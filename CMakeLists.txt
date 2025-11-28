@@ -9,6 +9,9 @@ project(${PROJECT_NAME})
 add_executable(
 	${PROJECT_NAME}
 	src/main.cpp
+	src/frontend/Lexer.cpp						include/frontend/Lexer.hpp
+	src/frontend/Token.cpp						include/frontend/Token.hpp
+	src/frontend/Parser.cpp						include/frontend/Parser.hpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})

@@ -1,0 +1,13 @@
+sum: function(integer, integer) = (a, b) 
+{
+    return a + b;
+};
+
+mul: function(integer, integer) = (a, b) => a * b;
+
+
+a: integer = 12;
+b: integer = 20;
+
+s: integer = sum(a, b);
+m: integer = mul(a, b);
