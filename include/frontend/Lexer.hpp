@@ -11,6 +11,9 @@ private:
     const std::string m_source;
     std::string::const_iterator m_current;
     
+    bool canAdvance() const;
+    void advance(size_t offset=1);
+
     void tokenizeNumber();
     void tokenizeString();
     void tokenizeIdentifier();

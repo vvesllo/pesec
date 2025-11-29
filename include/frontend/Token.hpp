@@ -8,6 +8,11 @@ enum class TokenType
 {
     Identifier,
     Keyword,
+
+    Plus,
+    Minus,
+    Star,
+    Slash,
     
     String,
     Integer,

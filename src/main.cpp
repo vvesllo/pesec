@@ -9,19 +9,29 @@ std::string readfile(std::string_view filepath);
 
 int main()
 {
-    Lexer lexer(readfile("examples/hello.pesec"));
+    // Lexer lexer(readfile("examples/hello.pesec"));
     
     try
     {
-        lexer.tokenize();
+        Lexer lexer("2 + 2 * 2");
+        auto tokens = lexer.tokenize();
+
+        Parser parser(tokens);
+        auto result = parser.parse();
+
+        std::println("result: {}", result->evaluate().toString());
     }
     catch (const std::runtime_error& e)
     {
         std::println("{}", e.what());
     }
+    catch (const std::exception& e)
+    {
+        std::println("compilation error: {}", e.what());
+    }
 }
 
-std::string readfile(std::string_view filepath)
+std::string readfile(std::string_view filepath) 
 {
     std::ifstream file(filepath.data());
 

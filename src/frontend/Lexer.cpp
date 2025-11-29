@@ -2,24 +2,26 @@
 
 #include <sstream>
 #include <string>
-#include <print>
 #include <stdexcept>
 
-    
+bool Lexer::canAdvance() const { return m_current != m_source.cend(); }
+
+void Lexer::advance(size_t offset) { m_current+=offset; }   
+
 void Lexer::tokenizeNumber()
 {
     std::stringstream buffer;
 
     uint8_t point_count = 0;
-    while (std::isdigit(*m_current) || *m_current == '.')
+    while (canAdvance() && (std::isdigit(*m_current) || *m_current == '.'))
     {
         buffer << *m_current;
-        m_current++;
         if (*m_current == '.')
         {
             if (++point_count > 1) 
-                throw std::runtime_error("Invalid float number");
+            throw std::runtime_error("Invalid float number");
         }
+        advance();
     }
     
     if (point_count == 1)
@@ -38,13 +40,13 @@ void Lexer::tokenizeString()
 {
     std::stringstream buffer;
 
-    m_current++;
-    while (*m_current != '"')
+    advance();
+    while (canAdvance() && *m_current != '"')
     {
         buffer << *m_current;
-        m_current++;
+        advance();
     }
-    m_current++;
+    advance();
     
     m_tokens.emplace_back(Token{
         TokenType::String,
@@ -56,14 +58,14 @@ void Lexer::tokenizeIdentifier()
 {
     std::stringstream buffer;
 
-    while (std::isalnum(*m_current) || *m_current == '_')
+    while (canAdvance() && (std::isalnum(*m_current) || *m_current == '_'))
     {
         buffer << *m_current;
-        m_current++;
+        advance();
     }
     
     m_tokens.emplace_back(Token{
-        TokenType::String,
+        TokenType::Identifier,
         buffer.str()
     });
 }
@@ -74,12 +76,15 @@ void Lexer::tokenizeOperator()
 
     switch (*m_current)
     {
-    case ';':  m_tokens.emplace_back(Token{TokenType::Semicolon, op_string});   m_current++; break;
+    case ';':  m_tokens.emplace_back(Token{TokenType::Semicolon, op_string});   advance(); break;
     
-    case '(':  m_tokens.emplace_back(Token{TokenType::LeftParen, op_string});   m_current++; break;
-    case ')':  m_tokens.emplace_back(Token{TokenType::RightParen, op_string});  m_current++; break;
+    case '(':  m_tokens.emplace_back(Token{TokenType::LeftParen, op_string});   advance(); break;
+    case ')':  m_tokens.emplace_back(Token{TokenType::RightParen, op_string});  advance(); break;
     
-    case '\0': m_tokens.emplace_back(Token{TokenType::Eof, op_string});         m_current++; break;
+    case '+':  m_tokens.emplace_back(Token{TokenType::Plus, op_string});   advance(); break;
+    case '-':  m_tokens.emplace_back(Token{TokenType::Minus, op_string});  advance(); break;
+    case '*':  m_tokens.emplace_back(Token{TokenType::Star, op_string});   advance(); break;
+    case '/':  m_tokens.emplace_back(Token{TokenType::Slash, op_string});  advance(); break;
     default:
         throw std::runtime_error("Unknown operator: " + op_string);
     }
@@ -88,8 +93,8 @@ void Lexer::tokenizeOperator()
 
 void Lexer::skipWhitespace()
 {
-    while (std::isspace(*m_current))
-        m_current++;
+    while (canAdvance() && std::isspace(*m_current))
+        advance();
 }
 
 Lexer::Lexer(const std::string& source)
@@ -101,7 +106,7 @@ Lexer::Lexer(const std::string& source)
 
 std::vector<Token> Lexer::tokenize()
 {
-    while (m_current != m_source.cend()) 
+    while (canAdvance()) 
     {
         if      (std::isspace(*m_current))  skipWhitespace();
         else if (std::isdigit(*m_current))  tokenizeNumber();
