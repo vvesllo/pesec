@@ -1,0 +1,4 @@
+mutab var = 2 + 2;
+println("var =", var);
+var = var * 2;
+println("var =", var);

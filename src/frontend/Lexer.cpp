@@ -1,0 +1,160 @@
+#include "include/frontend/Lexer.hpp"
+
+#include <sstream>
+#include <format>
+
+
+Token Lexer::createToken(const TokenAny& type) const { return Token{ type, m_line }; }
+
+bool Lexer::nextExists() const { return m_current != m_source.cend(); }
+
+bool Lexer::match(char character) const { return peek() == character; }
+
+char Lexer::advance() { return *m_current++; }
+
+char Lexer::peek() const { return *m_current; }
+
+void Lexer::processSkipable()
+{
+    while (nextExists() && std::isspace(peek())) 
+    {
+        if (peek() == '\n') ++m_line;
+        advance();
+    }
+}
+
+Token Lexer::processNumber()
+{
+    std::ostringstream oss;
+
+    while (nextExists() && (
+        std::isdigit(peek()) ||
+        match('\'')
+    )) 
+    {
+        if (!match('\'')) 
+            oss << peek();
+        advance();
+    }
+
+    return createToken(TokenType::Number{ std::stod(oss.str()) });
+}
+
+Token Lexer::processString()
+{
+    std::ostringstream oss;
+
+    advance();
+
+    while (nextExists() && !match('"'))
+        oss << advance();
+
+    advance();
+
+    return createToken(TokenType::String{ oss.str() });
+}
+
+Token Lexer::processOperator()
+{
+    switch (peek()) 
+    {
+    case '=': 
+        advance();
+        return createToken(TokenType::Equals{});
+    case '+': 
+        advance();
+        return createToken(TokenType::Plus{});
+    case '-': 
+        advance();
+        return createToken(TokenType::Minus{});
+    case '*': 
+        advance();
+        return createToken(TokenType::Asterisk{});
+    case '/': 
+        advance();
+        return createToken(TokenType::Slash{});
+    case '(': 
+        advance();
+        return createToken(TokenType::LeftParen{});
+    case ')': 
+        advance();
+        return createToken(TokenType::RightParen{});
+    case '{': 
+        advance();
+        return createToken(TokenType::LeftBracket{});
+    case '}': 
+        advance();
+        return createToken(TokenType::RightBracket{});
+    case ';': 
+        advance();
+        return createToken(TokenType::Semicolon{});
+    case ',': 
+        advance();
+        return createToken(TokenType::Comma{});
+    }
+
+    throw std::runtime_error(
+        std::format("Unknown character '{}'", peek())
+    );
+}
+
+Token Lexer::processIdentifier()
+{
+    std::ostringstream oss;
+
+    while (nextExists() && (
+        std::isalnum(peek()) ||
+        match('_')
+    )) oss << advance();
+
+    std::string value = oss.str();
+
+    if      (value == "mutab") return createToken(TokenType::Keyword::Mutab);
+    else if (value == "const") return createToken(TokenType::Keyword::Const);
+
+    else if (value == "funct") return createToken(TokenType::Keyword::Funct);
+    else if (value == "return") return createToken(TokenType::Keyword::Return);
+
+    else if (value == "if") return createToken(TokenType::Keyword::If);
+    else if (value == "else") return createToken(TokenType::Keyword::Else);
+
+    else if (value == "while") return createToken(TokenType::Keyword::While);
+    else if (value == "for") return createToken(TokenType::Keyword::For);
+    else if (value == "in") return createToken(TokenType::Keyword::In);
+    
+    else if (value == "null")  return createToken(TokenType::Null{});
+    else if (value == "true")  return createToken(TokenType::Boolean{ true });
+    else if (value == "false") return createToken(TokenType::Boolean{ false });
+
+    return createToken(TokenType::Identifier { value });
+}
+
+
+Lexer::Lexer(const std::string& source)
+    : m_source(source)
+    , m_current(m_source.cbegin())
+    , m_line(1)
+{
+
+}
+
+std::vector<Token> Lexer::process()
+{
+    std::vector<Token> tokens;
+    
+    while (nextExists()) 
+    {
+        if (std::isspace(peek())) 
+            processSkipable();
+        else if (match('"')) 
+            tokens.emplace_back(processString());
+        else if (std::isdigit(peek())) 
+            tokens.emplace_back(processNumber());
+        else if (std::isalpha(peek()) || match('_')) 
+            tokens.emplace_back(processIdentifier());
+        else
+            tokens.emplace_back(processOperator());
+    }
+
+    return tokens;
+}
