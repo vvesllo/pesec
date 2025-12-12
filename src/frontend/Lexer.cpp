@@ -1,6 +1,7 @@
 #include "include/frontend/Lexer.hpp"
 
 #include <sstream>
+#include <print>
 #include <format>
 
 
@@ -58,9 +59,6 @@ Token Lexer::processOperator()
 {
     switch (peek()) 
     {
-    case '=': 
-        advance();
-        return createToken(TokenType::Equals{});
     case '+': 
         advance();
         return createToken(TokenType::Plus{});
@@ -91,6 +89,38 @@ Token Lexer::processOperator()
     case ',': 
         advance();
         return createToken(TokenType::Comma{});
+    case '!': 
+        advance();
+        if (peek() == '=') 
+        {
+            advance();
+            return createToken(TokenType::NotEquals{});
+        }
+        return createToken(TokenType::Not{});
+    case '=': 
+        advance();
+        if (peek() == '=') 
+        {
+            advance();
+            return createToken(TokenType::EqualsEquals{});
+        }
+        return createToken(TokenType::Equals{});
+    case '<': 
+        advance();
+        if (peek() == '=') 
+        {
+            advance();
+            return createToken(TokenType::LessEquals{});
+        }
+        return createToken(TokenType::Less{});
+    case '>': 
+        advance();
+        if (peek() == '=') 
+        {
+            advance();
+            return createToken(TokenType::GreaterEquals{});
+        }
+        return createToken(TokenType::Greater{});
     }
 
     throw std::runtime_error(

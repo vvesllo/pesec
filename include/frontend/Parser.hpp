@@ -23,14 +23,18 @@ private:
     template<class T>
     T eat();
 
+    bool isBlockStatement(ASTNode* node) const;
 
-    std::unique_ptr<ASTNode> parseStatement();
+
     std::unique_ptr<ASTNode> parseBlock();
+    std::unique_ptr<ASTNode> parseStatement();
+    std::unique_ptr<ASTNode> parseComparison();
     std::unique_ptr<ASTNode> parseExpression();
     std::unique_ptr<ASTNode> parseTerm();
     std::unique_ptr<ASTNode> parseFactor();
     
 
+    std::unique_ptr<ASTNode> parseWhile();
     std::unique_ptr<ASTNode> parseIf();
     
     

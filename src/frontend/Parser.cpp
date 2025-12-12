@@ -4,6 +4,7 @@
 #include "include/frontend/ast/BinaryOpNode.hpp"
 #include "include/frontend/ast/LiteralNode.hpp"
 
+#include "include/frontend/ast/WhileNode.hpp"
 #include "include/frontend/ast/IfNode.hpp"
 
 #include "include/frontend/ast/FunctionCallNode.hpp"
@@ -37,12 +38,11 @@ T Parser::eat()
     return std::get<T>(advance().token);
 }
 
-std::unique_ptr<ASTNode> Parser::parseStatement()
+bool Parser::isBlockStatement(ASTNode* node) const
 {
-    if (nextExists() && match<TokenType::LeftBracket>())
-        return parseBlock();
-    
-    return parseExpression();
+    return  dynamic_cast<BlockNode*>(node) || 
+            dynamic_cast<WhileNode*>(node) || 
+            dynamic_cast<IfNode*>(node);
 }
 
 std::unique_ptr<ASTNode> Parser::parseBlock()
@@ -60,6 +60,46 @@ std::unique_ptr<ASTNode> Parser::parseBlock()
     eat<TokenType::RightBracket>();
 
     return std::make_unique<BlockNode>(std::move(statements));
+}
+
+std::unique_ptr<ASTNode> Parser::parseStatement()
+{
+    if (nextExists() && match<TokenType::LeftBracket>())
+        return parseBlock();
+    
+    return parseComparison();
+}
+
+std::unique_ptr<ASTNode> Parser::parseComparison()
+{
+    std::unique_ptr<ASTNode> lhs = parseExpression();
+    std::unique_ptr<ASTNode> rhs = nullptr;
+    
+    while (nextExists() && (
+        match<TokenType::EqualsEquals>() ||
+        match<TokenType::NotEquals>() ||
+        match<TokenType::Less>() ||
+        match<TokenType::Greater>() ||
+        match<TokenType::LessEquals>() ||
+        match<TokenType::GreaterEquals>()
+    ))
+    {
+        TokenAny token_type = peek().token;
+        if      (match<TokenType::EqualsEquals>())  eat<TokenType::EqualsEquals>();
+        else if (match<TokenType::NotEquals>())     eat<TokenType::NotEquals>();
+        else if (match<TokenType::Less>())          eat<TokenType::Less>();
+        else if (match<TokenType::Greater>())       eat<TokenType::Greater>();
+        else if (match<TokenType::LessEquals>())    eat<TokenType::LessEquals>();
+        else if (match<TokenType::GreaterEquals>()) eat<TokenType::GreaterEquals>();
+        
+        rhs = parseExpression();
+        lhs = std::make_unique<BinaryOpNode>(
+            token_type,
+            std::move(lhs),
+            std::move(rhs)
+        );
+    }
+    return lhs;
 }
 
 std::unique_ptr<ASTNode> Parser::parseExpression()
@@ -120,7 +160,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
     if (nextExists() && match<TokenType::LeftParen>())
     {
         eat<TokenType::LeftParen>();
-        node = parseExpression();
+        node = parseComparison();
         eat<TokenType::RightParen>();
     }
     else if (nextExists() && match<TokenType::Number>())
@@ -162,6 +202,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         {
         case TokenType::Keyword::Mutab: node = parseVariableDefinition(true); break;
         case TokenType::Keyword::Const: node = parseVariableDefinition(false); break;
+        case TokenType::Keyword::While: node = parseWhile(); break;
         case TokenType::Keyword::If:    node = parseIf(); break;
         default: throw std::runtime_error("Undefined control statement");
         }
@@ -177,9 +218,20 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
     return node;
 }
 
+std::unique_ptr<ASTNode> Parser::parseWhile()
+{
+    std::unique_ptr<ASTNode> condition = parseComparison();
+    std::unique_ptr<ASTNode> while_block = parseBlock();
+
+    return std::make_unique<WhileNode>(
+        std::move(condition),
+        std::move(while_block)
+    );
+}
+
 std::unique_ptr<ASTNode> Parser::parseIf()
 {
-    std::unique_ptr<ASTNode> condition = parseExpression();
+    std::unique_ptr<ASTNode> condition = parseComparison();
     std::unique_ptr<ASTNode> then_block = parseBlock();
     std::unique_ptr<ASTNode> else_block = nullptr;
 
@@ -206,11 +258,11 @@ std::unique_ptr<ASTNode> Parser::parseFunctionCall(const std::string& name)
     
     if (nextExists() && !match<TokenType::RightParen>())
     {
-        arguments.emplace_back(parseExpression());
+        arguments.emplace_back(parseComparison());
         while (nextExists() && match<TokenType::Comma>())
         {
             eat<TokenType::Comma>();
-            arguments.emplace_back(parseExpression());
+            arguments.emplace_back(parseComparison());
         }
     }
     
@@ -226,7 +278,7 @@ std::unique_ptr<ASTNode> Parser::parseVariableAssignment(const std::string& name
 {
     eat<TokenType::Equals>();
     
-    std::unique_ptr<ASTNode> value = parseExpression();
+    std::unique_ptr<ASTNode> value = parseComparison();
     
     return std::make_unique<VariableAssignmentNode>(
         name, 
@@ -246,7 +298,7 @@ std::unique_ptr<ASTNode> Parser::parseVariableDefinition(bool is_mutable)
     ))
     {
         eat<TokenType::Equals>();
-        expr = parseExpression();
+        expr = parseComparison();
     }
 
     return std::make_unique<VariableDefinitionNode>(
@@ -271,9 +323,7 @@ std::vector<std::unique_ptr<ASTNode>> Parser::parse()
     {
         std::unique_ptr<ASTNode> statement = parseStatement();
         
-        bool is_block_statement = 
-            dynamic_cast<BlockNode*>(statement.get()) || 
-            dynamic_cast<IfNode*>(statement.get());
+        bool is_block_statement = isBlockStatement(statement.get());
 
         statements.emplace_back(std::move(statement));
 

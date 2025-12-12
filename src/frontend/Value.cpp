@@ -94,7 +94,7 @@ Value Value::operator+(const Value& other) const
     else if (isString() && other.isString())
         return Value(getString() + other.getString());
     
-    throw std::runtime_error("Values ​​cannot be added");
+    throw std::runtime_error("Values ​​can't be added");
 }
 
 Value Value::operator-(const Value& other) const
@@ -102,7 +102,7 @@ Value Value::operator-(const Value& other) const
     if (isDouble() && other.isDouble())
         return Value(getDouble() - other.getDouble());
    
-    throw std::runtime_error("Values ​​cannot be substracted");
+    throw std::runtime_error("Values ​​can't be substracted");
 }
 
 Value Value::operator*(const Value& other) const
@@ -110,7 +110,7 @@ Value Value::operator*(const Value& other) const
     if (isDouble() && other.isDouble())
         return Value(getDouble() * other.getDouble());
     
-    throw std::runtime_error("Values ​​cannot be multiplied");
+    throw std::runtime_error("Values ​​can't be multiplied");
 }
 
 Value Value::operator/(const Value& other) const
@@ -121,5 +121,51 @@ Value Value::operator/(const Value& other) const
     if (isDouble() && other.isDouble())
         return Value(getDouble() / other.getDouble());
    
-    throw std::runtime_error("Values ​​cannot be divided");
+    throw std::runtime_error("Values ​​can't be divided");
+}
+
+Value Value::operator==(const Value& other) const
+{
+    if (isDouble() && other.isDouble())   return getDouble() == other.getDouble();
+    if (isString() && other.isString())   return getString() == other.getString();
+    if (isBoolean() && other.isBoolean()) return getBoolean() == other.getBoolean();
+
+    throw std::runtime_error("Values ​​can't be compared");
+}
+
+Value Value::operator!=(const Value& other) const
+{
+    if (isDouble() && other.isDouble())   return getDouble() != other.getDouble();
+    if (isString() && other.isString())   return getString() != other.getString();
+    if (isBoolean() && other.isBoolean()) return getBoolean() != other.getBoolean();
+
+    throw std::runtime_error("Values ​​can't be compared");
+}
+
+Value Value::operator<(const Value& other) const
+{
+    if (isDouble() && other.isDouble()) return getDouble() < other.getDouble();
+
+    throw std::runtime_error("Values ​​can't be compared");
+}
+
+Value Value::operator>(const Value& other) const
+{
+    if (isDouble() && other.isDouble()) return getDouble() > other.getDouble();
+
+    throw std::runtime_error("Values ​​can't be compared");
+}
+
+Value Value::operator<=(const Value& other) const
+{
+    if (isDouble() && other.isDouble()) return getDouble() <= other.getDouble();
+
+    throw std::runtime_error("Values ​​can't be compared");
+}
+
+Value Value::operator>=(const Value& other) const
+{
+    if (isDouble() && other.isDouble()) return getDouble() >= other.getDouble();
+
+    throw std::runtime_error("Values ​​can't be compared");
 }

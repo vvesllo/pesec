@@ -33,8 +33,17 @@ namespace TokenType
     struct Asterisk final {};
     struct Slash final {};
 
+    struct Not final {};
+
     struct Equals final {};
-    
+
+    struct EqualsEquals final {};
+    struct NotEquals final {};
+    struct Less final {};
+    struct Greater final {};
+    struct LessEquals final {};
+    struct GreaterEquals final {};
+
     struct Semicolon final {};
     struct Comma final {};
     
@@ -62,7 +71,16 @@ using TokenAny = std::variant<
     TokenType::Asterisk,
     TokenType::Slash,
 
+    TokenType::Not,
+
     TokenType::Equals,
+
+    TokenType::EqualsEquals,
+    TokenType::NotEquals,
+    TokenType::Less,
+    TokenType::Greater,
+    TokenType::LessEquals,
+    TokenType::GreaterEquals,
 
     TokenType::Semicolon,
     TokenType::Comma,

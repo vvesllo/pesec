@@ -27,14 +27,17 @@ Value BinaryOpNode::evaluate(Context& context) const
     const Value& rhs_value = m_rhs->evaluate(context);
 
     
-    if (match<TokenType::Plus>())
-        return lhs_value + rhs_value;
-    else if (match<TokenType::Minus>())
-        return lhs_value - rhs_value;
-    else if (match<TokenType::Asterisk>())
-        return lhs_value * rhs_value;
-    else if (match<TokenType::Slash>())
-        return lhs_value / rhs_value;
+    if (match<TokenType::Plus>())           return lhs_value + rhs_value;
+    else if (match<TokenType::Minus>())     return lhs_value - rhs_value;
+    else if (match<TokenType::Asterisk>())  return lhs_value * rhs_value;
+    else if (match<TokenType::Slash>())     return lhs_value / rhs_value;
+    
+    else if (match<TokenType::EqualsEquals>())  return lhs_value == rhs_value;
+    else if (match<TokenType::NotEquals>())     return lhs_value != rhs_value;
+    else if (match<TokenType::Less>())          return lhs_value <  rhs_value;
+    else if (match<TokenType::Greater>())       return lhs_value >  rhs_value;
+    else if (match<TokenType::LessEquals>())    return lhs_value <= rhs_value;
+    else if (match<TokenType::GreaterEquals>()) return lhs_value >= rhs_value;
 
     throw std::runtime_error("Unknown operation");
 }

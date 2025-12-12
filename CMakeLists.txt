@@ -21,6 +21,7 @@ add_executable(
 	src/frontend/ast/LiteralNode.cpp			include/frontend/ast/LiteralNode.hpp
 	src/frontend/ast/BinaryOpNode.cpp			include/frontend/ast/BinaryOpNode.hpp
 	
+	src/frontend/ast/WhileNode.cpp				include/frontend/ast/WhileNode.hpp
 	src/frontend/ast/IfNode.cpp					include/frontend/ast/IfNode.hpp
 	
 	src/frontend/ast/FunctionCallNode.cpp		include/frontend/ast/FunctionCallNode.hpp
