@@ -17,20 +17,14 @@ VariableDefinitionNode::VariableDefinitionNode(
 
 Value VariableDefinitionNode::evaluate(Context& context) const
 {
-    auto it = context.variables.find(m_name);
-    if (it != context.variables.end())
-        throw std::runtime_error("Variable '" + m_name + "' already exists");
-
     Variable var {
-        .value=Value(),
+        .value=m_expression 
+            ? m_expression->evaluate(context) 
+            : Value(),
         .is_mutable=m_is_mutable
     };
     
-
-    if (m_expression)
-        var.value = m_expression->evaluate(context);
-
-    context.variables[m_name] = var;
+    context.define(m_name, var);
 
     return var.value;
 }

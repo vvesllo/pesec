@@ -16,14 +16,14 @@ FunctionCallNode::FunctionCallNode(
 
 Value FunctionCallNode::evaluate(Context& context) const
 {
-    auto it = context.variables.find(m_name);
-    if (it == context.variables.end())
-        throw std::runtime_error("Function '" + m_name + "' not found");
-
     std::vector<Value> values;
+    Value function_value = context.get(m_name).value;
+
+    if (!function_value.isFunction())
+        throw std::runtime_error("Variable is not a function");
 
     for (const auto& argument : m_arguments)
         values.emplace_back(argument->evaluate(context));
 
-    return it->second.value.getFunction()(context, values);
+    return function_value.getFunction()(context, values);
 }

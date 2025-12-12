@@ -9,8 +9,8 @@
 
 void init_stdio(Context& context)
 {
-    context.variables["println"] = Variable{
-        Value((FunctionType)[](Context& context, const std::vector<Value>& values) {
+    context.define("println", Variable{
+        (FunctionType)[](Context& context, const std::vector<Value>& values) {
             for (size_t i=0; i < values.size(); i++)
             {
                 if (i > 0) std::cout << ' ';
@@ -18,9 +18,9 @@ void init_stdio(Context& context)
             }
             std::cout << std::endl;
             return Value();
-        }), 
+        },
         false
-    };
+    });
 }
 
 
