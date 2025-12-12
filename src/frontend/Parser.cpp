@@ -3,6 +3,8 @@
 #include "include/frontend/ast/BlockNode.hpp"
 #include "include/frontend/ast/BinaryOpNode.hpp"
 #include "include/frontend/ast/LiteralNode.hpp"
+
+#include "include/frontend/ast/ReturnNode.hpp"
 #include "include/frontend/ast/BreakNode.hpp"
 
 #include "include/frontend/ast/WhileNode.hpp"
@@ -234,8 +236,12 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         case TokenType::Keyword::Const: node = parseVariableDefinition(false); break;
         case TokenType::Keyword::While: node = parseWhile(); break;
         case TokenType::Keyword::Break: node = parseBreak(); break;
+        case TokenType::Keyword::Return:node = parseReturn(); break;
         case TokenType::Keyword::If:    node = parseIf(); break;
-        default: throw std::runtime_error("Undefined control statement");
+        default: throw std::runtime_error(std::format(
+            "Undefined control statement at line {}", 
+            peek().line
+        ));
         }
     }
     else 
@@ -272,14 +278,7 @@ std::unique_ptr<ASTNode> Parser::parseWhile()
 
 std::unique_ptr<ASTNode> Parser::parseBreak()
 {
-    std::unique_ptr<ASTNode> while_value = nullptr;
-    if (!match<TokenType::Semicolon>())
-        while_value = parseStatement();
-    
-        
-    return std::make_unique<BreakNode>(
-        std::move(while_value)
-    );
+    return std::make_unique<BreakNode>(parseStatement());
 }
 
 std::unique_ptr<ASTNode> Parser::parseIf()
@@ -301,6 +300,16 @@ std::unique_ptr<ASTNode> Parser::parseIf()
         std::move(then_block),
         std::move(else_block)
     );
+}
+
+std::unique_ptr<ASTNode> Parser::parseReturn()
+{
+    std::unique_ptr<ASTNode> node = nullptr;
+    
+    if (!match<TokenType::Semicolon>())
+        node = parseStatement();
+    
+    return std::make_unique<ReturnNode>(std::move(node));
 }
 
 std::unique_ptr<ASTNode> Parser::parseFunctionCall(const std::string& name)

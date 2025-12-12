@@ -38,6 +38,7 @@ private:
     std::unique_ptr<ASTNode> parseWhile();
     std::unique_ptr<ASTNode> parseBreak();
     std::unique_ptr<ASTNode> parseIf();
+    std::unique_ptr<ASTNode> parseReturn();
     
     
     std::unique_ptr<ASTNode> parseFunctionCall(const std::string& name);

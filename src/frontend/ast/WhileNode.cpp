@@ -1,5 +1,6 @@
 #include "include/frontend/ast/WhileNode.hpp"
 #include "include/frontend/ast/BreakValueException.hpp"
+#include "include/frontend/ast/ReturnValueException.hpp"
 
 #include <stdexcept>
 #include <print>
@@ -32,13 +33,24 @@ Value WhileNode::evaluate(Context& context) const
         } 
         catch (const BreakValueException& break_value) 
         {
-            return break_value.value();
+            return Value();
+        }
+        catch (const ReturnValueException& return_value) 
+        {
+            return return_value.value();
         }
     }
     
     if (m_else_block)
     {
-        return m_else_block->evaluate(context);
+        try 
+        {
+            return m_else_block->evaluate(context);
+        } 
+        catch (const ReturnValueException& return_value) 
+        {
+            return return_value.value();
+        }
     }
 
     return Value();

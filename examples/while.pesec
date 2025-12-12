@@ -4,10 +4,13 @@ const a = while i < 10
     i = i + 1;
     if (i == 5)
     {
-        break "Break";
+        return;
     }
 } else {
-    "Breakn't";
+    println("Breakn't");
 };
 
-println(a);
+if (a == null)
+{
+    println("a is null and loop is stoped");
+}

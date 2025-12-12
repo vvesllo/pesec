@@ -1,4 +1,8 @@
 #include "include/frontend/ast/BlockNode.hpp"
+#include "include/frontend/ast/ReturnNode.hpp"
+#include "include/frontend/ast/ReturnValueException.hpp"
+
+#include <print>
 
 
 BlockNode::BlockNode(std::vector<std::unique_ptr<ASTNode>> statements)
@@ -13,7 +17,9 @@ Value BlockNode::evaluate(Context& context) const
     for (auto& statement : m_statements)
     {
         value = statement->evaluate(context);
+        if (dynamic_cast<ReturnNode*>(statement.get()))
+            return value;
     }
     
-    return value;
+    return Value();
 }
