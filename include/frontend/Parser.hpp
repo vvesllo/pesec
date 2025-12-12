@@ -25,6 +25,7 @@ private:
 
     bool isBlockStatement(ASTNode* node) const;
 
+    std::vector<std::unique_ptr<ASTNode>> parseStatementList(bool is_block);
 
     std::unique_ptr<ASTNode> parseBlock();
     std::unique_ptr<ASTNode> parseStatement();
@@ -35,6 +36,7 @@ private:
     
 
     std::unique_ptr<ASTNode> parseWhile();
+    std::unique_ptr<ASTNode> parseBreak();
     std::unique_ptr<ASTNode> parseIf();
     
     

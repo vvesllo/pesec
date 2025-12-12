@@ -1,4 +1,5 @@
 #include "include/frontend/ast/WhileNode.hpp"
+#include "include/frontend/ast/BreakValueException.hpp"
 
 #include <stdexcept>
 
@@ -22,7 +23,14 @@ Value WhileNode::evaluate(Context& context) const
     
     while (m_condition->evaluate(context).getBoolean())
     {
-        value = m_while_block->evaluate(context);
+        try 
+        {
+            value = m_while_block->evaluate(context);
+        } 
+        catch (const BreakValueException& break_value) 
+        {
+            return break_value.value();
+        }
     }
     
     return value;

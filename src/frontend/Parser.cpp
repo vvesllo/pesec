@@ -3,9 +3,11 @@
 #include "include/frontend/ast/BlockNode.hpp"
 #include "include/frontend/ast/BinaryOpNode.hpp"
 #include "include/frontend/ast/LiteralNode.hpp"
+#include "include/frontend/ast/BreakNode.hpp"
 
 #include "include/frontend/ast/WhileNode.hpp"
 #include "include/frontend/ast/IfNode.hpp"
+
 
 #include "include/frontend/ast/FunctionCallNode.hpp"
 
@@ -32,7 +34,11 @@ T Parser::eat()
 {
     if (!match<T>())
         throw std::runtime_error(
-            std::format("Unexpected token {} at line {}", tokenToString(peek()), peek().line)
+            std::format(
+                "Unexpected token {} at line {} ({} expected)", 
+                    tokenToString(peek()), peek().line,
+                    typeid(T).name()
+            )
         );
 
     return std::get<T>(advance().token);
@@ -45,21 +51,45 @@ bool Parser::isBlockStatement(ASTNode* node) const
             dynamic_cast<IfNode*>(node);
 }
 
+std::vector<std::unique_ptr<ASTNode>> Parser::parseStatementList(bool is_block)
+{
+    std::vector<std::unique_ptr<ASTNode>> statements;
+    
+    while (nextExists())
+    {
+        if (is_block && match<TokenType::RightBracket>())
+            break;
+
+        std::unique_ptr<ASTNode> statement = parseStatement();    
+        
+        if (!isBlockStatement(statement.get()))
+        {
+            if (!nextExists())
+                throw std::runtime_error("Expected ';' after statement, but EOF reached");
+            
+            if (!match<TokenType::Semicolon>()) 
+                throw std::runtime_error(
+                    std::format("Expected ';' after statement at line {}", peek().line)
+                );
+
+            eat<TokenType::Semicolon>();
+        }
+
+        statements.emplace_back(std::move(statement));
+    }
+
+    return statements;
+}
+
 std::unique_ptr<ASTNode> Parser::parseBlock()
 {
     eat<TokenType::LeftBracket>();
     
-    std::vector<std::unique_ptr<ASTNode>> statements;
-
-    while (nextExists() && !match<TokenType::RightBracket>())
-    {
-        statements.emplace_back(parseStatement());
-        eat<TokenType::Semicolon>();
-    }
-
+    auto statement_list = parseStatementList(true);
+    
     eat<TokenType::RightBracket>();
-
-    return std::make_unique<BlockNode>(std::move(statements));
+    
+    return std::make_unique<BlockNode>(std::move(statement_list));
 }
 
 std::unique_ptr<ASTNode> Parser::parseStatement()
@@ -203,6 +233,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         case TokenType::Keyword::Mutab: node = parseVariableDefinition(true); break;
         case TokenType::Keyword::Const: node = parseVariableDefinition(false); break;
         case TokenType::Keyword::While: node = parseWhile(); break;
+        case TokenType::Keyword::Break: node = parseBreak(); break;
         case TokenType::Keyword::If:    node = parseIf(); break;
         default: throw std::runtime_error("Undefined control statement");
         }
@@ -226,6 +257,18 @@ std::unique_ptr<ASTNode> Parser::parseWhile()
     return std::make_unique<WhileNode>(
         std::move(condition),
         std::move(while_block)
+    );
+}
+
+std::unique_ptr<ASTNode> Parser::parseBreak()
+{
+    std::unique_ptr<ASTNode> while_value = nullptr;
+    if (!match<TokenType::Semicolon>())
+        while_value = parseStatement();
+    
+        
+    return std::make_unique<BreakNode>(
+        std::move(while_value)
     );
 }
 
@@ -316,30 +359,8 @@ Parser::Parser(const std::vector<Token>& tokens)
 }
 
 std::vector<std::unique_ptr<ASTNode>> Parser::parse()
-{    
-    std::vector<std::unique_ptr<ASTNode>> statements;
-    
-    while (nextExists()) 
-    {
-        std::unique_ptr<ASTNode> statement = parseStatement();
-        
-        bool is_block_statement = isBlockStatement(statement.get());
-
-        statements.emplace_back(std::move(statement));
-
-        if (!is_block_statement)
-        {
-            if (!nextExists())
-                throw std::runtime_error("Expected ';' after statement, but EOF reached");
-
-            if (!match<TokenType::Semicolon>()) 
-                throw std::runtime_error(
-                    std::format("Expected ';' after statement at line {}", peek().line)
-                );
-            
-            eat<TokenType::Semicolon>();
-        }
-    }
+{
+    auto statement_list = parseStatementList(false);
  
-    return statements;
+    return statement_list;
 }

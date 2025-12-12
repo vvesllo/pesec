@@ -20,6 +20,8 @@ add_executable(
 	src/frontend/ast/BlockNode.cpp				include/frontend/ast/BlockNode.hpp
 	src/frontend/ast/LiteralNode.cpp			include/frontend/ast/LiteralNode.hpp
 	src/frontend/ast/BinaryOpNode.cpp			include/frontend/ast/BinaryOpNode.hpp
+	src/frontend/ast/BreakNode.cpp				include/frontend/ast/BreakNode.hpp
+	src/frontend/ast/BreakValueException.cpp	include/frontend/ast/BreakValueException.hpp
 	
 	src/frontend/ast/WhileNode.cpp				include/frontend/ast/WhileNode.hpp
 	src/frontend/ast/IfNode.cpp					include/frontend/ast/IfNode.hpp

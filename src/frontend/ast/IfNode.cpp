@@ -17,15 +17,15 @@ IfNode::IfNode(
 
 Value IfNode::evaluate(Context& context) const
 {
-    Value value = m_condition->evaluate(context);
+    Value condition_value = m_condition->evaluate(context);
     
-    if (!value.isBoolean())
+    if (!condition_value.isBoolean())
         throw std::runtime_error("Condition must be boolean value");
     
-    if (value.getBoolean())
+    if (condition_value.getBoolean())
         return m_then_block->evaluate(context);
     else if (m_else_block)
         return m_else_block->evaluate(context);
-
+    
     return Value();
 }

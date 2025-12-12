@@ -1,7 +1,6 @@
 #include "include/frontend/Lexer.hpp"
 
 #include <sstream>
-#include <print>
 #include <format>
 
 
@@ -139,22 +138,24 @@ Token Lexer::processIdentifier()
 
     std::string value = oss.str();
 
-    if      (value == "mutab") return createToken(TokenType::Keyword::Mutab);
-    else if (value == "const") return createToken(TokenType::Keyword::Const);
+    if      (value == "mutab")  return createToken(TokenType::Keyword::Mutab);
+    else if (value == "const")  return createToken(TokenType::Keyword::Const);
 
-    else if (value == "funct") return createToken(TokenType::Keyword::Funct);
+    else if (value == "funct")  return createToken(TokenType::Keyword::Funct);
     else if (value == "return") return createToken(TokenType::Keyword::Return);
 
-    else if (value == "if") return createToken(TokenType::Keyword::If);
-    else if (value == "else") return createToken(TokenType::Keyword::Else);
+    else if (value == "if")     return createToken(TokenType::Keyword::If);
+    else if (value == "else")   return createToken(TokenType::Keyword::Else);
 
-    else if (value == "while") return createToken(TokenType::Keyword::While);
-    else if (value == "for") return createToken(TokenType::Keyword::For);
-    else if (value == "in") return createToken(TokenType::Keyword::In);
+    else if (value == "while")  return createToken(TokenType::Keyword::While);
+    else if (value == "for")    return createToken(TokenType::Keyword::For);
+    else if (value == "in")     return createToken(TokenType::Keyword::In);
+
+    else if (value == "break")  return createToken(TokenType::Keyword::Break);
     
-    else if (value == "null")  return createToken(TokenType::Null{});
-    else if (value == "true")  return createToken(TokenType::Boolean{ true });
-    else if (value == "false") return createToken(TokenType::Boolean{ false });
+    else if (value == "null")   return createToken(TokenType::Null{});
+    else if (value == "true")   return createToken(TokenType::Boolean{ true });
+    else if (value == "false")  return createToken(TokenType::Boolean{ false });
 
     return createToken(TokenType::Identifier { value });
 }

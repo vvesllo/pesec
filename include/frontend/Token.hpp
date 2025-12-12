@@ -17,6 +17,9 @@ namespace TokenType
         For,
         In,
 
+        Break,
+        Continue,
+
         If,
         Else,
     };
@@ -53,8 +56,6 @@ namespace TokenType
     
     struct LeftBracket final {};
     struct RightBracket final {};
-
-    struct Eof final {};
 }
 
 using TokenAny = std::variant<
@@ -89,9 +90,7 @@ using TokenAny = std::variant<
     TokenType::RightParen,
 
     TokenType::LeftBracket,
-    TokenType::RightBracket,
-
-    TokenType::Eof
+    TokenType::RightBracket
 >;
 struct Token
 {
