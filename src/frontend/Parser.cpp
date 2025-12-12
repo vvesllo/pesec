@@ -253,10 +253,20 @@ std::unique_ptr<ASTNode> Parser::parseWhile()
 {
     std::unique_ptr<ASTNode> condition = parseComparison();
     std::unique_ptr<ASTNode> while_block = parseBlock();
+    std::unique_ptr<ASTNode> else_block = nullptr;
+
+    if (nextExists() && match<TokenType::Keyword>())
+    {
+        TokenType::Keyword keyword = eat<TokenType::Keyword>();
+        if (keyword == TokenType::Keyword::Else)
+            else_block = parseBlock();
+
+    }
 
     return std::make_unique<WhileNode>(
         std::move(condition),
-        std::move(while_block)
+        std::move(while_block),
+        std::move(else_block)
     );
 }
 

@@ -12,8 +12,8 @@ Value BlockNode::evaluate(Context& context) const
     Value value;
     for (auto& statement : m_statements)
     {
-        statement->evaluate(context);
+        value = statement->evaluate(context);
     }
     
-    return Value();
+    return value;
 }

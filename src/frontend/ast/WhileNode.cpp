@@ -2,14 +2,17 @@
 #include "include/frontend/ast/BreakValueException.hpp"
 
 #include <stdexcept>
+#include <print>
 
 
 WhileNode::WhileNode(
     std::unique_ptr<ASTNode> condition,
-    std::unique_ptr<ASTNode> while_block
+    std::unique_ptr<ASTNode> while_block,
+    std::unique_ptr<ASTNode> else_block
 )
     : m_condition(std::move(condition))
     , m_while_block(std::move(while_block))
+    , m_else_block(std::move(else_block))
 {
 
 }
@@ -25,7 +28,7 @@ Value WhileNode::evaluate(Context& context) const
     {
         try 
         {
-            value = m_while_block->evaluate(context);
+            m_while_block->evaluate(context);
         } 
         catch (const BreakValueException& break_value) 
         {
@@ -33,5 +36,10 @@ Value WhileNode::evaluate(Context& context) const
         }
     }
     
-    return value;
+    if (m_else_block)
+    {
+        return m_else_block->evaluate(context);
+    }
+
+    return Value();
 }

@@ -1,11 +1,13 @@
 mutab i = 0;
-const result = while true
+const a = while i < 10
 {
     i = i + 1;
-    if i > 10
+    if (i == 5)
     {
-        break 2 + 2;
+        break "Break";
     }
+} else {
+    "Breakn't";
 };
 
-println(i, result);
+println(a);
