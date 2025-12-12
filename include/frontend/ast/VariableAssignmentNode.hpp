@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 #include <string>
 #include "include/frontend/ast/ASTNode.hpp"
 

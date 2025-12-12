@@ -14,12 +14,10 @@ VariableAssignmentNode::VariableAssignmentNode(
 
 Value VariableAssignmentNode::evaluate(Context& context) const
 {
-    context.set(
-        m_name,
-        m_expression 
+    Value value = m_expression 
             ? m_expression->evaluate(context)
-            : Value()
-    );
+            : Value();
+    context.set(m_name, value);
 
-    return Value();
+    return value;
 }

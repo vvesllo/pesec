@@ -3,10 +3,4 @@ const a = while i < 10
 {
     i = i + 1;
     println(i);
-} else {
-    mutab b = 10;
-    println("Breakn't", b);
 };
-
-println(a);
-println(b);

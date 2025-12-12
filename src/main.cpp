@@ -44,7 +44,7 @@ int main()
 {
     try 
     {
-        std::string source = readfile("examples/while.pesec");
+        std::string source = readfile("examples/test.pesec");
 
         Lexer lexer(source);
         

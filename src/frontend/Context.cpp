@@ -1,6 +1,7 @@
 #include "include/frontend/Context.hpp"
 
 #include <stdexcept>
+#include <format>
 
 
 Context::Context()
@@ -33,7 +34,10 @@ Variable Context::get(const std::string& name) const
     if (m_parent) 
         return m_parent->get(name);
 
-    throw std::runtime_error("Variable does not exist");
+    throw std::runtime_error(std::format(
+        "Variable '{}' does not exist in this scope",
+        name
+    ));
 }
 
 void Context::set(const std::string& name, const Value& value)
@@ -43,7 +47,10 @@ void Context::set(const std::string& name, const Value& value)
     if (it != m_variables.end()) 
     {
         if (!it->second.is_mutable)
-            throw std::runtime_error("Variable is constant and can't be changed");
+            throw std::runtime_error(std::format(
+                "Variable '{}' is constant and can't be changed",
+                name
+            ));
         
         it->second.value = value;
     } 
@@ -52,14 +59,20 @@ void Context::set(const std::string& name, const Value& value)
         m_parent->set(name, value);
 
     else
-        throw std::runtime_error("Attempt to assign undefined variable");
+        throw std::runtime_error(std::format(
+            "Attempt to assign undefined variable '{}'",
+            name
+        ));
 }
 
 void Context::define(const std::string& name, const Variable& variable)
 {
     auto it = m_variables.find(name);
     if (it != m_variables.end())
-        throw std::runtime_error("Variable already exists");
+        throw std::runtime_error(std::format(
+            "Variable '{}' already exists",
+            name
+        ));
     
     m_variables[name] = variable;
 }
