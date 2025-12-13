@@ -1,7 +1,4 @@
-const sum = funct(a, b)
-{
-    return a + b;
-};
+use "std/io.dll";
+use "std/math.dll";
 
-
-println("sum = " + tostr(sum(1, 2)));
+println(pow(5, 3));

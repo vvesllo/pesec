@@ -16,7 +16,7 @@ add_executable(
 	src/frontend/Value.cpp									include/frontend/Value.hpp
 	src/frontend/Context.cpp								include/frontend/Context.hpp
 	src/frontend/FunctionValue.cpp							include/frontend/FunctionValue.hpp
-	src/frontend/PesecStd.cpp								include/frontend/PesecStd.hpp
+	src/frontend/LibraryLoader.cpp							include/frontend/LibraryLoader.hpp
 
 	src/frontend/ast/ASTNode.cpp							include/frontend/ast/ASTNode.hpp
 	src/frontend/ast/BlockNode.cpp							include/frontend/ast/BlockNode.hpp
@@ -27,6 +27,8 @@ add_executable(
 	src/frontend/ast/ReturnNode.cpp							include/frontend/ast/ReturnNode.hpp
 	src/frontend/ast/ReturnValueException.cpp				include/frontend/ast/ReturnValueException.hpp
 	
+	src/frontend/ast/UseNode.cpp							include/frontend/ast/UseNode.hpp
+
 	src/frontend/ast/WhileNode.cpp							include/frontend/ast/WhileNode.hpp
 	src/frontend/ast/IfNode.cpp								include/frontend/ast/IfNode.hpp
 	
@@ -41,3 +43,6 @@ add_executable(
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
+
+add_subdirectory(stdlib/io)
+add_subdirectory(stdlib/math)

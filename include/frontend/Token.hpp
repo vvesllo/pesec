@@ -13,6 +13,8 @@ namespace TokenType
         Funct,
         Return,
         
+        Use,
+
         While,
         For,
         In,

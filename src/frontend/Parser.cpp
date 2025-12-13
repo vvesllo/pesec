@@ -7,6 +7,8 @@
 #include "include/frontend/ast/ReturnNode.hpp"
 #include "include/frontend/ast/BreakNode.hpp"
 
+#include "include/frontend/ast/UseNode.hpp"
+
 #include "include/frontend/ast/WhileNode.hpp"
 #include "include/frontend/ast/IfNode.hpp"
 
@@ -22,7 +24,6 @@
 
 #include <stdexcept>
 #include <format>
-#include <print>
 
 
 bool Parser::nextExists() const { return m_current != m_tokens.cend(); }
@@ -265,13 +266,14 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         
         switch (keyword) 
         {
-        case TokenType::Keyword::Mutab:  node = parseVariableDefinition(true); break;
-        case TokenType::Keyword::Const:  node = parseVariableDefinition(false); break;
-        case TokenType::Keyword::Funct:  node = parseFunction(); break;
+        case TokenType::Keyword::Use:    node = parseUse(); break;
         case TokenType::Keyword::While:  node = parseWhile(); break;
         case TokenType::Keyword::Break:  node = parseBreak(); break;
         case TokenType::Keyword::Return: node = parseReturn(); break;
         case TokenType::Keyword::If:     node = parseIf(); break;
+        case TokenType::Keyword::Mutab:  node = parseVariableDefinition(true); break;
+        case TokenType::Keyword::Const:  node = parseVariableDefinition(false); break;
+        case TokenType::Keyword::Funct:  node = parseFunction(); break;
         default: throw std::runtime_error(std::format(
             "Undefined control statement at line {}", 
             peek().line
@@ -287,6 +289,13 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
 
 
     return node;
+}
+
+std::unique_ptr<ASTNode> Parser::parseUse()
+{
+    std::string filepath =eat<TokenType::String>().value;
+    
+    return std::make_unique<UseNode>(filepath);
 }
 
 std::unique_ptr<ASTNode> Parser::parseWhile()

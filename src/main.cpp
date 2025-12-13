@@ -5,7 +5,6 @@
 #include "include/frontend/Lexer.hpp"
 #include "include/frontend/Parser.hpp"
 #include "include/frontend/Value.hpp"
-#include "include/frontend/PesecStd.hpp"
 
 
 std::string readfile(std::string_view filepath)
@@ -32,9 +31,6 @@ int main()
         Parser parser(lexer.process());
         
         Context context;
-        PesecStd::init_io(context);
-        PesecStd::init_math(context);
-        PesecStd::init_types(context);
         
         for (auto& statement : parser.parse())
             statement->evaluate(context);

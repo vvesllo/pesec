@@ -165,6 +165,8 @@ Token Lexer::processIdentifier()
     else if (value == "funct")  return createToken(TokenType::Keyword::Funct);
     else if (value == "return") return createToken(TokenType::Keyword::Return);
 
+    else if (value == "use")    return createToken(TokenType::Keyword::Use);
+
     else if (value == "if")     return createToken(TokenType::Keyword::If);
     else if (value == "else")   return createToken(TokenType::Keyword::Else);
 
