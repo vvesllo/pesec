@@ -15,7 +15,7 @@ using FunctionType = std::function<Value(Context&, std::vector<Value>&)>;
 class FunctionValue final
 {
 private:
-    const std::vector<std::string> m_parameters;
+    std::vector<std::string> m_parameters;
     std::shared_ptr<Context> m_scope;
     
     std::shared_ptr<ASTNode> m_body;

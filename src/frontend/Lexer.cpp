@@ -60,15 +60,35 @@ Token Lexer::processOperator()
     {
     case '+': 
         advance();
+        if (peek() == '=') 
+        {
+            advance();
+            return createToken(TokenType::PlusEquals{});
+        }
         return createToken(TokenType::Plus{});
     case '-': 
         advance();
+        if (peek() == '=') 
+        {
+            advance();
+            return createToken(TokenType::MinusEquals{});
+        }
         return createToken(TokenType::Minus{});
     case '*': 
         advance();
+        if (peek() == '=') 
+        {
+            advance();
+            return createToken(TokenType::AsteriskEquals{});
+        }
         return createToken(TokenType::Asterisk{});
     case '/': 
         advance();
+        if (peek() == '=') 
+        {
+            advance();
+            return createToken(TokenType::SlashEquals{});
+        }
         return createToken(TokenType::Slash{});
     case '(': 
         advance();

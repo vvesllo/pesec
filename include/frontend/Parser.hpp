@@ -18,6 +18,9 @@ private:
     Token advance();
 
     template<class T>
+    bool match(const TokenAny& token) const;
+    
+    template<class T>
     bool match() const;
 
     template<class T>
@@ -47,7 +50,7 @@ private:
     std::unique_ptr<ASTNode> parseFunctionCall(const std::string& name);
     
 
-    std::unique_ptr<ASTNode> parseVariableAssignment(const std::string& name);
+    std::unique_ptr<ASTNode> parseVariableAssignment(const std::string& name, const TokenAny& token);
     std::unique_ptr<ASTNode> parseVariableDefinition(bool is_mutable);
 
 

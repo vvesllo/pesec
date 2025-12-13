@@ -1,26 +1,28 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include "include/frontend/ast/ASTNode.hpp"
 #include "include/frontend/Token.hpp"
 
 
-class BinaryOpNode final : public ASTNode
+class VariableCompoundAssignmentNode final : public ASTNode
 {
 private:
     const TokenAny m_op_token;
-    std::unique_ptr<ASTNode> m_lhs;
-    std::unique_ptr<ASTNode> m_rhs;
+    const std::string m_name;
+    std::unique_ptr<ASTNode> m_expression;
 
     template<class T>
     bool match() const;
 
 public:
-    BinaryOpNode(
+    VariableCompoundAssignmentNode(
         const TokenAny& op_token,
-        std::unique_ptr<ASTNode> lhs,
-        std::unique_ptr<ASTNode> rhs
+        const std::string& name,
+        std::unique_ptr<ASTNode> expression
     );
+
     Value evaluate(Context& context) const override;
     std::unique_ptr<ASTNode> clone() const override;
 };

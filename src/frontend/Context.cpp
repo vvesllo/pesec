@@ -1,10 +1,11 @@
 #include "include/frontend/Context.hpp"
 
 #include "include/frontend/Value.hpp"
-#include "include/frontend/ast/ASTNode.hpp"
 
 #include <stdexcept>
 #include <format>
+#include <print>
+
 
 
 Context::Context()
@@ -45,8 +46,7 @@ Variable& Context::get(const std::string& name) const
 
 void Context::set(const std::string& name, Value value)
 {
-    auto it = m_variables.find(name.data());
-    
+    auto it = m_variables.find(name);
     if (it != m_variables.end()) 
     {
         if (!it->second->is_mutable)
@@ -55,13 +55,7 @@ void Context::set(const std::string& name, Value value)
                 name
             ));
         
-        m_variables.emplace(
-            name, 
-            std::make_unique<Variable>(
-                value, 
-                it->second->is_mutable
-            )
-        );
+        m_variables[name]->value = value;
     } 
     
     else if (m_parent) 

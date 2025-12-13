@@ -14,9 +14,10 @@
 #include "include/frontend/ast/FunctionCallNode.hpp"
 #include "include/frontend/ast/FunctionInstantCallNode.hpp"
 
-#include "include/frontend/ast/VariableAssignmentNode.hpp"
-#include "include/frontend/ast/VariableDefinitionNode.hpp"
 #include "include/frontend/ast/VariableNode.hpp"
+#include "include/frontend/ast/VariableDefinitionNode.hpp"
+#include "include/frontend/ast/VariableAssignmentNode.hpp"
+#include "include/frontend/ast/VariableCompoundAssignmentNode.hpp"
 
 
 #include <stdexcept>
@@ -31,7 +32,11 @@ Token Parser::peek() const { return *m_current; }
 Token Parser::advance() { return *m_current++; }
 
 template<class T>
-bool Parser::match() const { return std::holds_alternative<T>(m_current->token); }
+bool Parser::match(const TokenAny& token) const { return std::holds_alternative<T>(token); }
+
+template<class T>
+bool Parser::match() const { return match<T>(m_current->token); }
+
 template<class T>
 T Parser::eat()
 {
@@ -241,12 +246,18 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
     {
         std::string value = eat<TokenType::Identifier>().value;
         
-        if (nextExists() && match<TokenType::LeftParen>())
-            node = parseFunctionCall(value);
-        else if (nextExists() && match<TokenType::Equals>())
-            node = parseVariableAssignment(value);
-        else
-            node = std::make_unique<VariableNode>(value);
+        if (nextExists())
+        {
+            if (match<TokenType::LeftParen>()) node = parseFunctionCall(value);
+            
+            else if (match<TokenType::Equals>())         node = parseVariableAssignment(value, eat<TokenType::Equals>());
+            else if (match<TokenType::PlusEquals>())     node = parseVariableAssignment(value, eat<TokenType::PlusEquals>());
+            else if (match<TokenType::MinusEquals>())    node = parseVariableAssignment(value, eat<TokenType::MinusEquals>());
+            else if (match<TokenType::AsteriskEquals>()) node = parseVariableAssignment(value, eat<TokenType::AsteriskEquals>());
+            else if (match<TokenType::SlashEquals>())    node = parseVariableAssignment(value, eat<TokenType::SlashEquals>());
+            
+            else node = std::make_unique<VariableNode>(value);
+        }
     }
     else if (nextExists() && match<TokenType::Keyword>())
     {
@@ -254,13 +265,13 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         
         switch (keyword) 
         {
-        case TokenType::Keyword::Mutab: node = parseVariableDefinition(true); break;
-        case TokenType::Keyword::Const: node = parseVariableDefinition(false); break;
-        case TokenType::Keyword::Funct: node = parseFunction(); break;
-        case TokenType::Keyword::While: node = parseWhile(); break;
-        case TokenType::Keyword::Break: node = parseBreak(); break;
-        case TokenType::Keyword::Return:node = parseReturn(); break;
-        case TokenType::Keyword::If:    node = parseIf(); break;
+        case TokenType::Keyword::Mutab:  node = parseVariableDefinition(true); break;
+        case TokenType::Keyword::Const:  node = parseVariableDefinition(false); break;
+        case TokenType::Keyword::Funct:  node = parseFunction(); break;
+        case TokenType::Keyword::While:  node = parseWhile(); break;
+        case TokenType::Keyword::Break:  node = parseBreak(); break;
+        case TokenType::Keyword::Return: node = parseReturn(); break;
+        case TokenType::Keyword::If:     node = parseIf(); break;
         default: throw std::runtime_error(std::format(
             "Undefined control statement at line {}", 
             peek().line
@@ -380,16 +391,25 @@ std::unique_ptr<ASTNode> Parser::parseFunctionCall(const std::string& name)
     );
 }
 
-std::unique_ptr<ASTNode> Parser::parseVariableAssignment(const std::string& name)
+std::unique_ptr<ASTNode> Parser::parseVariableAssignment(const std::string& name, const TokenAny& token)
 {
-    eat<TokenType::Equals>();
-    
-    std::unique_ptr<ASTNode> value = parseComparison();
-    
-    return std::make_unique<VariableAssignmentNode>(
-        name, 
-        std::move(value)
-    );
+    std::unique_ptr<ASTNode> rhs = parseComparison();
+
+    if (match<TokenType::Equals>(token))
+    {
+        return std::make_unique<VariableAssignmentNode>(
+            name, 
+            std::move(rhs)
+        );
+    }
+    else
+    {
+        return std::make_unique<VariableCompoundAssignmentNode>(
+            token,
+            name,
+            std::move(rhs)
+        );
+    }
 }
 
 std::unique_ptr<ASTNode> Parser::parseVariableDefinition(bool is_mutable)

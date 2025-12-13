@@ -1,7 +1,13 @@
-const result = funct(a, b, c)
-{
-    return a * b * c;
-} (5, 5, 2 + 2);
+mutab i = 2;
+println(i);
+i = i + 1;
+println(i);
+i += 2 + 2;
+println(i);
 
-println(result);
-println("hello");
+mutab str = "Hello, ";
+println(str);
+str = str + "World";
+println(str);
+str += "!";
+println(str);

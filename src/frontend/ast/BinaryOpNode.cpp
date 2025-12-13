@@ -38,7 +38,7 @@ Value BinaryOpNode::evaluate(Context& context) const
     else if (match<TokenType::Greater>())       return lhs_value >  rhs_value;
     else if (match<TokenType::LessEquals>())    return lhs_value <= rhs_value;
     else if (match<TokenType::GreaterEquals>()) return lhs_value >= rhs_value;
-
+    
     throw std::runtime_error("Unknown operation");
 }
 

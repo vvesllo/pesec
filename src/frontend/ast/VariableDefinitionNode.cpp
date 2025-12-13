@@ -1,8 +1,5 @@
 #include "include/frontend/ast/VariableDefinitionNode.hpp"
 
-#include <stdexcept>
-
-
 VariableDefinitionNode::VariableDefinitionNode(
     const std::string& name,
     std::unique_ptr<ASTNode> expression,

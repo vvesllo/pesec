@@ -39,6 +39,10 @@ namespace TokenType
     struct Not final {};
 
     struct Equals final {};
+    struct PlusEquals final {};
+    struct MinusEquals final {};
+    struct AsteriskEquals final {};
+    struct SlashEquals final {};
 
     struct EqualsEquals final {};
     struct NotEquals final {};
@@ -75,6 +79,10 @@ using TokenAny = std::variant<
     TokenType::Not,
 
     TokenType::Equals,
+    TokenType::PlusEquals,
+    TokenType::MinusEquals,
+    TokenType::AsteriskEquals,
+    TokenType::SlashEquals,
 
     TokenType::EqualsEquals,
     TokenType::NotEquals,
