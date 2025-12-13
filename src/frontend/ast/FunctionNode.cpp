@@ -3,7 +3,7 @@
 
 
 FunctionNode::FunctionNode(
-    const std::vector<std::string>& parameters,
+    std::vector<std::string> parameters,
     std::unique_ptr<ASTNode> body
 )
     : m_parameters(parameters)
@@ -21,4 +21,12 @@ Value FunctionNode::evaluate(Context& context) const
     );
     
     return Value(std::move(func));
+}
+
+std::unique_ptr<ASTNode> FunctionNode::clone() const
+{
+    return std::make_unique<FunctionNode>(
+        m_parameters,
+        m_body ? m_body->clone() : nullptr
+    );
 }

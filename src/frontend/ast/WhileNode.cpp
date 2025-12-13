@@ -55,3 +55,12 @@ Value WhileNode::evaluate(Context& context) const
 
     return Value();
 }
+
+std::unique_ptr<ASTNode> WhileNode::clone() const
+{
+    return std::make_unique<WhileNode>(
+        m_condition ? m_condition->clone() : nullptr,
+        m_while_block ? m_while_block->clone() : nullptr,
+        m_else_block ? m_else_block->clone() : nullptr
+    );
+}

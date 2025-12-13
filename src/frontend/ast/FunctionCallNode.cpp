@@ -25,9 +25,19 @@ Value FunctionCallNode::evaluate(Context& context) const
 
     if (!value.isFunction())
         throw std::runtime_error("Variable is not a function");
-
-    if (value.isFunction())
-        return value.getFunction()(context, values);
-
+    
     return value.getFunction()(context, values);
+}
+
+std::unique_ptr<ASTNode> FunctionCallNode::clone() const
+{
+    std::vector<std::unique_ptr<ASTNode>> arguments;
+
+    for (auto& argument : m_arguments)
+        arguments.emplace_back(argument ? argument->clone() : nullptr);
+
+    return std::make_unique<FunctionCallNode>(
+        m_name,
+        std::move(arguments)
+    );
 }

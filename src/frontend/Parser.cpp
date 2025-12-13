@@ -10,8 +10,9 @@
 #include "include/frontend/ast/WhileNode.hpp"
 #include "include/frontend/ast/IfNode.hpp"
 
-#include "include/frontend/ast/FunctionCallNode.hpp"
 #include "include/frontend/ast/FunctionNode.hpp"
+#include "include/frontend/ast/FunctionCallNode.hpp"
+#include "include/frontend/ast/FunctionInstantCallNode.hpp"
 
 #include "include/frontend/ast/VariableAssignmentNode.hpp"
 #include "include/frontend/ast/VariableDefinitionNode.hpp"
@@ -50,7 +51,28 @@ bool Parser::isBlockStatement(ASTNode* node) const
 {
     return  dynamic_cast<BlockNode*>(node) || 
             dynamic_cast<WhileNode*>(node) || 
+            dynamic_cast<FunctionNode*>(node) || 
             dynamic_cast<IfNode*>(node);
+}
+
+std::vector<std::unique_ptr<ASTNode>> Parser::getArgumentList()
+{
+    eat<TokenType::LeftParen>();
+    
+    std::vector<std::unique_ptr<ASTNode>> arguments;
+    
+    if (nextExists() && !match<TokenType::RightParen>())
+    {
+        arguments.emplace_back(parseComparison());
+        while (nextExists() && match<TokenType::Comma>())
+        {
+            eat<TokenType::Comma>();
+            arguments.emplace_back(parseComparison());
+        }
+    }
+    
+    eat<TokenType::RightParen>();
+    return std::move(arguments);
 }
 
 std::vector<std::unique_ptr<ASTNode>> Parser::parseStatementList(bool is_block)
@@ -234,7 +256,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         {
         case TokenType::Keyword::Mutab: node = parseVariableDefinition(true); break;
         case TokenType::Keyword::Const: node = parseVariableDefinition(false); break;
-        case TokenType::Keyword::Funct: node = parseFunctionDefinition(); break;
+        case TokenType::Keyword::Funct: node = parseFunction(); break;
         case TokenType::Keyword::While: node = parseWhile(); break;
         case TokenType::Keyword::Break: node = parseBreak(); break;
         case TokenType::Keyword::Return:node = parseReturn(); break;
@@ -313,7 +335,7 @@ std::unique_ptr<ASTNode> Parser::parseReturn()
     return std::make_unique<ReturnNode>(std::move(node));
 }
 
-std::unique_ptr<ASTNode> Parser::parseFunctionDefinition()
+std::unique_ptr<ASTNode> Parser::parseFunction()
 {
     eat<TokenType::LeftParen>();
     
@@ -333,6 +355,16 @@ std::unique_ptr<ASTNode> Parser::parseFunctionDefinition()
 
     std::unique_ptr<ASTNode> function_body = parseBlock();
 
+    if (match<TokenType::LeftParen>())
+    {
+        std::vector<std::unique_ptr<ASTNode>> arguments = getArgumentList();
+        return std::make_unique<FunctionInstantCallNode>(
+            parameters,
+            std::move(function_body),
+            std::move(arguments)
+        );
+    }
+
     return std::make_unique<FunctionNode>(
         parameters,
         std::move(function_body)
@@ -341,22 +373,7 @@ std::unique_ptr<ASTNode> Parser::parseFunctionDefinition()
 
 std::unique_ptr<ASTNode> Parser::parseFunctionCall(const std::string& name)
 {
-    eat<TokenType::LeftParen>();
-    
-    std::vector<std::unique_ptr<ASTNode>> arguments;
-    
-    if (nextExists() && !match<TokenType::RightParen>())
-    {
-        arguments.emplace_back(parseComparison());
-        while (nextExists() && match<TokenType::Comma>())
-        {
-            eat<TokenType::Comma>();
-            arguments.emplace_back(parseComparison());
-        }
-    }
-    
-    eat<TokenType::RightParen>();
-    
+    std::vector<std::unique_ptr<ASTNode>> arguments = getArgumentList();
     return std::make_unique<FunctionCallNode>(
         name, 
         std::move(arguments)

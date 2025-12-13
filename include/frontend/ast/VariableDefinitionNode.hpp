@@ -21,4 +21,5 @@ public:
     );
 
     Value evaluate(Context& context) const override;
+    std::unique_ptr<ASTNode> clone() const override;
 };

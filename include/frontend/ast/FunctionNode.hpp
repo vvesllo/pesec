@@ -14,9 +14,10 @@ private:
 
 public:
     FunctionNode(
-        const std::vector<std::string>& parameters,
+        std::vector<std::string> parameters,
         std::unique_ptr<ASTNode> body
     );
 
     Value evaluate(Context& context) const override;
+    std::unique_ptr<ASTNode> clone() const override;
 };

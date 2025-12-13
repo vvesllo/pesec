@@ -14,3 +14,10 @@ Value BreakNode::evaluate(Context& context) const
         throw BreakValueException(m_value->evaluate(context));   
     throw BreakValueException(Value());
 }
+
+std::unique_ptr<ASTNode> BreakNode::clone() const
+{
+    return std::make_unique<BreakNode>(
+        m_value ? m_value->clone() : nullptr
+    );
+}

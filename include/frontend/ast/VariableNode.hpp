@@ -14,4 +14,5 @@ public:
     VariableNode(const std::string& name);
 
     Value evaluate(Context& context) const override;
+    std::unique_ptr<ASTNode> clone() const override;
 };

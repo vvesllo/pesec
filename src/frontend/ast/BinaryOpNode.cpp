@@ -41,3 +41,12 @@ Value BinaryOpNode::evaluate(Context& context) const
 
     throw std::runtime_error("Unknown operation");
 }
+
+std::unique_ptr<ASTNode> BinaryOpNode::clone() const
+{
+    return std::make_unique<BinaryOpNode>(
+        m_op_token,
+        m_lhs ? m_lhs->clone() : nullptr,
+        m_rhs ? m_rhs->clone() : nullptr
+    );
+}

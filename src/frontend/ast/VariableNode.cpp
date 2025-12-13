@@ -14,3 +14,8 @@ Value VariableNode::evaluate(Context& context) const
 {
     return context.get(m_name).value;
 }
+
+std::unique_ptr<ASTNode> VariableNode::clone() const
+{
+    return std::make_unique<VariableNode>(m_name);
+} 

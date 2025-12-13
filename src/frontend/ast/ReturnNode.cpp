@@ -14,3 +14,10 @@ Value ReturnNode::evaluate(Context& context) const
         throw ReturnValueException(m_value->evaluate(context));
     throw ReturnValueException(Value());
 }
+
+std::unique_ptr<ASTNode> ReturnNode::clone() const
+{
+    return std::make_unique<ReturnNode>(
+        m_value ? m_value->clone() : nullptr
+    );
+}

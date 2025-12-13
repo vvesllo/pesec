@@ -23,3 +23,13 @@ Value BlockNode::evaluate(Context& context) const
     
     return Value();
 }
+
+std::unique_ptr<ASTNode> BlockNode::clone() const
+{
+    std::vector<std::unique_ptr<ASTNode>> statements;
+
+    for (auto& statement : m_statements)
+        statements.emplace_back(statement ? statement->clone() : nullptr);
+
+    return std::make_unique<BlockNode>(std::move(statements));
+}

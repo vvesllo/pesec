@@ -24,6 +24,8 @@ private:
     T eat();
 
     bool isBlockStatement(ASTNode* node) const;
+    std::vector<std::unique_ptr<ASTNode>> getArgumentList();
+
 
     std::vector<std::unique_ptr<ASTNode>> parseStatementList(bool is_block);
 
@@ -41,7 +43,7 @@ private:
     std::unique_ptr<ASTNode> parseReturn();
     
     
-    std::unique_ptr<ASTNode> parseFunctionDefinition();
+    std::unique_ptr<ASTNode> parseFunction();
     std::unique_ptr<ASTNode> parseFunctionCall(const std::string& name);
     
 

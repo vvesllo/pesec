@@ -17,3 +17,8 @@ Value LiteralNode::evaluate(Context& context) const
 {
     return m_value;
 }
+
+std::unique_ptr<ASTNode> LiteralNode::clone() const
+{
+    return std::make_unique<LiteralNode>(m_value);
+}

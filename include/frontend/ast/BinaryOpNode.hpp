@@ -23,4 +23,5 @@ public:
         std::unique_ptr<ASTNode> rhs
     );
     Value evaluate(Context& context) const override;
+    std::unique_ptr<ASTNode> clone() const override;
 };

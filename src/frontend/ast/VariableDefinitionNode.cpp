@@ -30,3 +30,12 @@ Value VariableDefinitionNode::evaluate(Context& context) const
 
     return value;
 }
+
+std::unique_ptr<ASTNode> VariableDefinitionNode::clone() const
+{
+    return std::make_unique<VariableDefinitionNode>(
+        m_name,
+        m_expression ? m_expression->clone() : nullptr,
+        m_is_mutable
+    );
+}

@@ -12,4 +12,5 @@ private:
 public:
     BlockNode(std::vector<std::unique_ptr<ASTNode>> statements);
     Value evaluate(Context& context) const override;
+    std::unique_ptr<ASTNode> clone() const override;
 };

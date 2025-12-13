@@ -1,2 +1,7 @@
-const name = input("your name: ");
-println("Hello, " + name);
+const result = funct(a, b, c)
+{
+    return a * b * c;
+} (5, 5, 2 + 2);
+
+println(result);
+println("hello");

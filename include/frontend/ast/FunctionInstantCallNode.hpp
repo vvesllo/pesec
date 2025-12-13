@@ -6,15 +6,17 @@
 #include "include/frontend/ast/ASTNode.hpp"
 
 
-class FunctionCallNode final : public ASTNode
+class FunctionInstantCallNode final : public ASTNode
 {
 private:
-    const std::string m_name;
+    std::vector<std::string> m_parameters;
+    std::unique_ptr<ASTNode> m_body;
     std::vector<std::unique_ptr<ASTNode>> m_arguments;
 
 public:
-    FunctionCallNode(
-        const std::string& name,
+    FunctionInstantCallNode(
+        std::vector<std::string> parameters,
+        std::unique_ptr<ASTNode> body,
         std::vector<std::unique_ptr<ASTNode>> arguments
     );
 

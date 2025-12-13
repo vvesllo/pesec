@@ -29,3 +29,12 @@ Value IfNode::evaluate(Context& context) const
     
     return Value();
 }
+
+std::unique_ptr<ASTNode> IfNode::clone() const
+{   
+    return std::make_unique<IfNode>(
+        m_condition ? m_condition->clone() : nullptr,
+        m_then_block ? m_then_block->clone() : nullptr,
+        m_else_block ? m_else_block->clone() : nullptr
+    );
+}

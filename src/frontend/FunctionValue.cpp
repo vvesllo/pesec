@@ -9,7 +9,7 @@
 
 
 FunctionValue::FunctionValue(
-    const std::vector<std::string> parameters,
+    std::vector<std::string> parameters,
     std::shared_ptr<Context> scope,
     std::shared_ptr<ASTNode> body
 )
@@ -22,7 +22,7 @@ FunctionValue::FunctionValue(
 }
     
 FunctionValue::FunctionValue(
-    const std::vector<std::string> parameters,
+    std::vector<std::string> parameters,
     std::shared_ptr<Context> scope,
     FunctionType function
 )

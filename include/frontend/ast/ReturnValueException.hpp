@@ -11,5 +11,5 @@ private:
 public:
     ReturnValueException(Value value);
 
-    Value value() const;
+    Value value() const; 
 };
