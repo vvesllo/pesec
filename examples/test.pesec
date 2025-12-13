@@ -1,13 +1,7 @@
-mutab i = 2;
-println(i);
-i = i + 1;
-println(i);
-i += 2 + 2;
-println(i);
+const sum = funct(a, b)
+{
+    return a + b;
+};
 
-mutab str = "Hello, ";
-println(str);
-str = str + "World";
-println(str);
-str += "!";
-println(str);
+
+println("sum = " + tostr(sum(1, 2)));

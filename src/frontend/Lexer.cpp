@@ -29,7 +29,8 @@ Token Lexer::processNumber()
 
     while (nextExists() && (
         std::isdigit(peek()) ||
-        match('\'')
+        match('\'') ||
+        match('.')
     )) 
     {
         if (!match('\'')) 
@@ -37,7 +38,7 @@ Token Lexer::processNumber()
         advance();
     }
 
-    return createToken(TokenType::Number{ std::stod(oss.str()) });
+    return createToken(TokenType::Number{ std::stold(oss.str()) });
 }
 
 Token Lexer::processString()

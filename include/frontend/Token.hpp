@@ -25,7 +25,7 @@ namespace TokenType
     };
     
 
-    struct Number final { const double value; };
+    struct Number final { const long double value; };
     struct String final { const std::string value; };
     struct Boolean final { const bool value; };
     struct Null final {};

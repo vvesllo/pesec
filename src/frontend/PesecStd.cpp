@@ -4,14 +4,18 @@
 
 #include <iostream>
 
+
+
+//std::unordered_map<std::string, Value>&
+
 void PesecStd::init_io(Context& context)
 {
     context.define("print", std::make_unique<Variable>(FunctionValue(
         std::vector<std::string>{"value"}, // params
         std::make_shared<Context>(&context),
-        [](Context& context, std::vector<Value>& values) -> Value
+        [](Context& context) -> Value
         {
-            std::cout << values[0].toString();
+            std::cout << context.get("value").value.toString();
             return Value();
         }
     ),
@@ -19,9 +23,9 @@ void PesecStd::init_io(Context& context)
     context.define("println", std::make_unique<Variable>(FunctionValue(
         std::vector<std::string>{"value"}, // params
         std::make_shared<Context>(&context),
-        [](Context& context, std::vector<Value>& values) -> Value
+        [](Context& context) -> Value
         {
-            std::cout << values[0].toString() << std::endl;
+            std::cout << context.get("value").value.toString();
             return Value();
         }
     ),
@@ -29,10 +33,10 @@ void PesecStd::init_io(Context& context)
     context.define("input", std::make_unique<Variable>(FunctionValue(
         std::vector<std::string>{"value"}, // params
         std::make_shared<Context>(&context),
-        [](Context& context, std::vector<Value>& values) -> Value
+        [](Context& context) -> Value
         {
             std::string value;
-            std::cout << values[0].toString();
+            std::cout << context.get("value").value.toString();
             std::getline(std::cin, value);
             return Value(value);
         }
@@ -43,11 +47,11 @@ void PesecStd::init_io(Context& context)
 void PesecStd::init_types(Context& context)
 {
     context.define("tonum", std::make_unique<Variable>(FunctionValue(
-        std::vector<std::string>{"string"}, // params
+        std::vector<std::string>{"value"}, // params
         std::make_shared<Context>(&context),
-        [](Context& context, std::vector<Value>& values) -> Value
+        [](Context& context) -> Value
         {
-            Value value = values[0];
+            Value value = context.get("value").value;
             if (value.isString())
             {
                 return Value(std::stold(value.getString()));
@@ -60,9 +64,9 @@ void PesecStd::init_types(Context& context)
     context.define("tostr", std::make_unique<Variable>(FunctionValue(
         std::vector<std::string>{"value"}, // params
         std::make_shared<Context>(&context),
-        [](Context& context, std::vector<Value>& values) -> Value
+        [](Context& context) -> Value
         {
-            return Value(values[0].toString());
+            return Value(context.get("value").value.toString());
         }
     ),
     false));

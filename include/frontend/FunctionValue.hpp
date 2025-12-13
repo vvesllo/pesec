@@ -10,7 +10,7 @@ class Context;
 class Value;
 
 
-using FunctionType = std::function<Value(Context&, std::vector<Value>&)>;
+using FunctionType = std::function<Value(Context&)>;
 
 class FunctionValue final
 {
@@ -33,5 +33,5 @@ public:
         FunctionType function
     );
 
-    Value operator()(Context& context, std::vector<Value>& arguments);
+    Value operator()(Context& context, std::vector<Value>& values);
 };

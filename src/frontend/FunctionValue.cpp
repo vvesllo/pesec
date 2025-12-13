@@ -34,20 +34,20 @@ FunctionValue::FunctionValue(
 
 }
 
-Value FunctionValue::operator()(Context& context, std::vector<Value>& arguments)
+Value FunctionValue::operator()(Context& context, std::vector<Value>& values)
 {
     Context local_scope(m_scope.get());
 
-    if (arguments.size() != m_parameters.size())
+    if (values.size() != m_parameters.size())
         throw std::runtime_error(std::format(
             "Inappropriate number of arguments ({}, but {} given)",
-            m_parameters.size(), arguments.size()
+            m_parameters.size(), values.size()
         ));
 
     for (size_t i=0; i < m_parameters.size(); i++)
         local_scope.define(
             m_parameters[i], 
-            std::make_unique<Variable>(arguments[i], true)
+            std::make_unique<Variable>(values[i], true)
         );
     
     try 
@@ -55,7 +55,7 @@ Value FunctionValue::operator()(Context& context, std::vector<Value>& arguments)
         if (m_body)
             return m_body->evaluate(local_scope);
         else if (m_function)
-            return m_function(local_scope, arguments);
+            return m_function(local_scope);
         throw std::runtime_error("Invalid function");
     } 
     catch (const ReturnValueException& return_value) 
