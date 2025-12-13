@@ -224,7 +224,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
     }
     else if (nextExists() && match<TokenType::Number>())
     {
-        double value = eat<TokenType::Number>().value;
+        long double value = eat<TokenType::Number>().value;
         node = std::make_unique<LiteralNode>(value);
     }
     else if (nextExists() && match<TokenType::Boolean>())

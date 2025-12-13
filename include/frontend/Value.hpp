@@ -10,31 +10,20 @@ class Value;
 
 using ValueValue = std::variant<
     std::monostate,
-    double,
+    long double,
     bool,
     std::string,
     FunctionValue
 >;
 
-
-enum class ValueType
-{
-    Null,
-    Double,
-    Boolean,
-    String,
-    Function,
-};
-
 class Value final
 {
 private:
     mutable ValueValue m_value;
-    ValueType m_type;
 
 public:
     Value();
-    Value(double value);
+    Value(long double value);
     Value(bool value);
     Value(const std::string& value);
     Value(FunctionValue value);
@@ -47,8 +36,7 @@ public:
     bool isString() const;
     bool isFunction() const;
     
-    
-    double getDouble() const;
+    long double getDouble() const;
     bool getBoolean() const;
     std::string getString() const;
     FunctionValue& getFunction() const;

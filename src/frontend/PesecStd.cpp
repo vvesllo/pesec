@@ -50,7 +50,7 @@ void PesecStd::init_types(Context& context)
             Value value = values[0];
             if (value.isString())
             {
-                return Value(std::stod(value.getString()));
+                return Value(std::stold(value.getString()));
             }
             
             throw std::runtime_error("Variable is not a number string");
