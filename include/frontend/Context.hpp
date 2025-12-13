@@ -12,7 +12,10 @@ struct Variable
 class Context final
 {    
 private:
-    std::unordered_map<std::string, Variable> m_variables;
+    mutable std::unordered_map<
+        std::string, 
+        std::unique_ptr<Variable>
+    > m_variables;
 
     Context* m_parent;
 
@@ -22,7 +25,7 @@ public:
 
     bool isExists(const std::string& name) const;
     
-    Variable get(const std::string& name) const;
-    void set(const std::string& name, const Value& value);
-    void define(const std::string& name, const Variable& variable);
+    Variable& get(const std::string& name) const;
+    void set(const std::string& name, Value value);
+    void define(const std::string& name, std::unique_ptr<Variable> variable);
 };

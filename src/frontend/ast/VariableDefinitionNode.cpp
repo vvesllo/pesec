@@ -17,14 +17,16 @@ VariableDefinitionNode::VariableDefinitionNode(
 
 Value VariableDefinitionNode::evaluate(Context& context) const
 {
-    Variable var {
-        .value=m_expression 
+    Value value = m_expression 
             ? m_expression->evaluate(context) 
-            : Value(),
-        .is_mutable=m_is_mutable
-    };
-    
-    context.define(m_name, var);
+            : Value();
 
-    return var.value;
+    std::unique_ptr<Variable> variable = std::make_unique<Variable>(
+        Value(value),
+        m_is_mutable
+    );
+    
+    context.define(m_name, std::move(variable));
+
+    return value;
 }

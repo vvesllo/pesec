@@ -41,6 +41,7 @@ private:
     std::unique_ptr<ASTNode> parseReturn();
     
     
+    std::unique_ptr<ASTNode> parseFunctionDefinition();
     std::unique_ptr<ASTNode> parseFunctionCall(const std::string& name);
     
 

@@ -1,5 +1,8 @@
 #include "include/frontend/Context.hpp"
 
+#include "include/frontend/Value.hpp"
+#include "include/frontend/ast/ASTNode.hpp"
+
 #include <stdexcept>
 #include <format>
 
@@ -25,11 +28,11 @@ bool Context::isExists(const std::string& name) const
     return false;
 }
 
-Variable Context::get(const std::string& name) const
+Variable& Context::get(const std::string& name) const
 {    
     auto it = m_variables.find(name);
     if (it != m_variables.end()) 
-        return it->second;
+        return *it->second;
     
     if (m_parent) 
         return m_parent->get(name);
@@ -40,23 +43,29 @@ Variable Context::get(const std::string& name) const
     ));
 }
 
-void Context::set(const std::string& name, const Value& value)
+void Context::set(const std::string& name, Value value)
 {
     auto it = m_variables.find(name.data());
     
     if (it != m_variables.end()) 
     {
-        if (!it->second.is_mutable)
+        if (!it->second->is_mutable)
             throw std::runtime_error(std::format(
                 "Variable '{}' is constant and can't be changed",
                 name
             ));
         
-        it->second.value = value;
+        m_variables.emplace(
+            name, 
+            std::make_unique<Variable>(
+                value, 
+                it->second->is_mutable
+            )
+        );
     } 
     
     else if (m_parent) 
-        m_parent->set(name, value);
+        m_parent->set(name, std::move(value));
 
     else
         throw std::runtime_error(std::format(
@@ -65,7 +74,7 @@ void Context::set(const std::string& name, const Value& value)
         ));
 }
 
-void Context::define(const std::string& name, const Variable& variable)
+void Context::define(const std::string& name, std::unique_ptr<Variable> variable)
 {
     auto it = m_variables.find(name);
     if (it != m_variables.end())
@@ -74,5 +83,5 @@ void Context::define(const std::string& name, const Variable& variable)
             name
         ));
     
-    m_variables[name] = variable;
+    m_variables.emplace(name, std::move(variable));
 }

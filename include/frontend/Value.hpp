@@ -1,20 +1,19 @@
 #pragma once
 
-#include <functional>
 #include <variant>
 #include <string>
+#include "include/frontend/FunctionValue.hpp"
 
 class Context;
 class Value;
 
-using FunctionType = std::function<Value(Context&, const std::vector<Value>&)>;
 
 using ValueValue = std::variant<
     std::monostate,
     double,
     bool,
     std::string,
-    FunctionType
+    FunctionValue
 >;
 
 
@@ -30,7 +29,7 @@ enum class ValueType
 class Value final
 {
 private:
-    ValueValue m_value;
+    mutable ValueValue m_value;
     ValueType m_type;
 
 public:
@@ -38,7 +37,7 @@ public:
     Value(double value);
     Value(bool value);
     Value(const std::string& value);
-    Value(const FunctionType& value);
+    Value(FunctionValue value);
     
     std::string toString() const;
     
@@ -52,8 +51,8 @@ public:
     double getDouble() const;
     bool getBoolean() const;
     std::string getString() const;
-    FunctionType getFunction() const;
-
+    FunctionValue& getFunction() const;
+    
     Value operator+(const Value& other) const;
     Value operator-(const Value& other) const;
     Value operator*(const Value& other) const;

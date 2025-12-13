@@ -10,8 +10,7 @@ BreakNode::BreakNode(std::unique_ptr<ASTNode> value)
 
 Value BreakNode::evaluate(Context& context) const
 {
-    Value break_value = Value();
     if (m_value) 
-        break_value = m_value->evaluate(context);
-    throw BreakValueException(break_value);
+        throw BreakValueException(m_value->evaluate(context));   
+    throw BreakValueException(Value());
 }

@@ -1,6 +1,2 @@
-mutab i = 0;
-const a = while i < 10
-{
-    i = i + 1;
-    println(i);
-};
+const name = input("your name: ");
+println("Hello, " + name);

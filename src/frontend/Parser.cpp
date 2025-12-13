@@ -10,8 +10,8 @@
 #include "include/frontend/ast/WhileNode.hpp"
 #include "include/frontend/ast/IfNode.hpp"
 
-
 #include "include/frontend/ast/FunctionCallNode.hpp"
+#include "include/frontend/ast/FunctionNode.hpp"
 
 #include "include/frontend/ast/VariableAssignmentNode.hpp"
 #include "include/frontend/ast/VariableDefinitionNode.hpp"
@@ -234,6 +234,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         {
         case TokenType::Keyword::Mutab: node = parseVariableDefinition(true); break;
         case TokenType::Keyword::Const: node = parseVariableDefinition(false); break;
+        case TokenType::Keyword::Funct: node = parseFunctionDefinition(); break;
         case TokenType::Keyword::While: node = parseWhile(); break;
         case TokenType::Keyword::Break: node = parseBreak(); break;
         case TokenType::Keyword::Return:node = parseReturn(); break;
@@ -310,6 +311,32 @@ std::unique_ptr<ASTNode> Parser::parseReturn()
         node = parseStatement();
     
     return std::make_unique<ReturnNode>(std::move(node));
+}
+
+std::unique_ptr<ASTNode> Parser::parseFunctionDefinition()
+{
+    eat<TokenType::LeftParen>();
+    
+    std::vector<std::string> parameters;
+    
+    if (nextExists() && !match<TokenType::RightParen>())
+    {
+        parameters.emplace_back(eat<TokenType::Identifier>().value);
+        while (nextExists() && match<TokenType::Comma>())
+        {
+            eat<TokenType::Comma>();
+            parameters.emplace_back(eat<TokenType::Identifier>().value);
+        }
+    }
+    
+    eat<TokenType::RightParen>();
+
+    std::unique_ptr<ASTNode> function_body = parseBlock();
+
+    return std::make_unique<FunctionNode>(
+        parameters,
+        std::move(function_body)
+    );
 }
 
 std::unique_ptr<ASTNode> Parser::parseFunctionCall(const std::string& name)

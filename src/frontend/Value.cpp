@@ -1,4 +1,6 @@
 #include "include/frontend/Value.hpp"
+#include "include/frontend/FunctionValue.hpp"
+#include "include/frontend/ast/ASTNode.hpp"
 
 #include <stdexcept>
 #include <sstream>
@@ -24,9 +26,9 @@ Value::Value(const std::string& value)
     , m_value(value)
 {}
 
-Value::Value(const FunctionType& value)
+Value::Value(FunctionValue value)
     : m_type(ValueType::Function)
-    , m_value(value)
+    , m_value(std::move(value))
 {}
 
 std::string Value::toString() const
@@ -79,10 +81,10 @@ std::string Value::getString() const
     throw std::runtime_error("Value is not string");
 }
 
-FunctionType Value::getFunction() const
+FunctionValue& Value::getFunction() const
 {
     if (isFunction()) 
-        return std::get<FunctionType>(m_value);
+        return std::get<FunctionValue>(m_value);
 
     throw std::runtime_error("Value is not function");
 }

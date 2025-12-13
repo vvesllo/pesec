@@ -5,22 +5,37 @@
 #include "include/frontend/Lexer.hpp"
 #include "include/frontend/Parser.hpp"
 #include "include/frontend/Value.hpp"
+#include "include/frontend/FunctionValue.hpp"
 
 
 void init_stdio(Context& context)
 {
-    context.define("println", Variable{
-        (FunctionType)[](Context& context, const std::vector<Value>& values) {
-            for (size_t i=0; i < values.size(); i++)
+    context.define("println", std::make_unique<Variable>(
+        FunctionValue(
+            std::vector<std::string>{"string"}, // params
+            std::make_shared<Context>(&context),
+            [](Context& context, std::vector<Value>& values) -> Value
             {
-                if (i > 0) std::cout << ' ';
-                std::cout << values[i].toString();
+                std::cout << values[0].toString() << std::endl;
+                return Value();
             }
-            std::cout << std::endl;
-            return Value();
-        },
+        ),
         false
-    });
+    ));
+    context.define("input", std::make_unique<Variable>(
+        FunctionValue(
+            std::vector<std::string>{"string"}, // params
+            std::make_shared<Context>(&context),
+            [](Context& context, std::vector<Value>& values) -> Value
+            {
+                std::string value;
+                std::cout << values[0].toString();
+                std::getline(std::cin, value);
+                return Value(value);
+            }
+        ),
+        false
+    ));
 }
 
 
@@ -44,14 +59,10 @@ int main()
 {
     try 
     {
-        std::string source = readfile("examples/test.pesec");
-
-        Lexer lexer(source);
-        
+        Lexer lexer(readfile("examples/test.pesec"));
         Parser parser(lexer.process());
         
         Context context;
-
         init_stdio(context);
         
         for (auto& statement : parser.parse())

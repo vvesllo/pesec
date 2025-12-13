@@ -1,7 +1,7 @@
 #include "include/frontend/ast/ReturnValueException.hpp"
 
 ReturnValueException::ReturnValueException(Value value)
-    : std::runtime_error("Return value exception")
+    : std::runtime_error("Unexpected return usage")
     , m_value(value)
 {
 

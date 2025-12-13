@@ -14,6 +14,7 @@ add_executable(
 	src/frontend/Lexer.cpp						include/frontend/Lexer.hpp
 	src/frontend/Parser.cpp						include/frontend/Parser.hpp
 	src/frontend/Value.cpp						include/frontend/Value.hpp
+	src/frontend/FunctionValue.cpp				include/frontend/FunctionValue.hpp
 	src/frontend/Context.cpp					include/frontend/Context.hpp
 
 	src/frontend/ast/ASTNode.cpp				include/frontend/ast/ASTNode.hpp
@@ -28,6 +29,7 @@ add_executable(
 	src/frontend/ast/WhileNode.cpp				include/frontend/ast/WhileNode.hpp
 	src/frontend/ast/IfNode.cpp					include/frontend/ast/IfNode.hpp
 	
+	src/frontend/ast/FunctionNode.cpp			include/frontend/ast/FunctionNode.hpp
 	src/frontend/ast/FunctionCallNode.cpp		include/frontend/ast/FunctionCallNode.hpp
 	
 	src/frontend/ast/VariableNode.cpp			include/frontend/ast/VariableNode.hpp

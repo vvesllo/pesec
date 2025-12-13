@@ -10,8 +10,7 @@ ReturnNode::ReturnNode(std::unique_ptr<ASTNode> value)
 
 Value ReturnNode::evaluate(Context& context) const
 {
-    Value return_value = Value();
-    if (m_value) 
-        return_value = m_value->evaluate(context);
-    throw ReturnValueException(return_value);
+    if (m_value)
+        throw ReturnValueException(m_value->evaluate(context));
+    throw ReturnValueException(Value());
 }
