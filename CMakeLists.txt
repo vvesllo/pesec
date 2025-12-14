@@ -45,4 +45,4 @@ add_executable(
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
 add_subdirectory(stdlib/io)
-add_subdirectory(stdlib/math)
+add_subdirectory(stdlib/types)

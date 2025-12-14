@@ -1,19 +1,23 @@
 use "std/io.dll";
-use "std/math.dll";
-
-mutab a = 9;
+use "std/types.dll";
 
 
-if a < 10
+mutab i = 0;
+const a = while i < 10
 {
-    println("Less than 10");
-}
-else if a > 10
-{
-    println("Greater than 10");
-}
-else
-{
-    println("Equal to 10");
-}
+    i += 10;
+    println(i);
+    return if i > 2
+    {
+        return i * 2;
+    }
+    else 
+    {
+        return i - 100;
+    };
+} else {
+    mutab b = 10;
+    println("Breakn't " + tostring(b));
+};
 
+println(a);

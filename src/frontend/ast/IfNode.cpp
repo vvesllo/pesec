@@ -1,4 +1,5 @@
 #include "include/frontend/ast/IfNode.hpp"
+#include "include/frontend/ast/ReturnValueException.hpp"
 
 #include <stdexcept>
 
@@ -22,11 +23,19 @@ Value IfNode::evaluate(Context& context) const
     if (!condition_value.isBoolean())
         throw std::runtime_error("Condition must be boolean value");
     
-    if (condition_value.getBoolean())
-        return m_then_block->evaluate(context);
-    else if (m_else_block)
-        return m_else_block->evaluate(context);
-    
+        
+    try 
+    {
+        if (condition_value.getBoolean())
+            return m_then_block->evaluate(context);
+        else if (m_else_block)
+            return m_else_block->evaluate(context);
+    }
+    catch (const ReturnValueException& return_value) 
+    {
+        return return_value.value();
+    }
+
     return Value();
 }
 

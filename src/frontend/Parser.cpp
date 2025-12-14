@@ -347,7 +347,7 @@ std::unique_ptr<ASTNode> Parser::parseWhile()
 
 std::unique_ptr<ASTNode> Parser::parseBreak()
 {
-    return std::make_unique<BreakNode>(parseStatement());
+    return std::make_unique<BreakNode>();
 }
 
 std::unique_ptr<ASTNode> Parser::parseIf()

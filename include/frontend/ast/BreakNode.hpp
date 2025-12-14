@@ -6,11 +6,8 @@
 
 class BreakNode final : public ASTNode
 {
-private:
-    std::unique_ptr<ASTNode> m_value;
-
 public:
-    BreakNode(std::unique_ptr<ASTNode> value);
+    BreakNode();
 
     Value evaluate(Context& context) const override;
     std::unique_ptr<ASTNode> clone() const override;
