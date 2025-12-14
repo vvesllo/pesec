@@ -5,7 +5,6 @@
 #include "include/frontend/ast/LiteralNode.hpp"
 
 #include "include/frontend/ast/ReturnNode.hpp"
-#include "include/frontend/ast/BreakNode.hpp"
 
 #include "include/frontend/ast/UseNode.hpp"
 
@@ -294,7 +293,6 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         {
         case TokenType::Keyword::Use:    node = parseUse(); break;
         case TokenType::Keyword::While:  node = parseWhile(); break;
-        case TokenType::Keyword::Break:  node = parseBreak(); break;
         case TokenType::Keyword::Return: node = parseReturn(); break;
         case TokenType::Keyword::If:     node = parseIf(); break;
         case TokenType::Keyword::Mutab:  node = parseVariableDefinition(true); break;
@@ -343,11 +341,6 @@ std::unique_ptr<ASTNode> Parser::parseWhile()
         std::move(while_block),
         std::move(else_block)
     );
-}
-
-std::unique_ptr<ASTNode> Parser::parseBreak()
-{
-    return std::make_unique<BreakNode>();
 }
 
 std::unique_ptr<ASTNode> Parser::parseIf()

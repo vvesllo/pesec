@@ -187,8 +187,6 @@ Token Lexer::processIdentifier()
     else if (value == "for")    return createToken(TokenType::Keyword::For);
     else if (value == "in")     return createToken(TokenType::Keyword::In);
 
-    else if (value == "break")  return createToken(TokenType::Keyword::Break);
-    
     else if (value == "null")   return createToken(TokenType::Null{});
     else if (value == "true")   return createToken(TokenType::Boolean{ true });
     else if (value == "false")  return createToken(TokenType::Boolean{ false });

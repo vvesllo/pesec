@@ -19,7 +19,6 @@ namespace TokenType
         For,
         In,
 
-        Break,
         Continue,
 
         If,

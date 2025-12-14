@@ -43,7 +43,6 @@ private:
 
     std::unique_ptr<ASTNode> parseUse();
     std::unique_ptr<ASTNode> parseWhile();
-    std::unique_ptr<ASTNode> parseBreak();
     std::unique_ptr<ASTNode> parseIf();
     std::unique_ptr<ASTNode> parseReturn();
     
