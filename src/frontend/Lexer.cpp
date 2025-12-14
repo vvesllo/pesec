@@ -82,6 +82,11 @@ Token Lexer::processOperator()
             advance();
             return createToken(TokenType::AsteriskEquals{});
         }
+        else if (peek() == '*') 
+        {
+            advance();
+            return createToken(TokenType::AsteriskAsterisk{});
+        }
         return createToken(TokenType::Asterisk{});
     case '/': 
         advance();
@@ -91,6 +96,14 @@ Token Lexer::processOperator()
             return createToken(TokenType::SlashEquals{});
         }
         return createToken(TokenType::Slash{});
+    case '%': 
+        advance();
+        if (peek() == '=') 
+        {
+            advance();
+            return createToken(TokenType::PercentEquals{});
+        }
+        return createToken(TokenType::Percent{});
     case '(': 
         advance();
         return createToken(TokenType::LeftParen{});

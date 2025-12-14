@@ -37,6 +37,7 @@ private:
     std::unique_ptr<ASTNode> parseComparison();
     std::unique_ptr<ASTNode> parseExpression();
     std::unique_ptr<ASTNode> parseTerm();
+    std::unique_ptr<ASTNode> parsePower();
     std::unique_ptr<ASTNode> parseFactor();
     
 

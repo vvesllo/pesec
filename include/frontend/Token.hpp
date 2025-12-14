@@ -37,6 +37,9 @@ namespace TokenType
     struct Minus final {};
     struct Asterisk final {};
     struct Slash final {};
+    struct Percent final {};
+    
+    struct AsteriskAsterisk final {};
 
     struct Not final {};
 
@@ -45,6 +48,7 @@ namespace TokenType
     struct MinusEquals final {};
     struct AsteriskEquals final {};
     struct SlashEquals final {};
+    struct PercentEquals final {};
 
     struct EqualsEquals final {};
     struct NotEquals final {};
@@ -77,7 +81,9 @@ using TokenAny = std::variant<
     TokenType::Minus,
     TokenType::Asterisk,
     TokenType::Slash,
-
+    TokenType::Percent,
+    
+    TokenType::AsteriskAsterisk,
     TokenType::Not,
 
     TokenType::Equals,
@@ -85,6 +91,7 @@ using TokenAny = std::variant<
     TokenType::MinusEquals,
     TokenType::AsteriskEquals,
     TokenType::SlashEquals,
+    TokenType::PercentEquals,
 
     TokenType::EqualsEquals,
     TokenType::NotEquals,

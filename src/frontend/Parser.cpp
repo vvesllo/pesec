@@ -190,12 +190,13 @@ std::unique_ptr<ASTNode> Parser::parseExpression()
 
 std::unique_ptr<ASTNode> Parser::parseTerm()
 {
-    std::unique_ptr<ASTNode> lhs = parseFactor();
+    std::unique_ptr<ASTNode> lhs = parsePower();
     std::unique_ptr<ASTNode> rhs = nullptr;
     
     while (nextExists() && (
         match<TokenType::Asterisk>() ||
-        match<TokenType::Slash>()
+        match<TokenType::Slash>() ||
+        match<TokenType::Percent>()
     ))
     {
         TokenAny token_type = peek().token;
@@ -203,6 +204,31 @@ std::unique_ptr<ASTNode> Parser::parseTerm()
             eat<TokenType::Asterisk>();
         else if (match<TokenType::Slash>())
             eat<TokenType::Slash>();
+        else if (match<TokenType::Percent>())
+            eat<TokenType::Percent>();
+        
+        rhs = parsePower();
+        lhs = std::make_unique<BinaryOpNode>(
+            token_type,
+            std::move(lhs),
+            std::move(rhs)
+        );
+    }
+    return lhs;
+}
+
+std::unique_ptr<ASTNode> Parser::parsePower()
+{
+    std::unique_ptr<ASTNode> lhs = parseFactor();
+    std::unique_ptr<ASTNode> rhs = nullptr;
+    
+    while (nextExists() && (
+        match<TokenType::AsteriskAsterisk>()
+    ))
+    {
+        TokenAny token_type = peek().token;
+        if (match<TokenType::AsteriskAsterisk>()) 
+            eat<TokenType::AsteriskAsterisk>();
         
         rhs = parseFactor();
         lhs = std::make_unique<BinaryOpNode>(
@@ -293,7 +319,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
 
 std::unique_ptr<ASTNode> Parser::parseUse()
 {
-    std::string filepath =eat<TokenType::String>().value;
+    std::string filepath = eat<TokenType::String>().value;
     
     return std::make_unique<UseNode>(filepath);
 }
@@ -334,7 +360,16 @@ std::unique_ptr<ASTNode> Parser::parseIf()
     {
         TokenType::Keyword keyword = eat<TokenType::Keyword>();
         if (keyword == TokenType::Keyword::Else)
-            else_block = parseBlock();
+        {
+            if (nextExists() && match<TokenType::Keyword>())
+            {
+                keyword = eat<TokenType::Keyword>();
+                if (keyword == TokenType::Keyword::If)
+                    else_block = parseIf();
+            }
+            else
+                else_block = parseBlock();
+        }
     }
 
 

@@ -41,10 +41,13 @@ public:
     std::string getString() const;
     FunctionValue& getFunction() const;
     
+    Value power(const Value& other) const;
+
     Value operator+(const Value& other) const;
     Value operator-(const Value& other) const;
     Value operator*(const Value& other) const;
     Value operator/(const Value& other) const;
+    Value operator%(const Value& other) const;
     
     Value operator==(const Value& other) const;
     Value operator!=(const Value& other) const;

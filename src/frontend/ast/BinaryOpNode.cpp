@@ -26,11 +26,12 @@ Value BinaryOpNode::evaluate(Context& context) const
     const Value& lhs_value = m_lhs->evaluate(context);
     const Value& rhs_value = m_rhs->evaluate(context);
 
-    
-    if (match<TokenType::Plus>())           return lhs_value + rhs_value;
-    else if (match<TokenType::Minus>())     return lhs_value - rhs_value;
-    else if (match<TokenType::Asterisk>())  return lhs_value * rhs_value;
-    else if (match<TokenType::Slash>())     return lhs_value / rhs_value;
+    if (match<TokenType::Plus>())                   return lhs_value + rhs_value;
+    else if (match<TokenType::Minus>())             return lhs_value - rhs_value;
+    else if (match<TokenType::Asterisk>())          return lhs_value * rhs_value;
+    else if (match<TokenType::Slash>())             return lhs_value / rhs_value;
+    else if (match<TokenType::Percent>())           return lhs_value % rhs_value;
+    else if (match<TokenType::AsteriskAsterisk>())  return lhs_value.power(rhs_value);
     
     else if (match<TokenType::EqualsEquals>())  return lhs_value == rhs_value;
     else if (match<TokenType::NotEquals>())     return lhs_value != rhs_value;

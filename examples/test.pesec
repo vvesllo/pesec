@@ -1,4 +1,19 @@
 use "std/io.dll";
 use "std/math.dll";
 
-println(pow(5, 3));
+mutab a = 9;
+
+
+if a < 10
+{
+    println("Less than 10");
+}
+else if a > 10
+{
+    println("Greater than 10");
+}
+else
+{
+    println("Equal to 10");
+}
+

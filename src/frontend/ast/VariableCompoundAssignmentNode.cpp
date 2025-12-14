@@ -31,6 +31,7 @@ Value VariableCompoundAssignmentNode::evaluate(Context& context) const
     else if (match<TokenType::MinusEquals>())    value = context.get(m_name).value - value;
     else if (match<TokenType::AsteriskEquals>()) value = context.get(m_name).value * value;
     else if (match<TokenType::SlashEquals>())    value = context.get(m_name).value / value;
+    else if (match<TokenType::PercentEquals>())  value = context.get(m_name).value % value;
     else throw std::runtime_error("Unknown compound assignment operator");
 
     context.set(m_name, value);

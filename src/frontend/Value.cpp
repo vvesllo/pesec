@@ -81,6 +81,14 @@ FunctionValue& Value::getFunction() const
 
     throw std::runtime_error("Value is not function");
 }
+ 
+Value Value::power(const Value& other) const
+{
+    if (isDouble() && other.isDouble())
+        return Value(std::powl(getDouble(), other.getDouble()));
+    
+    throw std::runtime_error("Can't calculate the power of value");
+}
 
 Value Value::operator+(const Value& other) const
 {
@@ -117,6 +125,17 @@ Value Value::operator/(const Value& other) const
         return Value(getDouble() / other.getDouble());
    
     throw std::runtime_error("Values can't be divided");
+}
+
+Value Value::operator%(const Value& other) const
+{
+    if (other.isDouble() && other.getDouble() == 0)
+        throw std::runtime_error("Division by zero");
+
+    if (isDouble() && other.isDouble())
+        return Value(std::fmodl(getDouble(), other.getDouble()));
+   
+    throw std::runtime_error("Can't calcualte reminder of division");
 }
 
 Value Value::operator==(const Value& other) const
