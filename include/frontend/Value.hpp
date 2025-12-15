@@ -7,13 +7,15 @@
 class Context;
 class Value;
 
+using ArrayValue = std::vector<Value>;
 
 using ValueValue = std::variant<
     std::monostate,
     long double,
     bool,
     std::string,
-    FunctionValue
+    FunctionValue,
+    ArrayValue
 >;
 
 class Value final
@@ -27,6 +29,7 @@ public:
     Value(bool value);
     Value(const std::string& value);
     Value(FunctionValue value);
+    Value(ArrayValue value);
     
     std::string toString() const;
     
@@ -35,11 +38,13 @@ public:
     bool isBoolean() const;
     bool isString() const;
     bool isFunction() const;
+    bool isArray() const;
     
     long double getDouble() const;
     bool getBoolean() const;
     std::string getString() const;
     FunctionValue& getFunction() const;
+    ArrayValue& getArray() const;
     
     Value power(const Value& other) const;
 

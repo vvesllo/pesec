@@ -47,6 +47,11 @@ private:
     std::unique_ptr<ASTNode> parseReturn();
     
     
+    std::unique_ptr<ASTNode> parseArray();
+    std::unique_ptr<ASTNode> parseArrayAccess(const std::string& name);
+    std::unique_ptr<ASTNode> parseArrayAccessAssignment(const std::string& name, std::vector<std::unique_ptr<ASTNode>> indices);
+
+
     std::unique_ptr<ASTNode> parseFunction();
     std::unique_ptr<ASTNode> parseFunctionCall(const std::string& name);
     

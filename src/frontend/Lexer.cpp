@@ -14,6 +14,8 @@ char Lexer::advance() { return *m_current++; }
 
 char Lexer::peek() const { return *m_current; }
 
+char Lexer::peek(size_t offset) const { return *(m_current + offset); }
+
 void Lexer::processSkipable()
 {
     while (nextExists() && std::isspace(peek())) 
@@ -33,6 +35,9 @@ Token Lexer::processNumber()
         match('.')
     )) 
     {
+        if (peek() == '.' && peek(1) == '.')
+            break;
+        
         if (!match('\'')) 
             oss << peek();
         advance();
@@ -116,12 +121,26 @@ Token Lexer::processOperator()
     case '}': 
         advance();
         return createToken(TokenType::RightBracket{});
+    case '[': 
+        advance();
+        return createToken(TokenType::LeftBrace{});
+    case ']': 
+        advance();
+        return createToken(TokenType::RightBrace{});
     case ';': 
         advance();
         return createToken(TokenType::Semicolon{});
     case ',': 
         advance();
         return createToken(TokenType::Comma{});
+    case '.': 
+        advance();
+        if (peek() == '.') 
+        {
+            advance();
+            return createToken(TokenType::DotDot{});
+        }
+        return createToken(TokenType::Dot{});
     case '!': 
         advance();
         if (peek() == '=') 

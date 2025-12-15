@@ -58,6 +58,10 @@ namespace TokenType
 
     struct Semicolon final {};
     struct Comma final {};
+
+    struct Dot final {};
+    struct DotDot final {};
+    struct DotDotDot final {};
     
     // maybe enum was better option, idc
     struct LeftParen final {}; 
@@ -65,6 +69,9 @@ namespace TokenType
     
     struct LeftBracket final {};
     struct RightBracket final {};
+    
+    struct LeftBrace final {};
+    struct RightBrace final {};
 }
 
 using TokenAny = std::variant<
@@ -102,11 +109,18 @@ using TokenAny = std::variant<
     TokenType::Semicolon,
     TokenType::Comma,
 
+    TokenType::Dot,
+    TokenType::DotDot,
+    TokenType::DotDotDot,
+
     TokenType::LeftParen,
     TokenType::RightParen,
 
     TokenType::LeftBracket,
-    TokenType::RightBracket
+    TokenType::RightBracket,
+
+    TokenType::LeftBrace,
+    TokenType::RightBrace
 >;
 struct Token
 {

@@ -19,6 +19,7 @@ private:
     bool match(char character) const;
     char advance();
     char peek() const;
+    char peek(size_t offset) const;
 
     void  processSkipable();
     Token processNumber();

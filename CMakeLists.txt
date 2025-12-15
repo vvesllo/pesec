@@ -17,13 +17,17 @@ add_executable(
 	src/frontend/Context.cpp								include/frontend/Context.hpp
 	src/frontend/FunctionValue.cpp							include/frontend/FunctionValue.hpp
 	src/frontend/LibraryLoader.cpp							include/frontend/LibraryLoader.hpp
-
+	
 	src/frontend/ast/ASTNode.cpp							include/frontend/ast/ASTNode.hpp
 	src/frontend/ast/BlockNode.cpp							include/frontend/ast/BlockNode.hpp
-	src/frontend/ast/LiteralNode.cpp						include/frontend/ast/LiteralNode.hpp
+	src/frontend/ast/ValueNode.cpp							include/frontend/ast/ValueNode.hpp
 	src/frontend/ast/BinaryOpNode.cpp						include/frontend/ast/BinaryOpNode.hpp
 	src/frontend/ast/ReturnNode.cpp							include/frontend/ast/ReturnNode.hpp
 	src/frontend/ast/ReturnValueException.cpp				include/frontend/ast/ReturnValueException.hpp
+	
+	src/frontend/ast/ArrayNode.cpp							include/frontend/ast/ArrayNode.hpp
+	src/frontend/ast/ArrayAccessNode.cpp					include/frontend/ast/ArrayAccessNode.hpp
+	src/frontend/ast/ArrayAccessAssignmentNode.cpp			include/frontend/ast/ArrayAccessAssignmentNode.hpp
 	
 	src/frontend/ast/UseNode.cpp							include/frontend/ast/UseNode.hpp
 

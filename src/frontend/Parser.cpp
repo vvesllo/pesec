@@ -2,7 +2,7 @@
 
 #include "include/frontend/ast/BlockNode.hpp"
 #include "include/frontend/ast/BinaryOpNode.hpp"
-#include "include/frontend/ast/LiteralNode.hpp"
+#include "include/frontend/ast/ValueNode.hpp"
 
 #include "include/frontend/ast/ReturnNode.hpp"
 
@@ -10,6 +10,10 @@
 
 #include "include/frontend/ast/WhileNode.hpp"
 #include "include/frontend/ast/IfNode.hpp"
+
+#include "include/frontend/ast/ArrayNode.hpp"
+#include "include/frontend/ast/ArrayAccessNode.hpp"
+#include "include/frontend/ast/ArrayAccessAssignmentNode.hpp"
 
 #include "include/frontend/ast/FunctionNode.hpp"
 #include "include/frontend/ast/FunctionCallNode.hpp"
@@ -54,10 +58,11 @@ T Parser::eat()
 
 bool Parser::isBlockStatement(ASTNode* node) const
 {
-    return  dynamic_cast<BlockNode*>(node) || 
-            dynamic_cast<WhileNode*>(node) || 
-            dynamic_cast<FunctionNode*>(node) || 
-            dynamic_cast<IfNode*>(node);
+    // return  dynamic_cast<BlockNode*>(node) || 
+    //         dynamic_cast<WhileNode*>(node) || 
+    //         dynamic_cast<FunctionNode*>(node) || 
+    //         dynamic_cast<IfNode*>(node);
+    return false; // temporary
 }
 
 std::vector<std::unique_ptr<ASTNode>> Parser::getArgumentList()
@@ -248,25 +253,31 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         node = parseComparison();
         eat<TokenType::RightParen>();
     }
+    else if (nextExists() && match<TokenType::LeftBrace>())
+    {
+        eat<TokenType::LeftBrace>();
+        node = parseArray();
+        eat<TokenType::RightBrace>();
+    }
     else if (nextExists() && match<TokenType::Number>())
     {
         long double value = eat<TokenType::Number>().value;
-        node = std::make_unique<LiteralNode>(value);
+        node = std::make_unique<ValueNode>(value);
     }
     else if (nextExists() && match<TokenType::Boolean>())
     {
         bool value = eat<TokenType::Boolean>().value;
-        node = std::make_unique<LiteralNode>(value);
+        node = std::make_unique<ValueNode>(value);
     }
     else if (nextExists() && match<TokenType::String>())
     {
         std::string value = eat<TokenType::String>().value;
-        node = std::make_unique<LiteralNode>(value);
+        node = std::make_unique<ValueNode>(value);
     }
     else if (nextExists() && match<TokenType::Null>())
     {
         eat<TokenType::Null>();
-        node = std::make_unique<LiteralNode>();
+        node = std::make_unique<ValueNode>();
     }
     else if (nextExists() && match<TokenType::Identifier>())
     {
@@ -274,7 +285,8 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         
         if (nextExists())
         {
-            if (match<TokenType::LeftParen>()) node = parseFunctionCall(value);
+            if      (match<TokenType::LeftParen>()) node = parseFunctionCall(value);
+            else if (match<TokenType::LeftBrace>()) node = parseArrayAccess(value);
             
             else if (match<TokenType::Equals>())         node = parseVariableAssignment(value, eat<TokenType::Equals>());
             else if (match<TokenType::PlusEquals>())     node = parseVariableAssignment(value, eat<TokenType::PlusEquals>());
@@ -381,6 +393,64 @@ std::unique_ptr<ASTNode> Parser::parseReturn()
         node = parseStatement();
     
     return std::make_unique<ReturnNode>(std::move(node));
+}
+
+std::unique_ptr<ASTNode> Parser::parseArray()
+{
+    std::vector<std::unique_ptr<ASTNode>> values;
+
+    if (nextExists() && !match<TokenType::RightBrace>())
+    {
+        values.emplace_back(parseComparison());
+        while (nextExists() && match<TokenType::Comma>())
+        {
+            eat<TokenType::Comma>();
+            values.emplace_back(parseComparison());
+        }
+    }
+    
+    return std::make_unique<ArrayNode>(std::move(values));
+}
+
+std::unique_ptr<ASTNode> Parser::parseArrayAccess(const std::string& name)
+{
+    std::vector<std::unique_ptr<ASTNode>> indices;
+    
+    eat<TokenType::LeftBrace>();
+    indices.emplace_back(parseComparison());
+    eat<TokenType::RightBrace>();
+    
+    std::unique_ptr<ASTNode> node = std::make_unique<ArrayAccessNode>(name, indices.back()->clone());
+    
+    while (nextExists() && match<TokenType::LeftBrace>())
+    {
+        eat<TokenType::LeftBrace>();
+        indices.emplace_back(parseComparison());
+        eat<TokenType::RightBrace>();
+        node = std::make_unique<ArrayAccessNode>(
+            std::move(node), 
+            indices.back()->clone()
+        );
+    }
+
+    if (match<TokenType::Equals>())
+    {
+        eat<TokenType::Equals>();
+        return parseArrayAccessAssignment(name, std::move(indices));
+    }
+
+    return std::move(node);
+}
+
+std::unique_ptr<ASTNode> Parser::parseArrayAccessAssignment(const std::string& name, std::vector<std::unique_ptr<ASTNode>> indices)
+{
+    std::unique_ptr<ASTNode> value = parseComparison();
+
+    return std::make_unique<ArrayAccessAssignmentNode>(
+        name,
+        std::move(indices),
+        std::move(value)
+    );
 }
 
 std::unique_ptr<ASTNode> Parser::parseFunction()

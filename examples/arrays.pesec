@@ -1,0 +1,33 @@
+use "std/io.dll";
+use "std/types.dll";
+
+mutab a = [
+    [11, 12, 13, 14],
+    [21, 22, 23, 24],
+    [21, 22, 33, 34],
+    [41, 42, 43, 44]
+];
+
+mutab k = 0;
+while k < 4
+{
+    a[k][k] = 99;
+    k += 1;
+};
+
+const print_mat = funct(arr, n, m) {
+    mutab i = 0;
+    while i < n
+    {
+        mutab j = 0;
+        while j < m
+        {
+            print(tostring(arr[i][j]) + " ");
+            j += 1;
+        };
+        println("");
+        i += 1;
+    };
+};
+
+print_mat(a, 4, 4);

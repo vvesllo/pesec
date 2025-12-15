@@ -24,6 +24,10 @@ Value::Value(const std::string& value)
 Value::Value(FunctionValue value) 
     : m_value(std::move(value)) 
 {}
+    
+Value::Value(ArrayValue value)
+    : m_value(std::move(value)) 
+{}
 
 std::string Value::toString() const
 {
@@ -40,6 +44,22 @@ std::string Value::toString() const
         oss << getDouble(); 
         return oss.str();
     }
+    else if (isArray())
+    {
+        std::ostringstream oss;
+        oss << '[';
+
+        const ArrayValue values = getArray();
+
+        for (size_t i=0; i < values.size(); i++)
+        {
+            if (i > 0) oss << ", ";
+            oss << values[i].toString();
+        }
+
+        oss << ']';
+        return oss.str();
+    }
 
     return "unstr";
 }
@@ -53,6 +73,8 @@ bool Value::isBoolean() const { return std::holds_alternative<bool>(m_value); }
 bool Value::isString() const { return std::holds_alternative<std::string>(m_value); }
 
 bool Value::isFunction() const { return std::holds_alternative<FunctionValue>(m_value); }
+
+bool Value::isArray() const { return std::holds_alternative<ArrayValue>(m_value); }
 
 long double Value::getDouble() const
 {
@@ -80,6 +102,13 @@ FunctionValue& Value::getFunction() const
     if (isFunction()) return std::get<FunctionValue>(m_value);
 
     throw std::runtime_error("Value is not function");
+}
+ 
+ArrayValue& Value::getArray() const
+{
+    if (isArray()) return std::get<ArrayValue>(m_value);
+
+    throw std::runtime_error("Value is not array");
 }
  
 Value Value::power(const Value& other) const
