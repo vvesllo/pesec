@@ -9,6 +9,7 @@
 #include "include/frontend/ast/UseNode.hpp"
 
 #include "include/frontend/ast/WhileNode.hpp"
+#include "include/frontend/ast/ForNode.hpp"
 #include "include/frontend/ast/IfNode.hpp"
 
 #include "include/frontend/ast/ArrayNode.hpp"
@@ -304,6 +305,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         switch (keyword) 
         {
         case TokenType::Keyword::Use:    node = parseUse(); break;
+        case TokenType::Keyword::For:    node = parseFor(); break;
         case TokenType::Keyword::While:  node = parseWhile(); break;
         case TokenType::Keyword::Return: node = parseReturn(); break;
         case TokenType::Keyword::If:     node = parseIf(); break;
@@ -332,6 +334,37 @@ std::unique_ptr<ASTNode> Parser::parseUse()
     std::string filepath = eat<TokenType::String>().value;
     
     return std::make_unique<UseNode>(filepath);
+}
+
+std::unique_ptr<ASTNode> Parser::parseFor()
+{
+    std::string iterator = eat<TokenType::Identifier>().value;
+    std::unique_ptr<ASTNode> iterable = nullptr;
+    std::unique_ptr<ASTNode> else_block = nullptr;
+
+    
+    if (nextExists() && match<TokenType::Keyword>())
+    {
+        TokenType::Keyword keyword = eat<TokenType::Keyword>();
+        if (keyword == TokenType::Keyword::In)
+            iterable = parseComparison();
+    }
+    
+    std::unique_ptr<ASTNode> for_block = parseBlock();
+    
+    if (nextExists() && match<TokenType::Keyword>())
+    {
+        TokenType::Keyword keyword = eat<TokenType::Keyword>();
+        if (keyword == TokenType::Keyword::Else)
+            else_block = parseBlock();
+    }
+
+    return std::make_unique<ForNode>(
+        iterator,
+        std::move(iterable),
+        std::move(for_block),
+        std::move(else_block)
+    );
 }
 
 std::unique_ptr<ASTNode> Parser::parseWhile()

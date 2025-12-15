@@ -32,6 +32,7 @@ add_executable(
 	src/frontend/ast/UseNode.cpp							include/frontend/ast/UseNode.hpp
 
 	src/frontend/ast/WhileNode.cpp							include/frontend/ast/WhileNode.hpp
+	src/frontend/ast/ForNode.cpp							include/frontend/ast/ForNode.hpp
 	src/frontend/ast/IfNode.cpp								include/frontend/ast/IfNode.hpp
 	
 	src/frontend/ast/FunctionNode.cpp						include/frontend/ast/FunctionNode.hpp
