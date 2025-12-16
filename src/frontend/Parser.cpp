@@ -5,6 +5,7 @@
 #include "include/frontend/ast/ValueNode.hpp"
 
 #include "include/frontend/ast/ReturnNode.hpp"
+#include "include/frontend/ast/BreakNode.hpp"
 
 #include "include/frontend/ast/UseNode.hpp"
 
@@ -317,13 +318,14 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         switch (keyword) 
         {
         case TokenType::Keyword::Use:    node = parseUse(); break;
-        case TokenType::Keyword::For:    node = parseFor(); break;
         case TokenType::Keyword::While:  node = parseWhile(); break;
-        case TokenType::Keyword::Return: node = parseReturn(); break;
+        case TokenType::Keyword::For:    node = parseFor(); break;
         case TokenType::Keyword::If:     node = parseIf(); break;
+        case TokenType::Keyword::Break:  node = parseBreak(); break;
         case TokenType::Keyword::Mut:    node = parseVariableDefinition(true); break;
         case TokenType::Keyword::Const:  node = parseVariableDefinition(false); break;
         case TokenType::Keyword::Fn:     node = parseFunction(); break;
+        case TokenType::Keyword::Return: node = parseReturn(); break;
         default: throw std::runtime_error(std::format(
             "Undefined control statement at line {}", 
             peek().line
@@ -430,6 +432,15 @@ std::unique_ptr<ASTNode> Parser::parseIf()
     );
 }
 
+std::unique_ptr<ASTNode> Parser::parseBreak()
+{
+    std::unique_ptr<ASTNode> node = nullptr;
+    
+    if (!match<TokenType::Semicolon>())
+        node = parseStatement();
+    
+    return std::make_unique<BreakNode>(std::move(node));
+}
 std::unique_ptr<ASTNode> Parser::parseReturn()
 {
     std::unique_ptr<ASTNode> node = nullptr;

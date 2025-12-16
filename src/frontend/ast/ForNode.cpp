@@ -1,5 +1,5 @@
 #include "include/frontend/ast/ForNode.hpp"
-#include "include/frontend/ast/ReturnValueException.hpp"
+#include "include/frontend/ast/BreakValueException.hpp"
 
 #include <stdexcept>
 
@@ -38,23 +38,14 @@ Value ForNode::evaluate(Context& context) const
         {
             m_for_block->evaluate(context);
         }
-        catch (const ReturnValueException& return_value) 
+        catch (const BreakValueException& break_value) 
         {
-            return return_value.value();
+            return break_value.value();
         }
     }
     
     if (m_else_block)
-    {
-        try 
-        {
-            return m_else_block->evaluate(context);
-        } 
-        catch (const ReturnValueException& return_value) 
-        {
-            return return_value.value();
-        }
-    }
+        return m_else_block->evaluate(context);
 
     return Value();
 }

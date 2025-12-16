@@ -24,17 +24,10 @@ Value IfNode::evaluate(Context& context) const
         throw std::runtime_error("Condition must be boolean value");
     
         
-    try 
-    {
-        if (condition_value.getBoolean())
-            return m_then_block->evaluate(context);
-        else if (m_else_block)
-            return m_else_block->evaluate(context);
-    }
-    catch (const ReturnValueException& return_value) 
-    {
-        return return_value.value();
-    }
+    if (condition_value.getBoolean())
+        return m_then_block->evaluate(context);
+    else if (m_else_block)
+        return m_else_block->evaluate(context);
 
     return Value();
 }

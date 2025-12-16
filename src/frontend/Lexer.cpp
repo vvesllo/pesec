@@ -201,24 +201,28 @@ Token Lexer::processIdentifier()
 
     std::string value = oss.str();
 
-    if      (value == "mut")  return createToken(TokenType::Keyword::Mut);
-    else if (value == "const")  return createToken(TokenType::Keyword::Const);
+    if      (value == "mut")     return createToken(TokenType::Keyword::Mut);
+    else if (value == "const")   return createToken(TokenType::Keyword::Const);
+    else if (value == "typedef") return createToken(TokenType::Keyword::Typedef);
 
-    else if (value == "fn")     return createToken(TokenType::Keyword::Fn);
-    else if (value == "return") return createToken(TokenType::Keyword::Return);
+    else if (value == "struct")  return createToken(TokenType::Keyword::Struct);
 
-    else if (value == "use")    return createToken(TokenType::Keyword::Use);
+    else if (value == "fn")      return createToken(TokenType::Keyword::Fn);
+    else if (value == "return")  return createToken(TokenType::Keyword::Return);
 
-    else if (value == "if")     return createToken(TokenType::Keyword::If);
-    else if (value == "else")   return createToken(TokenType::Keyword::Else);
+    else if (value == "use")     return createToken(TokenType::Keyword::Use);
 
-    else if (value == "while")  return createToken(TokenType::Keyword::While);
-    else if (value == "for")    return createToken(TokenType::Keyword::For);
-    else if (value == "in")     return createToken(TokenType::Keyword::In);
+    else if (value == "if")      return createToken(TokenType::Keyword::If);
+    else if (value == "else")    return createToken(TokenType::Keyword::Else);
 
-    else if (value == "null")   return createToken(TokenType::Null{});
-    else if (value == "true")   return createToken(TokenType::Boolean{ true });
-    else if (value == "false")  return createToken(TokenType::Boolean{ false });
+    else if (value == "while")   return createToken(TokenType::Keyword::While);
+    else if (value == "for")     return createToken(TokenType::Keyword::For);
+    else if (value == "in")      return createToken(TokenType::Keyword::In);
+    else if (value == "break")   return createToken(TokenType::Keyword::Break);
+
+    else if (value == "null")    return createToken(TokenType::Null{});
+    else if (value == "true")    return createToken(TokenType::Boolean{ true });
+    else if (value == "false")   return createToken(TokenType::Boolean{ false });
 
     return createToken(TokenType::Identifier { value });
 }

@@ -9,6 +9,9 @@ namespace TokenType
     enum class Keyword {
         Const,
         Mut,
+        Typedef,
+        
+        Struct,
         
         Fn,
         Return,
@@ -18,6 +21,7 @@ namespace TokenType
         While,
         For,
         In,
+        Break,
 
         Continue,
 
