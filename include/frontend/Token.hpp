@@ -8,9 +8,9 @@ namespace TokenType
     struct Identifier final { const std::string value; };
     enum class Keyword {
         Const,
-        Mutab,
+        Mut,
         
-        Funct,
+        Fn,
         Return,
         
         Use,

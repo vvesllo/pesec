@@ -26,6 +26,7 @@ add_executable(
 	src/frontend/ast/ReturnValueException.cpp				include/frontend/ast/ReturnValueException.hpp
 	
 	src/frontend/ast/ArrayNode.cpp							include/frontend/ast/ArrayNode.hpp
+	src/frontend/ast/ArrayRangeNode.cpp						include/frontend/ast/ArrayRangeNode.hpp
 	src/frontend/ast/ArrayAccessNode.cpp					include/frontend/ast/ArrayAccessNode.hpp
 	src/frontend/ast/ArrayAccessAssignmentNode.cpp			include/frontend/ast/ArrayAccessAssignmentNode.hpp
 	

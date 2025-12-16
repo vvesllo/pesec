@@ -1,6 +1,13 @@
 use "std/io.dll";
 
-for i in [1, 2, 3, 4, 5, "hello"]
+mut a = 0...5;
+
+println(a);
+
+for i in a
 {
     println(i);
+    return;
+} else {
+    println("for loop didn't stop");
 };

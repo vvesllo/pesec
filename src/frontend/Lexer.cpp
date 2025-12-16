@@ -138,6 +138,11 @@ Token Lexer::processOperator()
         if (peek() == '.') 
         {
             advance();
+            if (peek() == '.') 
+            {
+                advance();
+                return createToken(TokenType::DotDotDot{});
+            }
             return createToken(TokenType::DotDot{});
         }
         return createToken(TokenType::Dot{});
@@ -191,10 +196,10 @@ Token Lexer::processIdentifier()
 
     std::string value = oss.str();
 
-    if      (value == "mutab")  return createToken(TokenType::Keyword::Mutab);
+    if      (value == "mut")  return createToken(TokenType::Keyword::Mut);
     else if (value == "const")  return createToken(TokenType::Keyword::Const);
 
-    else if (value == "funct")  return createToken(TokenType::Keyword::Funct);
+    else if (value == "fn")     return createToken(TokenType::Keyword::Fn);
     else if (value == "return") return createToken(TokenType::Keyword::Return);
 
     else if (value == "use")    return createToken(TokenType::Keyword::Use);

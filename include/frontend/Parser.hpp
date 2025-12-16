@@ -49,6 +49,7 @@ private:
     
     
     std::unique_ptr<ASTNode> parseArray();
+    std::unique_ptr<ASTNode> parseArrayRange(std::unique_ptr<ASTNode> begin);
     std::unique_ptr<ASTNode> parseArrayAccess(const std::string& name);
     std::unique_ptr<ASTNode> parseArrayAccessAssignment(const std::string& name, std::vector<std::unique_ptr<ASTNode>> indices);
 

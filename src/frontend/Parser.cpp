@@ -13,6 +13,7 @@
 #include "include/frontend/ast/IfNode.hpp"
 
 #include "include/frontend/ast/ArrayNode.hpp"
+#include "include/frontend/ast/ArrayRangeNode.hpp"
 #include "include/frontend/ast/ArrayAccessNode.hpp"
 #include "include/frontend/ast/ArrayAccessAssignmentNode.hpp"
 
@@ -264,6 +265,9 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
     {
         long double value = eat<TokenType::Number>().value;
         node = std::make_unique<ValueNode>(value);
+
+        if (match<TokenType::DotDot>() || match<TokenType::DotDotDot>())
+            node = parseArrayRange(std::move(node));
     }
     else if (nextExists() && match<TokenType::Boolean>())
     {
@@ -309,9 +313,9 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         case TokenType::Keyword::While:  node = parseWhile(); break;
         case TokenType::Keyword::Return: node = parseReturn(); break;
         case TokenType::Keyword::If:     node = parseIf(); break;
-        case TokenType::Keyword::Mutab:  node = parseVariableDefinition(true); break;
+        case TokenType::Keyword::Mut:    node = parseVariableDefinition(true); break;
         case TokenType::Keyword::Const:  node = parseVariableDefinition(false); break;
-        case TokenType::Keyword::Funct:  node = parseFunction(); break;
+        case TokenType::Keyword::Fn:  node = parseFunction(); break;
         default: throw std::runtime_error(std::format(
             "Undefined control statement at line {}", 
             peek().line
@@ -443,6 +447,22 @@ std::unique_ptr<ASTNode> Parser::parseArray()
     }
     
     return std::make_unique<ArrayNode>(std::move(values));
+}
+    
+std::unique_ptr<ASTNode> Parser::parseArrayRange(std::unique_ptr<ASTNode> begin)
+{
+    bool contains_last = match<TokenType::DotDotDot>();
+    
+    if (match<TokenType::DotDot>())
+        eat<TokenType::DotDot>();
+    else if (match<TokenType::DotDotDot>())
+        eat<TokenType::DotDotDot>();
+
+    std::unique_ptr<ASTNode> end = parseComparison();
+
+    return std::make_unique<ArrayRangeNode>(
+        std::move(begin), std::move(end), contains_last
+    );
 }
 
 std::unique_ptr<ASTNode> Parser::parseArrayAccess(const std::string& name)
