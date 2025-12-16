@@ -18,6 +18,8 @@ std::string tokenToString(const Token& token)
     else if (const auto tok = std::get_if<TokenType::Slash>(&token.token))      return "Slash";
 
     else if (const auto tok = std::get_if<TokenType::Equals>(&token.token))     return "Equals";
+    
+    else if (const auto tok = std::get_if<TokenType::Equals>(&token.token))     return "Equals";
 
     else if (const auto tok = std::get_if<TokenType::Semicolon>(&token.token))  return "Semicolon";
     else if (const auto tok = std::get_if<TokenType::Comma>(&token.token))      return "Comma";

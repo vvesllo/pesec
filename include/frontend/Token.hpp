@@ -56,6 +56,8 @@ namespace TokenType
     struct LessEquals final {};
     struct GreaterEquals final {};
 
+    struct ArrowRight final {};
+
     struct Semicolon final {};
     struct Comma final {};
 
@@ -105,6 +107,8 @@ using TokenAny = std::variant<
     TokenType::Greater,
     TokenType::LessEquals,
     TokenType::GreaterEquals,
+
+    TokenType::ArrowRight,
 
     TokenType::Semicolon,
     TokenType::Comma,

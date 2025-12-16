@@ -161,6 +161,11 @@ Token Lexer::processOperator()
             advance();
             return createToken(TokenType::EqualsEquals{});
         }
+        else if (peek() == '>') 
+        {
+            advance();
+            return createToken(TokenType::ArrowRight{});
+        }
         return createToken(TokenType::Equals{});
     case '<': 
         advance();

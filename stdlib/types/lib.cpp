@@ -35,6 +35,8 @@ void init(Context& context)
         Value& value = context.get("value").value;
         if (value.isString())
             return Value(static_cast<long double>(value.getString().size()));
+        else if (value.isArray())
+            return Value(static_cast<long double>(value.getArray().size()));
         
         throw std::runtime_error("Invalid value to get length");
     });

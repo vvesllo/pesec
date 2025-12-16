@@ -1,13 +1,13 @@
-use "std/io.dll";
+use "build/stdlib/io/Release/io.dll";
+use "build/stdlib/types/Release/types.dll";
 
-mut a = 0...5;
-
-println(a);
-
-for i in a
-{
-    println(i);
-    return;
-} else {
-    println("for loop didn't stop");
-};
+print("accumulate [1...10] = ");
+println(fn(arr, f) {
+    mut res = 0;
+    for i in arr {
+        res += f(i);
+    };
+    return res;
+} (1...100, fn(a) {
+    return a ** 3;
+}));

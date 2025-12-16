@@ -62,6 +62,7 @@ bool Parser::isBlockStatement(ASTNode* node) const
 {
     // return  dynamic_cast<BlockNode*>(node) || 
     //         dynamic_cast<WhileNode*>(node) || 
+    //         dynamic_cast<ForNode*>(node) || 
     //         dynamic_cast<FunctionNode*>(node) || 
     //         dynamic_cast<IfNode*>(node);
     return false; // temporary
@@ -254,6 +255,9 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         eat<TokenType::LeftParen>();
         node = parseComparison();
         eat<TokenType::RightParen>();
+
+        if (match<TokenType::DotDot>() || match<TokenType::DotDotDot>())
+            node = parseArrayRange(std::move(node));
     }
     else if (nextExists() && match<TokenType::LeftBrace>())
     {
@@ -298,8 +302,12 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
             else if (match<TokenType::MinusEquals>())    node = parseVariableAssignment(value, eat<TokenType::MinusEquals>());
             else if (match<TokenType::AsteriskEquals>()) node = parseVariableAssignment(value, eat<TokenType::AsteriskEquals>());
             else if (match<TokenType::SlashEquals>())    node = parseVariableAssignment(value, eat<TokenType::SlashEquals>());
-            
-            else node = std::make_unique<VariableNode>(value);
+            else 
+            {
+                node = std::make_unique<VariableNode>(value);
+                if (match<TokenType::DotDot>() || match<TokenType::DotDotDot>())
+                    node = parseArrayRange(std::move(node));
+            }
         }
     }
     else if (nextExists() && match<TokenType::Keyword>())
@@ -315,7 +323,7 @@ std::unique_ptr<ASTNode> Parser::parseFactor()
         case TokenType::Keyword::If:     node = parseIf(); break;
         case TokenType::Keyword::Mut:    node = parseVariableDefinition(true); break;
         case TokenType::Keyword::Const:  node = parseVariableDefinition(false); break;
-        case TokenType::Keyword::Fn:  node = parseFunction(); break;
+        case TokenType::Keyword::Fn:     node = parseFunction(); break;
         default: throw std::runtime_error(std::format(
             "Undefined control statement at line {}", 
             peek().line

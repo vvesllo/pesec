@@ -1,4 +1,6 @@
 #include "include/frontend/ast/ArrayRangeNode.hpp"
+#include <stdexcept>
+
 
 ArrayRangeNode::ArrayRangeNode(
     std::unique_ptr<ASTNode> begin,
@@ -19,10 +21,18 @@ Value ArrayRangeNode::evaluate(Context& context) const
     
     std::vector<Value> values;
 
-    for (long double i=begin_value.getDouble(); i < end_value.getDouble() + (m_contains_last ? 1 : 0); i++)
-    {
-        values.emplace_back(Value(i));
-    }
+    if (!begin_value.isDouble() || !end_value.isDouble())
+        throw std::runtime_error("Range begin and end should be numeric");
+    
+    long double begin = begin_value.getDouble();
+    long double end = end_value.getDouble();
+
+    if (begin < end)
+        for (long double i=begin; i < end + (m_contains_last ? 1 : 0); i++)
+            values.emplace_back(Value(i));
+    else
+        for (long double i=begin; i > end - (m_contains_last ? 1 : 0); i--)
+            values.emplace_back(Value(i));
 
     return values;
 }
