@@ -149,6 +149,7 @@ token_t lexer_next_identifier(lexer_t* lexer)
         string_view_equals_cstr(value, "break") ||
         string_view_equals_cstr(value, "struct") ||
         string_view_equals_cstr(value, "import") ||
+        string_view_equals_cstr(value, "load") ||
         string_view_equals_cstr(value, "true") ||
         string_view_equals_cstr(value, "false")
         ) type = TOKEN_TYPE_KEYWORD;

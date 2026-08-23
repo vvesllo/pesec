@@ -12,6 +12,18 @@ parameter_t* parameter_new()
     return parameter;
 }
 
+parameter_t* parameter_new_from_cstr(const char** values)
+{
+    parameter_t* parameter = parameter_new();
+
+    for (const char **p = values; *p; ++p)
+    {
+        parameter_push(parameter, string_view_from(*p));
+    }
+
+    return parameter;
+}
+
 void parameter_push_from_cstr(parameter_t* parameter, const char** values)
 {
     for (const char **p = values; *p; ++p)

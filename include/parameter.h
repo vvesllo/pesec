@@ -19,6 +19,8 @@ typedef struct
 
 parameter_t* parameter_new();
 
+parameter_t* parameter_new_from_cstr(const char** values);
+
 void parameter_push_from_cstr(parameter_t* parameter, const char** values);
 
 void parameter_push(parameter_t* parameter, string_view_t value);
