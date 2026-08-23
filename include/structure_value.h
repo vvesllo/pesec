@@ -11,13 +11,9 @@ typedef struct STRUCTURE_VALUE_STRUCT
     context_t* context;
 } structure_value_t;
 
-structure_value_t* structure_value_new();
-
-structure_value_t* structure_value_new_with(context_t* context);
+structure_value_t* structure_value_new(context_t* context);
 
 value_t structure_value_get(const structure_value_t* structure_value, string_view_t name);
-
-void structure_value_push(const structure_value_t* structure_value, string_view_t name, value_t value);
 
 void structure_value_set(const structure_value_t* structure_value, string_view_t name, value_t value);
 

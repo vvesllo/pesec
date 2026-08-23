@@ -9,11 +9,10 @@ typedef struct AST_NODE_STRUCT ast_node_t;
 
 typedef struct
 {
-    parameter_t* parameter;
-    ast_node_t* values;
+    ast_node_t* fields;
 } structure_definition_node_t;
 
-ast_node_t* structure_definition_node_new(parameter_t* parameter, ast_node_t* values);
+ast_node_t* structure_definition_node_new(ast_node_t* fields);
 
 void structure_definition_node_free(structure_definition_node_t* structure_definition_node);
 

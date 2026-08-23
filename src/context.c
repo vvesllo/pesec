@@ -59,7 +59,7 @@ void context_set(const context_t* context, const string_view_t key, value_t valu
 {
     context_item_t* node = context_get(context, key);
     if (node->constant)
-        THROW("Variable %.*s is constant\n", (unsigned int)key.length, key.data);
+        THROW("Variable '%.*s' is constant\n", (unsigned int)key.length, key.data);
 
     value_increase_reference(&value);
     value_decrease_reference(&node->value);

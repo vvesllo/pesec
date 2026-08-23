@@ -18,13 +18,13 @@ f(); # returns string value after call  #
 - structures
 ```pesec
 const point = struct {
-    x = 0,
-    y = 0,
-    move = fn(dx, dy) {
+    mutab x = 0;
+    mutab y = 0;
+    const move = fn(dx, dy) {
         # "this" is a struct object #
         this.x = this.x + dx;
         this.y = this.y + dy;
-    }
+    };
 }; 
 
 point.f(42, 69); # fields inside succesfully changes #

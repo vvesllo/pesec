@@ -38,5 +38,5 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
 
     execute_file(source_value.data.as_string->data, module_context);
 
-    return MAKE_VAL_STRUCT(structure_value_new_with(module_context));
+    return MAKE_VAL_STRUCT(structure_value_new(module_context));
 }

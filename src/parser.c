@@ -215,43 +215,27 @@ ast_node_t *parser_parse_function_definition(parser_t *parser)
 
 ast_node_t *parser_parse_structure_definition(parser_t *parser)
 {
-    parameter_t* parameter = parameter_new();
-    ast_node_t* values = statement_sequence_node_new(true);
+    ast_node_t* fields = statement_sequence_node_new(true);
 
     parser_eat(parser, TOKEN_TYPE_LBRACE);
 
-    if (!parser_match(parser, TOKEN_TYPE_RBRACE))
+    while (!parser_match(parser, TOKEN_TYPE_RBRACE))
     {
-        parameter_push(parameter, parser_eat(parser, TOKEN_TYPE_IDENTIFIER).value.as_string_view);
-        if (parser_match(parser, TOKEN_TYPE_EQUALS))
-        {
-            parser_eat(parser, TOKEN_TYPE_EQUALS);
-            statement_sequence_node_push(values->node.statement_sequence, parser_parse_statement(parser));
-        }
-        else
-        {
-            statement_sequence_node_push(values->node.statement_sequence, literal_node_new(MAKE_VAL_NUM(0)));
-        }
+        bool constant;
 
-        while (parser_match(parser, TOKEN_TYPE_COMMA))
-        {
-            parser_eat(parser, TOKEN_TYPE_COMMA);
-            parameter_push(parameter, parser_eat(parser, TOKEN_TYPE_IDENTIFIER).value.as_string_view);
-            if (parser_match(parser, TOKEN_TYPE_EQUALS))
-            {
-                parser_eat(parser, TOKEN_TYPE_EQUALS);
-                statement_sequence_node_push(values->node.statement_sequence, parser_parse_statement(parser));
-            }
-            else
-            {
-                statement_sequence_node_push(values->node.statement_sequence, literal_node_new(MAKE_VAL_NUM(0)));
-            }
-        }
+        const token_t keyword = parser_eat(parser, TOKEN_TYPE_KEYWORD);
+
+        if (string_view_equals_cstr(keyword.value.as_string_view, "mutab")) constant = false;
+        else if (string_view_equals_cstr(keyword.value.as_string_view, "const")) constant = true;
+        else THROW("Unexpected field definition keyword at line %llu", parser->current_token.line);
+
+        statement_sequence_node_push(fields->node.statement_sequence, parser_parse_variable_definition(parser, constant));
+        parser_eat(parser, TOKEN_TYPE_SEMICOLON);
     }
 
     parser_eat(parser, TOKEN_TYPE_RBRACE);
 
-    return structure_definition_node_new(parameter, values);
+    return structure_definition_node_new(fields);
 }
 
 ast_node_t *parser_parse_structure_field_access(parser_t *parser, ast_node_t* object)

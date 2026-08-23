@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 
-ast_node_t* variable_definition_node_new(const string_view_t name, ast_node_t* value, bool constant)
+ast_node_t* variable_definition_node_new(const string_view_t name, ast_node_t* value, const bool constant)
 {
     const auto node = (ast_node_t*)malloc(sizeof(ast_node_t));
     node->type = AST_NODE_VARIABLE_DEFINITION;
