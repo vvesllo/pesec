@@ -34,9 +34,9 @@ value_t variable_assignment_node_evaluate(const variable_assignment_node_t* vari
         case AST_NODE_VARIABLE:
             context_set(context, variable_assignment_node->target->node.variable->name, value);
             break;
-        case AST_NODE_STRUCTURE_FIELD_ACCESS:
+        case AST_NODE_VARIABLE_FIELD_ACCESS:
             const value_t object_value = ast_node_evaluate(
-                variable_assignment_node->target->node.structure_field_access->object,
+                variable_assignment_node->target->node.variable_field_access->object,
                 context
             );
 
@@ -45,7 +45,7 @@ value_t variable_assignment_node_evaluate(const variable_assignment_node_t* vari
 
             structure_value_set(
                 object_value.data.as_structure,
-                variable_assignment_node->target->node.structure_field_access->field,
+                variable_assignment_node->target->node.variable_field_access->field,
                 value
             );
 

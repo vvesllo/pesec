@@ -6,6 +6,7 @@
 #include "include/array_value.h"
 #include "include/structure_value.h"
 #include "include/function_value.h"
+#include "include/module_value.h"
 #include "include/utils/throw.h"
 
 void value_free(const value_t* value)
@@ -16,6 +17,7 @@ void value_free(const value_t* value)
         case VALUE_TYPE_STRING: string_value_free(value->data.as_string); break;
         case VALUE_TYPE_STRUCTURE: structure_value_free(value->data.as_structure); break;
         case VALUE_TYPE_FUNCTION: function_value_free(value->data.as_function); break;
+        case VALUE_TYPE_MODULE: module_value_free(value->data.as_module); break;
         default: break;
     }
 }
@@ -43,6 +45,7 @@ bool value_get_boolean(const value_t value)
         case VALUE_TYPE_BOOLEAN: return value.data.as_bool;
         case VALUE_TYPE_FUNCTION:
         case VALUE_TYPE_ARRAY:
+        case VALUE_TYPE_MODULE:
         case VALUE_TYPE_STRUCTURE: return true;
     }
 
@@ -59,6 +62,7 @@ char* value_get_type(const value_t value)
         case VALUE_TYPE_FUNCTION: return "function";
         case VALUE_TYPE_STRUCTURE: return "structure";
         case VALUE_TYPE_ARRAY: return "array";
+        case VALUE_TYPE_MODULE: return "module";
     }
 
     THROW("Value type '%d' is not a valid value type\n", value.type);
@@ -74,6 +78,7 @@ void value_print(const value_t value)
         case VALUE_TYPE_FUNCTION: value_print_function(value.data.as_function); return;
         case VALUE_TYPE_STRUCTURE: value_print_structure(value.data.as_structure); return;
         case VALUE_TYPE_ARRAY: value_print_array(value.data.as_array); return;
+        case VALUE_TYPE_MODULE: value_print_module(value.data.as_module); return;
     }
 
     THROW("Value type '%d' is not a valid value type\n", value.type);
@@ -102,6 +107,11 @@ void value_print_function(const function_value_t* value)
 void value_print_structure(const structure_value_t* value)
 {
     printf("<structure:%p>", &value);
+}
+
+void value_print_module(const module_value_t* value)
+{
+    printf("<module:%p>", &value);
 }
 
 void value_print_array(const array_value_t* value)

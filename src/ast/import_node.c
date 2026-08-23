@@ -6,6 +6,7 @@
 #include "include/utils/throw.h"
 
 #include "include/lexer.h"
+#include "include/module_value.h"
 #include "include/parser.h"
 #include "include/structure_value.h"
 #include "include/utils/execute_file.h"
@@ -38,5 +39,5 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
 
     execute_file(source_value.data.as_string->data, module_context);
 
-    return MAKE_VAL_STRUCT(structure_value_new(module_context));
+    return MAKE_VAL_MODULE(module_value_new(module_context));
 }

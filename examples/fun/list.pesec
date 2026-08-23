@@ -1,16 +1,16 @@
 const list_new = fn (value) struct {
-    value=value,
-    next=false,
-    push = fn(value) {
+    mutab value = value;
+    mutab next = false;
+    const push = fn(value) {
         mutab current = this;
         while current.next {
             current = current.next;
         };
 
         current.next = list_new(value);
-    },
+    }
 
-    print = fn() {
+    const print = fn() {
         mutab current = this;
 
         while current {

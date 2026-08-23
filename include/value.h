@@ -6,6 +6,7 @@
 #define MAKE_VAL_BOOL(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_BOOLEAN, .data.as_bool = x })
 #define MAKE_VAL_FUNC(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_FUNCTION, .data.as_function = x })
 #define MAKE_VAL_STRUCT(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRUCTURE, .data.as_structure = x })
+#define MAKE_VAL_MODULE(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_MODULE, .data.as_module = x })
 #define MAKE_VAL_ARR(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_ARRAY, .data.as_array = x })
 
 #define MAKE_VAL_STR_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRING, .data.as_string = x, .control_flow = cf })
@@ -13,6 +14,7 @@
 #define MAKE_VAL_BOOL_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_BOOLEAN, .data.as_bool = x, .control_flow = cf })
 #define MAKE_VAL_FUNC_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_FUNCTION, .data.as_function = x, .control_flow = cf })
 #define MAKE_VAL_STRUCT_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRUCTURE, .data.as_structure = x, .control_flow = cf })
+#define MAKE_VAL_MODULE_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_MODULEURE, .data.as_module = x, .control_flow = cf })
 #define MAKE_VAL_ARR_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_ARRAY, .data.as_array = x, .control_flow = cf })
 
 #include "string_value.h"
@@ -20,6 +22,7 @@
 
 typedef struct FUNCTION_VALUE_STRUCT function_value_t;
 typedef struct STRUCTURE_VALUE_STRUCT structure_value_t;
+typedef struct MODULE_VALUE_STRUCT module_value_t;
 typedef struct ARRAY_VALUE_STRUCT array_value_t;
 
 typedef enum
@@ -29,6 +32,7 @@ typedef enum
     VALUE_TYPE_BOOLEAN,
     VALUE_TYPE_FUNCTION,
     VALUE_TYPE_STRUCTURE,
+    VALUE_TYPE_MODULE,
     VALUE_TYPE_ARRAY,
 } value_type_t;
 
@@ -40,6 +44,7 @@ typedef union
     function_value_t* as_function;
     structure_value_t* as_structure;
     array_value_t* as_array;
+    module_value_t* as_module;
 } value_value_t;
 
 typedef struct
@@ -71,6 +76,8 @@ void value_print_boolean(bool value);
 void value_print_function(const function_value_t* value);
 
 void value_print_structure(const structure_value_t* value);
+
+void value_print_module(const module_value_t* value);
 
 void value_print_array(const array_value_t* value);
 

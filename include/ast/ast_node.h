@@ -9,7 +9,7 @@
 #include "function_call_node.h"
 #include "function_definition_node.h"
 #include "structure_definition_node.h"
-#include "structure_field_access_node.h"
+#include "variable_field_access_node.h"
 #include "array_definition_node.h"
 #include "array_access_node.h"
 #include "statement_sequence_node.h"
@@ -30,7 +30,7 @@ typedef enum
     AST_NODE_FUNCTION_CALL,
     AST_NODE_FUNCTION_DEFINITION,
     AST_NODE_STRUCTURE_DEFINITION,
-    AST_NODE_STRUCTURE_FIELD_ACCESS,
+    AST_NODE_VARIABLE_FIELD_ACCESS,
     AST_NODE_ARRAY_DEFINITION,
     AST_NODE_ARRAY_ACCESS,
     AST_NODE_STATEMENT_SEQUENCE,
@@ -53,7 +53,7 @@ typedef struct AST_NODE_STRUCT
         function_call_node_t* function_call;
         function_definition_node_t* function_definition;
         structure_definition_node_t* structure_definition;
-        structure_field_access_node_t* structure_field_access;
+        variable_field_access_node_t* variable_field_access;
         array_definition_node_t* array_definition;
         array_access_node_t* array_access;
         statement_sequence_node_t* statement_sequence;

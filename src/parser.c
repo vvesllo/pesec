@@ -45,10 +45,10 @@ ast_node_t* parser_check_and_parse_function_call(parser_t *parser, ast_node_t* c
     return callee;
 }
 
-ast_node_t* parser_check_and_parse_structure_field_access(parser_t *parser, ast_node_t* object)
+ast_node_t* parser_check_and_parse_variable_field_access(parser_t *parser, ast_node_t* object)
 {
     if (parser_match(parser, TOKEN_TYPE_DOT))
-        return parser_parse_structure_field_access(parser, object);
+        return parser_parse_variable_field_access(parser, object);
 
     return object;
 }
@@ -72,7 +72,7 @@ ast_node_t* parser_check_and_parse_array_access(parser_t *parser, ast_node_t* ar
 ast_node_t* parser_check_and_do_everything(parser_t *parser, ast_node_t* node)
 {
     node = parser_check_and_parse_function_call(parser, node);
-    node = parser_check_and_parse_structure_field_access(parser, node);
+    node = parser_check_and_parse_variable_field_access(parser, node);
     node = parser_check_and_parse_variable_assignment(parser, node);
     node = parser_check_and_parse_array_access(parser, node);
 
@@ -108,7 +108,7 @@ ast_node_t *parser_parse_identifier(parser_t *parser)
 
     if (parser_match(parser, TOKEN_TYPE_LPAREN))    return parser_parse_function_call(parser, variable_node);
     if (parser_match(parser, TOKEN_TYPE_EQUALS))    return parser_parse_variable_assignment(parser, variable_node);
-    if (parser_match(parser, TOKEN_TYPE_DOT))       return parser_parse_structure_field_access(parser, variable_node);
+    if (parser_match(parser, TOKEN_TYPE_DOT))       return parser_parse_variable_field_access(parser, variable_node);
     if (parser_match(parser, TOKEN_TYPE_LBRACKET))  return parser_parse_array_access(parser, variable_node);
 
     return variable_node;
@@ -238,13 +238,13 @@ ast_node_t *parser_parse_structure_definition(parser_t *parser)
     return structure_definition_node_new(fields);
 }
 
-ast_node_t *parser_parse_structure_field_access(parser_t *parser, ast_node_t* object)
+ast_node_t *parser_parse_variable_field_access(parser_t *parser, ast_node_t* object)
 {
     parser_eat(parser, TOKEN_TYPE_DOT);
 
     const token_t field = parser_eat(parser, TOKEN_TYPE_IDENTIFIER);
 
-    ast_node_t *node = structure_field_access_node_new(object, field.value.as_string_view);
+    ast_node_t *node = variable_field_access_node_new(object, field.value.as_string_view);
 
     node = parser_check_and_do_everything(parser, node);
 

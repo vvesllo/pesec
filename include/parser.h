@@ -46,7 +46,7 @@ ast_node_t *parser_parse_function_definition(parser_t *parser);
 
 ast_node_t *parser_parse_structure_definition(parser_t *parser);
 
-ast_node_t *parser_parse_structure_field_access(parser_t *parser, ast_node_t* object);
+ast_node_t *parser_parse_variable_field_access(parser_t *parser, ast_node_t* object);
 
 ast_node_t *parser_parse_array_definition(parser_t *parser);
 
