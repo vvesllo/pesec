@@ -1,0 +1,27 @@
+const list_new = fn (value) struct {
+    value=value,
+    next=false,
+    push = fn(value) {
+        mutab current = this;
+        while current.next {
+            current = current.next;
+        };
+
+        current.next = list_new(value);
+    },
+
+    print = fn() {
+        mutab current = this;
+
+        while current {
+            print(current.value);
+            current = current.next;
+        };
+    }
+};
+
+mutab list = list_new(69);
+list.push(42);
+list.push(89898);
+list.push("DAMN!");
+list.print();
