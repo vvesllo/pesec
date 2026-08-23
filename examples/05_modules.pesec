@@ -4,3 +4,12 @@ println(math.PI);
 println(math.PI_OVER_2);
 
 println(math.to_rad(90));
+
+mutab v1 = math.vec2_new(10, 20);
+mutab v2 = math.vec2_new(100, 200);
+
+println([v1.x, v1.y]);
+
+v1.add(v2);
+
+println([v1.x, v1.y]);

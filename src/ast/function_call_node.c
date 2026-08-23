@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include "include/function_value.h"
+#include "include/structure_value.h"
 #include "include/utils/throw.h"
 
 
@@ -79,7 +80,20 @@ value_t function_call_node_evaluate(const function_call_node_t* function_call_no
             );
     }
 
-    context_t* local_context = context_new(context);
+    context_t* local_context = context_new(context);;
+
+    if (function_call_node->callee->type == AST_NODE_STRUCTURE_FIELD_ACCESS)
+    {
+        const value_t object_value = ast_node_evaluate(function_call_node->callee->node.structure_field_access->object, context);
+        if (object_value.type == VALUE_TYPE_STRUCTURE)
+        {
+            context_push(
+                local_context,
+                string_view_from("this"),
+                object_value,
+                false);
+        }
+    }
 
     const parameter_queue_t* parameter = function->parameter->parameters;
 
@@ -87,6 +101,8 @@ value_t function_call_node_evaluate(const function_call_node_t* function_call_no
     {
         context_push(local_context, parameter->value, evaluated_values[i], false);
     }
+
+
 
     result = function_value_call(
         function,

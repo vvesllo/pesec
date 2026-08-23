@@ -5,4 +5,13 @@ const PI_OVER_4 = PI / 4;
 const pow = fn(x) x * x;
 const lerp = fn(a, b, t) (1 - t) * a + (t * b);
 
-const to_rad = fn(deg) PI / 180 * deg;
+const to_rad = fn(deg) this.PI # бля, вот так казуз # / 180 * deg;
+
+const vec2_new = fn(x, y) struct {
+    x = x,
+    y = y,
+    add = fn(other) {
+        this.x = this.x + other.x;
+        this.y = this.y + other.y;
+    }
+};
