@@ -325,8 +325,16 @@ ast_node_t *parser_parse_while(parser_t *parser)
     ast_node_t *condition = parser_parse_statement(parser);
 
     ast_node_t *while_body = parser_parse_statement(parser);
+    ast_node_t *else_body = nullptr;
 
-    return while_loop_node_new(condition, while_body);
+    if (parser_match(parser, TOKEN_TYPE_KEYWORD) &&
+        string_view_equals_cstr(parser->current_token.value.as_string_view, "else"))
+    {
+        parser_eat(parser, TOKEN_TYPE_KEYWORD);
+        else_body = parser_parse_statement(parser);
+    }
+
+    return while_loop_node_new(condition, while_body, else_body);
 }
 
 ast_node_t *parser_parse_break(parser_t *parser)

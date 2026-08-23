@@ -14,7 +14,7 @@ const list_new = fn (value) struct {
         mutab current = this;
 
         while current {
-            print(current.value);
+            println(current.value);
             current = current.next;
         };
     }

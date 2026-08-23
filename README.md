@@ -46,5 +46,5 @@ const while_result = while (i < 5) {
     i = i + 1;
     break i; # returns value from loop #
 }
-else 420; # if loop not stoped by break statement #
+else 420; # if loop not stopped by break statement #
 ```
