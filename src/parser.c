@@ -28,7 +28,7 @@ token_t parser_eat(parser_t *parser, const token_type_t type)
 
         fprintf(stderr, "Unexpected token \"");
         token_print(stderr, parser->current_token);
-        fprintf(stderr, "\"\n");
+        fprintf(stderr, "\" at line %llu\n", parser->current_token.line);
         exit(EXIT_FAILURE);
     }
     const token_t prev_token = parser->current_token;
@@ -130,7 +130,7 @@ ast_node_t *parser_parse_keyword(parser_t *parser)
     if (string_view_equals_cstr(name, "break")) return parser_parse_break(parser);
     if (string_view_equals_cstr(name, "import")) return parser_parse_import(parser);
 
-    THROW("unknown keyword\n");
+    THROW("Unknown keyword at line %llu", parser->current_token.line);
 }
 
 ast_node_t *parser_parse_variable(parser_t *parser, const string_view_t name)
@@ -445,7 +445,7 @@ ast_node_t *parser_parse_factor(parser_t *parser)
 
     if (!node)
     {
-        THROW("unexpected token type '%d'", parser->current_token.type);
+        THROW("unexpected token type '%d' at line %llu", parser->current_token.type, parser->current_token.line);
     }
 
     return node;

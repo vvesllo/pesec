@@ -7,11 +7,12 @@ typedef struct
 {
     bool commenting;
     char* source;
-    unsigned long long i;
-    unsigned long long length;
+    ull_t i;
+    ull_t length;
+    ull_t line;
 } lexer_t;
 
-lexer_t* lexer_new(char* source, unsigned long long length);
+lexer_t* lexer_new(char* source, ull_t length);
 
 void lexer_advance(lexer_t* lexer);
 
