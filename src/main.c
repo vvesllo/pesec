@@ -18,9 +18,7 @@ int main(const int argc, char** argv)
     context_t* context = context_new(nullptr);
     const value_t result = execute_file(filename, context);
     if (result.control_flow == CONTROL_FLOW_THROW)
-    {
         value_print(stderr, result);
-    }
 
     context_free(context);
 

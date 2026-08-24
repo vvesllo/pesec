@@ -1,9 +1,6 @@
-const cpesec = import {
-    if (__platform == "linux")
-        "cpesec/io/libio.so"
-    else
-        throw "Unsupported platform";
-};
+const cpesec = if (__platform == "linux")
+    import "cpesec/io/libio.so"
+else throw "Unsupported platform";
 
 const print = fn(args) {
     for arg in args

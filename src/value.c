@@ -86,43 +86,43 @@ void value_print(FILE* stream, const value_t value)
 
 void value_print_string(FILE* stream, const string_value_t* value)
 {
-    printf("%s", value->data);
+    fprintf(stream, "%s", value->data);
 }
 
 void value_print_number(FILE* stream, const long double value)
 {
-    printf("%.64Lg", value);
+    fprintf(stream, "%.64Lg", value);
 }
 
 void value_print_boolean(FILE* stream, const bool value)
 {
-    printf(value ? "true" : "false");
+    fprintf(stream, value ? "true" : "false");
 }
 
 void value_print_function(FILE* stream, const function_value_t* value)
 {
-    printf("<function:%p>", &value);
+    fprintf(stream, "<function:%p>", &value);
 }
 
 void value_print_structure(FILE* stream, const structure_value_t* value)
 {
-    printf("<structure:%p>", &value);
+    fprintf(stream,"<structure:%p>", &value);
 }
 
 void value_print_module(FILE* stream, const module_value_t* value)
 {
-    printf("<module:%p>", &value);
+    fprintf(stream,"<module:%p>", &value);
 }
 
 void value_print_array(FILE* stream, const array_value_t* value)
 {
-    printf("[");
+    fprintf(stream,"[");
     for (ull_t i=0; i < value->size; ++i)
     {
-        if (i > 0) printf(", ");
+        if (i > 0) fprintf(stream,", ");
         value_print(stream, value->values[i]);
     }
-    printf("]");
+    fprintf(stream,"]");
 }
 
 value_t value_operation_add(const value_t left, const value_t right)
