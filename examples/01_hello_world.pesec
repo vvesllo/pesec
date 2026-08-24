@@ -1,1 +1,2 @@
-println("Hello, World!");
+const io = import "std/io/libio.so";
+io.println("Hello, World!");

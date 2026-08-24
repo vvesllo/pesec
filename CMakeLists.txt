@@ -46,3 +46,5 @@ add_executable(
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
 add_subdirectory(std/io)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE io)

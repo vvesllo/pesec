@@ -8,3 +8,5 @@ add_library(
         SHARED
         src/lib.c       include/lib.h
 )
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR})
