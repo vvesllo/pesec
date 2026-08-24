@@ -122,13 +122,18 @@ ast_node_t *parser_parse_keyword(parser_t *parser)
 
     if (string_view_equals_cstr(name, "mutab")) return parser_parse_variable_definition(parser, false);
     if (string_view_equals_cstr(name, "const")) return parser_parse_variable_definition(parser, true);
+
     if (string_view_equals_cstr(name, "fn")) return parser_parse_function_definition(parser);
     if (string_view_equals_cstr(name, "struct")) return parser_parse_structure_definition(parser);
+
     if (string_view_equals_cstr(name, "if")) return parser_parse_if(parser);
     if (string_view_equals_cstr(name, "while")) return parser_parse_while(parser);
     if (string_view_equals_cstr(name, "for")) return parser_parse_for(parser);
-    if (string_view_equals_cstr(name, "break")) return parser_parse_break(parser);
+
     if (string_view_equals_cstr(name, "import")) return parser_parse_import(parser);
+
+    if (string_view_equals_cstr(name, "break")) return parser_parse_break(parser);
+    if (string_view_equals_cstr(name, "throw")) return parser_parse_throw(parser);
 
     THROW("Unknown keyword \"%.*s\" at line %llu", (unsigned int)name.length, name.data, parser->current_token.line);
 }
@@ -363,6 +368,13 @@ ast_node_t *parser_parse_import(parser_t *parser)
     ast_node_t* source = parser_parse_statement(parser);
 
     return import_node_new(source);
+}
+
+ast_node_t *parser_parse_throw(parser_t *parser)
+{
+    ast_node_t* value = parser_parse_statement(parser);
+
+    return throw_node_new(value);
 }
 
 ast_node_t* parser_parse_statement(parser_t* parser)

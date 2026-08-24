@@ -30,7 +30,7 @@ add_executable(
         src/ast/function_call_node.c                include/ast/function_call_node.h
         src/ast/function_definition_node.c          include/ast/function_definition_node.h
         src/ast/structure_definition_node.c         include/ast/structure_definition_node.h
-        src/ast/variable_field_access_node.c include/ast/variable_field_access_node.h
+        src/ast/variable_field_access_node.c        include/ast/variable_field_access_node.h
         src/ast/array_definition_node.c             include/ast/array_definition_node.h
         src/ast/array_access_node.c                 include/ast/array_access_node.h
         src/ast/statement_sequence_node.c           include/ast/statement_sequence_node.h
@@ -42,6 +42,7 @@ add_executable(
         src/ast/while_loop_node.c                   include/ast/while_loop_node.h
         src/ast/for_loop_node.c                     include/ast/for_loop_node.h
         src/ast/break_node.c                        include/ast/break_node.h
+        src/ast/throw_node.c                        include/ast/throw_node.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})

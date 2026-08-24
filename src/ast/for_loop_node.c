@@ -55,11 +55,14 @@ value_t for_loop_node_evaluate(const for_loop_node_t* for_loop_node, context_t* 
 
             result = ast_node_evaluate(for_loop_node->for_body, local_context);
 
-            if (result.control_flow == CONTROL_FLOW_BREAK)
+            switch (result.control_flow)
             {
-                result.control_flow = CONTROL_FLOW_NONE;
-                is_stopped = true;
-                break;
+                case CONTROL_FLOW_BREAK:
+                    result.control_flow = CONTROL_FLOW_NONE;
+                    is_stopped = true;
+                    break;
+                case CONTROL_FLOW_THROW: return result;
+                default: break;
             }
         }
     }

@@ -68,59 +68,59 @@ char* value_get_type(const value_t value)
     THROW("Value type '%d' is not a valid value type\n", value.type);
 }
 
-void value_print(const value_t value)
+void value_print(FILE* stream, const value_t value)
 {
     switch (value.type)
     {
-        case VALUE_TYPE_STRING: value_print_string(value.data.as_string); return;
-        case VALUE_TYPE_NUMBER: value_print_number(value.data.as_number); return;
-        case VALUE_TYPE_BOOLEAN: value_print_boolean(value.data.as_bool); return;
-        case VALUE_TYPE_FUNCTION: value_print_function(value.data.as_function); return;
-        case VALUE_TYPE_STRUCTURE: value_print_structure(value.data.as_structure); return;
-        case VALUE_TYPE_ARRAY: value_print_array(value.data.as_array); return;
-        case VALUE_TYPE_MODULE: value_print_module(value.data.as_module); return;
+        case VALUE_TYPE_STRING: value_print_string(stream, value.data.as_string); return;
+        case VALUE_TYPE_NUMBER: value_print_number(stream, value.data.as_number); return;
+        case VALUE_TYPE_BOOLEAN: value_print_boolean(stream, value.data.as_bool); return;
+        case VALUE_TYPE_FUNCTION: value_print_function(stream, value.data.as_function); return;
+        case VALUE_TYPE_STRUCTURE: value_print_structure(stream, value.data.as_structure); return;
+        case VALUE_TYPE_ARRAY: value_print_array(stream, value.data.as_array); return;
+        case VALUE_TYPE_MODULE: value_print_module(stream, value.data.as_module); return;
     }
 
     THROW("Value type '%d' is not a valid value type\n", value.type);
 }
 
-void value_print_string(const string_value_t* value)
+void value_print_string(FILE* stream, const string_value_t* value)
 {
     printf("%s", value->data);
 }
 
-void value_print_number(const long double value)
+void value_print_number(FILE* stream, const long double value)
 {
     printf("%.64Lg", value);
 }
 
-void value_print_boolean(const bool value)
+void value_print_boolean(FILE* stream, const bool value)
 {
     printf(value ? "true" : "false");
 }
 
-void value_print_function(const function_value_t* value)
+void value_print_function(FILE* stream, const function_value_t* value)
 {
     printf("<function:%p>", &value);
 }
 
-void value_print_structure(const structure_value_t* value)
+void value_print_structure(FILE* stream, const structure_value_t* value)
 {
     printf("<structure:%p>", &value);
 }
 
-void value_print_module(const module_value_t* value)
+void value_print_module(FILE* stream, const module_value_t* value)
 {
     printf("<module:%p>", &value);
 }
 
-void value_print_array(const array_value_t* value)
+void value_print_array(FILE* stream, const array_value_t* value)
 {
     printf("[");
     for (ull_t i=0; i < value->size; ++i)
     {
         if (i > 0) printf(", ");
-        value_print(value->values[i]);
+        value_print(stream, value->values[i]);
     }
     printf("]");
 }

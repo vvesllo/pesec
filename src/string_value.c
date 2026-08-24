@@ -18,7 +18,7 @@ string_value_t* string_value_new()
     return string;
 }
 
-string_value_t* string_value_from(char* data, ull_t size)
+string_value_t* string_value_from(char* data, const ull_t size)
 {
     const auto string = (string_value_t*)malloc(sizeof(string_value_t));
 
@@ -26,6 +26,14 @@ string_value_t* string_value_from(char* data, ull_t size)
     string->size = size;
     string->data = data;
 
+    return string;
+}
+
+string_value_t* string_value_from_cstr(const char* data)
+{
+    string_value_t* string = string_value_new();
+    for (ull_t i = 0; i < strlen(data); i++)
+        string_value_push_back(string, data[i]);
     return string;
 }
 

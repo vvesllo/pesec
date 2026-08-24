@@ -18,6 +18,7 @@
 #include "break_node.h"
 #include "for_loop_node.h"
 #include "import_node.h"
+#include "throw_node.h"
 
 #include "include/context.h"
 
@@ -40,6 +41,7 @@ typedef enum
     AST_NODE_FOR_LOOP,
     AST_NODE_BREAK,
     AST_NODE_IMPORT,
+    AST_NODE_THROW,
 } ast_node_type_t;
 
 typedef struct AST_NODE_STRUCT
@@ -64,6 +66,7 @@ typedef struct AST_NODE_STRUCT
         for_loop_node_t* for_loop;
         break_node_t* _break;
         import_node_t* _import;
+        throw_node_t* _throw;
     } node;
 } ast_node_t;
 

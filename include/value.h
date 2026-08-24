@@ -17,6 +17,8 @@
 #define MAKE_VAL_MODULE_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_MODULEURE, .data.as_module = x, .control_flow = cf })
 #define MAKE_VAL_ARR_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_ARRAY, .data.as_array = x, .control_flow = cf })
 
+#include <stdio.h>
+
 #include "string_value.h"
 #include "control_flow.h"
 
@@ -65,21 +67,21 @@ bool value_get_boolean(value_t value);
 
 char* value_get_type(value_t value);
 
-void value_print(value_t value);
+void value_print(FILE* stream, value_t value);
 
-void value_print_string(const string_value_t* value);
+void value_print_string(FILE* stream, const string_value_t* value);
 
-void value_print_number(long double value);
+void value_print_number(FILE* stream, long double value);
 
-void value_print_boolean(bool value);
+void value_print_boolean(FILE* stream, bool value);
 
-void value_print_function(const function_value_t* value);
+void value_print_function(FILE* stream, const function_value_t* value);
 
-void value_print_structure(const structure_value_t* value);
+void value_print_structure(FILE* stream, const structure_value_t* value);
 
-void value_print_module(const module_value_t* value);
+void value_print_module(FILE* stream, const module_value_t* value);
 
-void value_print_array(const array_value_t* value);
+void value_print_array(FILE* stream, const array_value_t* value);
 
 value_t value_operation_add(value_t left, value_t right);
 

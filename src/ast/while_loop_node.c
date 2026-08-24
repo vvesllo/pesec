@@ -35,11 +35,15 @@ value_t while_loop_node_evaluate(const while_loop_node_t* while_loop_node, conte
     {
         result = ast_node_evaluate(while_loop_node->while_body, local_context);
 
-        if (result.control_flow == CONTROL_FLOW_BREAK)
+
+        switch (result.control_flow)
         {
-            result.control_flow = CONTROL_FLOW_NONE;
-            is_stopped = true;
-            break;
+            case CONTROL_FLOW_BREAK:
+                result.control_flow = CONTROL_FLOW_NONE;
+                is_stopped = true;
+                break;
+            case CONTROL_FLOW_THROW: return result;
+            default: break;
         }
     }
 

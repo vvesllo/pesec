@@ -149,6 +149,7 @@ token_t lexer_next_identifier(lexer_t* lexer)
         string_view_equals_cstr(value, "for") ||
         string_view_equals_cstr(value, "in") ||
         string_view_equals_cstr(value, "break") ||
+        string_view_equals_cstr(value, "throw") ||
         string_view_equals_cstr(value, "struct") ||
         string_view_equals_cstr(value, "import") ||
         string_view_equals_cstr(value, "true") ||

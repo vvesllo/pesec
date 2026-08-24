@@ -16,7 +16,12 @@ int main(const int argc, char** argv)
     const char* filename = argv[1];
 
     context_t* context = context_new(nullptr);
-    execute_file(filename, context);
+    const value_t result = execute_file(filename, context);
+    if (result.control_flow == CONTROL_FLOW_THROW)
+    {
+        value_print(stderr, result);
+    }
+
     context_free(context);
 
     return EXIT_SUCCESS;

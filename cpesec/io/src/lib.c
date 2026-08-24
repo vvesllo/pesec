@@ -22,7 +22,7 @@
 static value_t write(context_t *context)
 {
     const context_item_t *value = context_get(context, string_view_from("value"));
-    value_print(value->value);
+    value_print(stdout, value->value);
     return MAKE_VAL_NUM(0);
 }
 
