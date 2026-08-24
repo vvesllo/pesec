@@ -14,6 +14,7 @@ ast_node_t* throw_node_new(ast_node_t* expression)
 
 void throw_node_free(throw_node_t* throw_node)
 {
+    ast_node_free(throw_node->expression);
     free(throw_node);
 }
 

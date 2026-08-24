@@ -1,3 +1,5 @@
 const io = import "../std/io.pesec";
 
-throw "huh?";
+io.print(["Hello, World!\n"]);
+const name = io.input([]);
+io.print(["Hello, ", name, "!"]);

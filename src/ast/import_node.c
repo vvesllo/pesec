@@ -62,7 +62,15 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
 
     if (string_view_equals_cstr(get_file_extension(path->data), "pesec"))
     {
-        execute_file(path->data, module_context);
+        const value_t result = execute_file(path->data, module_context);
+
+        switch (result.control_flow)
+        {
+            case CONTROL_FLOW_BREAK: THROW("Break outside of loop\n"); break;
+            case CONTROL_FLOW_CONTINUE: THROW("Continue outside of loop\n"); break;
+            case CONTROL_FLOW_THROW: context_free(module_context); return result;
+            default: break;
+        }
     }
     else if (string_view_equals_cstr(get_file_extension(path->data), "so"))
     {
