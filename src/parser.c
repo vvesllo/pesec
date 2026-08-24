@@ -25,7 +25,6 @@ token_t parser_eat(parser_t *parser, const token_type_t type)
 {
     if (!parser_match(parser, type))
     {
-
         fprintf(stderr, "Unexpected token \"");
         token_print(stderr, parser->current_token);
         fprintf(stderr, "\" at line %llu\n", parser->current_token.line);
@@ -127,10 +126,11 @@ ast_node_t *parser_parse_keyword(parser_t *parser)
     if (string_view_equals_cstr(name, "struct")) return parser_parse_structure_definition(parser);
     if (string_view_equals_cstr(name, "if")) return parser_parse_if(parser);
     if (string_view_equals_cstr(name, "while")) return parser_parse_while(parser);
+    if (string_view_equals_cstr(name, "for")) return parser_parse_for(parser);
     if (string_view_equals_cstr(name, "break")) return parser_parse_break(parser);
     if (string_view_equals_cstr(name, "import")) return parser_parse_import(parser);
 
-    THROW("Unknown keyword at line %llu", parser->current_token.line);
+    THROW("Unknown keyword \"%.*s\" at line %llu", (unsigned int)name.length, name.data, parser->current_token.line);
 }
 
 ast_node_t *parser_parse_variable(parser_t *parser, const string_view_t name)
@@ -319,6 +319,31 @@ ast_node_t *parser_parse_while(parser_t *parser)
     }
 
     return while_loop_node_new(condition, while_body, else_body);
+}
+
+ast_node_t *parser_parse_for(parser_t *parser)
+{
+    const string_view_t iterator = parser_eat(parser, TOKEN_TYPE_IDENTIFIER).value.as_string_view;
+
+    if (parser_match(parser, TOKEN_TYPE_KEYWORD))
+    {
+        if (!string_view_equals_cstr(parser_eat(parser, TOKEN_TYPE_KEYWORD).value.as_string_view, "in"))
+            THROW("Unexpected keyword to for loop");
+    }
+
+    ast_node_t *iterable = parser_parse_statement(parser);
+
+    ast_node_t *for_body = parser_parse_statement(parser);
+    ast_node_t *else_body = nullptr;
+
+    if (parser_match(parser, TOKEN_TYPE_KEYWORD) &&
+        string_view_equals_cstr(parser->current_token.value.as_string_view, "else"))
+    {
+        parser_eat(parser, TOKEN_TYPE_KEYWORD);
+        else_body = parser_parse_statement(parser);
+    }
+
+    return for_loop_node_new(iterator, iterable, for_body, else_body);
 }
 
 ast_node_t *parser_parse_break(parser_t *parser)

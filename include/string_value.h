@@ -12,6 +12,8 @@ typedef struct
 
 string_value_t* string_value_new();
 
+string_value_t* string_value_from(char* data, ull_t size);
+
 void string_value_push_back(string_value_t* string, char data);
 
 bool string_value_equals(const string_value_t* left, const string_value_t* right);

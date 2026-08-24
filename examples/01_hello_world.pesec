@@ -1,2 +1,5 @@
-const io = import "std/io/libio.so";
-io.println("Hello, World!");
+const io = import "../examples/io.pesec";
+
+io.print(["Hello, World!\n"]);
+const name = io.input([]);
+io.print(["Hello, ", name, "!"]);

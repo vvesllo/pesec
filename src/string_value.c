@@ -18,6 +18,17 @@ string_value_t* string_value_new()
     return string;
 }
 
+string_value_t* string_value_from(char* data, ull_t size)
+{
+    const auto string = (string_value_t*)malloc(sizeof(string_value_t));
+
+    string->capacity = size;
+    string->size = size;
+    string->data = data;
+
+    return string;
+}
+
 void string_value_push_back(string_value_t* string, const char data)
 {
     if (string->size + 1 >= string->capacity)

@@ -40,6 +40,7 @@ add_executable(
 
         src/ast/condition_node.c                    include/ast/condition_node.h
         src/ast/while_loop_node.c                   include/ast/while_loop_node.h
+        src/ast/for_loop_node.c                     include/ast/for_loop_node.h
         src/ast/break_node.c                        include/ast/break_node.h
 )
 

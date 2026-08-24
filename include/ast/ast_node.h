@@ -16,6 +16,7 @@
 #include "condition_node.h"
 #include "while_loop_node.h"
 #include "break_node.h"
+#include "for_loop_node.h"
 #include "import_node.h"
 
 #include "include/context.h"
@@ -36,6 +37,7 @@ typedef enum
     AST_NODE_STATEMENT_SEQUENCE,
     AST_NODE_CONDITION,
     AST_NODE_WHILE_LOOP,
+    AST_NODE_FOR_LOOP,
     AST_NODE_BREAK,
     AST_NODE_IMPORT,
 } ast_node_type_t;
@@ -59,6 +61,7 @@ typedef struct AST_NODE_STRUCT
         statement_sequence_node_t* statement_sequence;
         condition_node_t* condition;
         while_loop_node_t* while_loop;
+        for_loop_node_t* for_loop;
         break_node_t* _break;
         import_node_t* _import;
     } node;
