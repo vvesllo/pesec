@@ -1,4 +1,4 @@
-const io = import "../examples/io.pesec";
+const io = import "../std/io.pesec";
 
 io.print(["Hello, World!\n"]);
 const name = io.input([]);

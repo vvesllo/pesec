@@ -1,0 +1,12 @@
+const cpesec = import "cpesec/io/libio.so";
+
+const print = fn(args) {
+    for arg in args
+        cpesec.write("cpesec.stdout", arg);
+};
+
+const input = fn(args) {
+    for arg in args
+        cpesec.write("cpesec.stdout", arg);
+    cpesec.read("cpesec.stdin");
+};

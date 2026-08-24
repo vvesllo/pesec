@@ -19,24 +19,23 @@
             )\
         ), true)
 
-static value_t cout(context_t *context)
+static value_t write(context_t *context)
 {
     const context_item_t *value = context_get(context, string_view_from("value"));
     value_print(value->value);
     return MAKE_VAL_NUM(0);
 }
 
-static value_t cin(context_t *context)
+static value_t read(context_t *context)
 {
     char *line;
     size_t capacity = 0;
 
     const ssize_t length = getline(&line, &capacity, stdin);
 
-    if (length != -1)
+    if (length != -1 && length > 0 && line[length - 1] == '\n')
     {
-        if (length > 0 && line[length - 1] == '\n')
-            line[length - 1] = '\0';
+        line[length - 1] = '\0';
     }
 
     return MAKE_VAL_STR(
@@ -46,6 +45,6 @@ static value_t cin(context_t *context)
 
 void init_lib(context_t *context)
 {
-    REG_FUNC(cout, "value");
-    REG_FUNC(cin, nullptr);
+    REG_FUNC(write, "steam", "value");
+    REG_FUNC(read, "steam");
 }
