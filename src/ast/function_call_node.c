@@ -83,13 +83,13 @@ value_t function_call_node_evaluate(const function_call_node_t* function_call_no
             local_context = context_new(object_value.data.as_module->context);
         else
         {
-            local_context = context_new(context);
+            local_context = context_new(function->parent_context);
             if (object_value.type == VALUE_TYPE_STRUCTURE)
                 context_push(local_context, string_view_from("this"), object_value, true);
         }
     }
     else
-        local_context = context_new(context);
+        local_context = context_new(function->parent_context);
 
     const parameter_queue_t* parameter = function->parameter->parameters;
     for (ull_t i = 0; parameter; ++i, parameter = parameter->next)

@@ -30,7 +30,8 @@ value_t function_definition_node_evaluate(const function_definition_node_t* func
             (function_value_value_t){
                 .as_node=function_definition_node->body
             },
-            FUNCTION_VALUE_TYPE_NODE
+            FUNCTION_VALUE_TYPE_NODE,
+            context
         )
     );
     return value;

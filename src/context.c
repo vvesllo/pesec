@@ -81,8 +81,6 @@ context_item_t* context_get(const context_t* context, const string_view_t key)
         node = node->next;
     }
 
-    context_get_local(context, key);
-
     if (context->parent)
     {
         return context_get(context->parent, key);

@@ -1,2 +1,2 @@
 const io = import "../std/io.pesec";
-throw io.a;
+throw io.s.f();

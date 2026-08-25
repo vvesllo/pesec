@@ -23,9 +23,10 @@ typedef struct FUNCTION_VALUE_STRUCT
     parameter_t* parameter;
     function_value_type_t type;
     function_value_value_t body;
+    context_t* parent_context;
 } function_value_t;
 
-function_value_t* function_value_new(parameter_t* parameter, function_value_value_t body, function_value_type_t type);
+function_value_t* function_value_new(parameter_t* parameter, function_value_value_t body, function_value_type_t type, context_t* parent_context);
 
 void function_value_free(function_value_t* function_value);
 

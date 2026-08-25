@@ -20,7 +20,8 @@
                 (function_value_value_t){ \
                     .as_c_function = function_name \
                 }, \
-                FUNCTION_VALUE_TYPE_C_FUNCTION \
+                FUNCTION_VALUE_TYPE_C_FUNCTION, \
+                context \
             ) \
         ), \
         true \

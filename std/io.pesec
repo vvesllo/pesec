@@ -1,5 +1,5 @@
 const a = 10;
 
 const s = struct {
-    const val = 0;
+    mutab f = fn() a;
 };
