@@ -27,6 +27,11 @@
 #include "string_value.h"
 #include "control_flow.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
 typedef struct FUNCTION_VALUE_STRUCT function_value_t;
 typedef struct STRUCTURE_VALUE_STRUCT structure_value_t;
 typedef struct MODULE_VALUE_STRUCT module_value_t;
@@ -122,5 +127,9 @@ value_t value_operation_less(value_t left, value_t right);
 value_t value_operation_greater_or_equals(value_t left, value_t right);
 
 value_t value_operation_greater(value_t left, value_t right);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // PESEC_VALUE_H

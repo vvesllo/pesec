@@ -4,6 +4,11 @@
 #include "context.h"
 #include "utils/typedefs.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
 typedef struct AST_NODE_STRUCT ast_node_t;
 typedef struct STATEMENT_SEQUENCE_NODE_STRUCT statement_sequence_node_t;
 
@@ -21,5 +26,9 @@ value_t array_value_get(const array_value_t* array_value, ull_t index);
 void array_value_set(const array_value_t* array_value, ull_t index, value_t value);
 
 void array_value_free(array_value_t* array_value);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // PESEC_ARRAY_VALUE_H

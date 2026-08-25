@@ -3,6 +3,11 @@
 
 #include "context.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
 typedef struct AST_NODE_STRUCT ast_node_t;
 typedef struct STATEMENT_SEQUENCE_NODE_STRUCT statement_sequence_node_t;
 
@@ -18,5 +23,9 @@ value_t structure_value_get(const structure_value_t* structure_value, string_vie
 void structure_value_set(const structure_value_t* structure_value, string_view_t name, value_t value);
 
 void structure_value_free(structure_value_t* structure_value);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // PESEC_STRUCTURE_VALUE_H

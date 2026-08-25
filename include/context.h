@@ -4,6 +4,11 @@
 #include "value.h"
 #include "utils/string_view.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
 typedef struct CONTEXT_STRUCT context_t;
 typedef struct CONTEXT_ITEM_STRUCT context_item_t;
 
@@ -36,5 +41,9 @@ context_item_t* context_get(const context_t* context, string_view_t key);
 context_item_t* context_get_local(const context_t* context, string_view_t key);
 
 void context_free(context_t* context);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // PESEC_CONTEXT_H

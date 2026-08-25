@@ -3,6 +3,12 @@
 
 #include "utils/typedefs.h"
 
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
 typedef struct
 {
     char* data;
@@ -23,5 +29,9 @@ bool string_value_equals(const string_value_t* left, const string_value_t* right
 string_value_t* string_value_concat(const string_value_t* left, const string_value_t* right);
 
 void string_value_free(string_value_t* string);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // PESEC_STRING_VALUE_H

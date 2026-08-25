@@ -1,13 +1,19 @@
 const io = import "../std/io.pesec";
 
-#io.print("Hello, Pesec!\n");
+io.print("Hello, Pesec!\n");
 const file = io.open("test.txt", "w");
 file.write("Hey! :D");
-file.close();#
+file.close();
 
 const cmath = if (__platform == "linux")
     import "cpesec/math/libmath.so"
 else throw "Unsupported platform";
 
+io.print(cmath._sin(1));
+io.print("\n");
 
-io.print(math._sin(1));
+const ctypes = if (__platform == "linux")
+    import "cpesec/types/libtypes.so"
+else throw "Unsupported platform";
+
+io.print(ctypes.to_string(1) + "Hello");

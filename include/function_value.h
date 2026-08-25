@@ -4,6 +4,11 @@
 #include "parameter.h"
 #include "value.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif // __cplusplus
+
 typedef struct AST_NODE_STRUCT ast_node_t;
 
 typedef enum
@@ -31,5 +36,9 @@ function_value_t* function_value_new(parameter_t* parameter, function_value_valu
 void function_value_free(function_value_t* function_value);
 
 value_t function_value_call(const function_value_t* function_value, context_t* context);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // PESEC_FUNCTION_VALUE_H
