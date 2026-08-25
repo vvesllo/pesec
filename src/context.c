@@ -81,9 +81,28 @@ context_item_t* context_get(const context_t* context, const string_view_t key)
         node = node->next;
     }
 
+    context_get_local(context, key);
+
     if (context->parent)
     {
         return context_get(context->parent, key);
+    }
+
+    THROW("Variable %.*s doesn't exist\n", (unsigned int)key.length, key.data);
+}
+
+context_item_t* context_get_local(const context_t* context, string_view_t key)
+{
+    const ull_t hash_index = context_hash(context, key);
+
+    context_item_t* node = context->items[hash_index];
+
+    while (node)
+    {
+        if (node->key.length == key.length && string_view_equals(node->key, key))
+            return node;
+
+        node = node->next;
     }
 
     THROW("Variable %.*s doesn't exist\n", (unsigned int)key.length, key.data);

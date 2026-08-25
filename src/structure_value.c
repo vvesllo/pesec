@@ -20,7 +20,7 @@ void structure_value_set(const structure_value_t* structure_value, const string_
 
 value_t structure_value_get(const structure_value_t* structure_value, const string_view_t name)
 {
-    return context_get(structure_value->context, name)->value;
+    return context_get_local(structure_value->context, name)->value;
 }
 
 void structure_value_free(structure_value_t* structure_value)

@@ -33,6 +33,8 @@ void context_set(const context_t* context, string_view_t key, value_t value);
 
 context_item_t* context_get(const context_t* context, string_view_t key);
 
+context_item_t* context_get_local(const context_t* context, string_view_t key);
+
 void context_free(context_t* context);
 
 #endif // PESEC_CONTEXT_H

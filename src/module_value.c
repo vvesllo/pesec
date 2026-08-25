@@ -20,7 +20,7 @@ void module_value_set(const module_value_t* module_value, const string_view_t na
 
 value_t module_value_get(const module_value_t* module_value, const string_view_t name)
 {
-    return context_get(module_value->context, name)->value;
+    return context_get_local(module_value->context, name)->value;
 }
 
 void module_value_free(module_value_t* module_value)

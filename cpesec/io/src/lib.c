@@ -10,7 +10,6 @@
 #include "../../../include/string_value.h"
 #include "../../../include/value.h"
 
-// Макрос для регистрации C-функции в контексте интерпретатора
 #define REG_FUNC(function_name, ...) \
     context_push( \
         context, \
@@ -32,15 +31,15 @@ static value_t builtin_write(context_t *context)
     const context_item_t *fd_item = context_get(context, string_view_from("fd"));
     const context_item_t *data_item = context_get(context, string_view_from("data"));
 
-    if (!fd_item || !data_item) {
+    if (!fd_item || !data_item)
+    {
         return MAKE_VAL_NUM(-1);
     }
 
-    int fd = (int)fd_item->value.data.as_number;
+    const unsigned int fd = (unsigned int)fd_item->value.data.as_number;
 
-    // Для stdout (1) и stderr (2) используем нативный value_print для корректного
-    // форматирования типов pesec (числа, строки, структуры и т.д.)
-    if (fd == 1 || fd == 2) {
+    if (fd == 1 || fd == 2)
+    {
         FILE *stream = (fd == 1) ? stdout : stderr;
         value_print(stream, data_item->value);
         fflush(stream);
@@ -88,7 +87,6 @@ static value_t builtin_read(context_t *context)
         return MAKE_VAL_STR(string_value_from("", 0));
     }
 
-    // Чтение из файла
     char *buffer = (char *)malloc(size + 1);
     if (!buffer) {
         return MAKE_VAL_STR(string_value_from("Error: memory allocation failed", 33));
@@ -150,7 +148,6 @@ static value_t builtin_close(context_t *context)
 
 void init_lib(context_t *context)
 {
-    // Регистрируем функции с именами, которые будут вызываться из кода на pesec
     REG_FUNC(builtin_write, "fd", "data");
     REG_FUNC(builtin_read, "fd", "size");
     REG_FUNC(builtin_open, "filename", "mode");

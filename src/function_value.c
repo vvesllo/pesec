@@ -27,5 +27,4 @@ value_t function_value_call(const function_value_t* function_value, context_t* c
     if (function_value->type == FUNCTION_VALUE_TYPE_NODE)
         return ast_node_evaluate(function_value->body.as_node, context);
     return function_value->body.as_c_function(context);
-
 }
