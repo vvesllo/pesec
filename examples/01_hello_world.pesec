@@ -1,2 +1,13 @@
 const io = import "../std/io.pesec";
-throw io.s.f();
+
+#io.print("Hello, Pesec!\n");
+const file = io.open("test.txt", "w");
+file.write("Hey! :D");
+file.close();#
+
+const cmath = if (__platform == "linux")
+    import "cpesec/math/libmath.so"
+else throw "Unsupported platform";
+
+
+io.print(math._sin(1));

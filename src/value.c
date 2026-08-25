@@ -9,6 +9,72 @@
 #include "include/module_value.h"
 #include "include/utils/throw.h"
 
+
+value_t value_new()
+{
+    value_t value;
+    value.reference_count = 1;
+    value.control_flow = CONTROL_FLOW_NONE;
+
+    return value;
+}
+
+value_t value_new_string(string_value_t* data)
+{
+    value_t value = value_new();
+    value.type = VALUE_TYPE_STRING;
+    value.data.as_string = data;
+    return value;
+}
+
+value_t value_new_number(const long double data)
+{
+    value_t value = value_new();
+    value.type = VALUE_TYPE_NUMBER;
+    value.data.as_number = data;
+    return value;
+}
+
+value_t value_new_boolean(const bool data)
+{
+    value_t value = value_new();
+    value.type = VALUE_TYPE_BOOLEAN;
+    value.data.as_bool = data;
+    return value;
+}
+
+value_t value_new_function(function_value_t* data)
+{
+    value_t value = value_new();
+    value.type = VALUE_TYPE_FUNCTION;
+    value.data.as_function = data;
+    return value;
+}
+
+value_t value_new_structure(structure_value_t* data)
+{
+    value_t value = value_new();
+    value.type = VALUE_TYPE_STRUCTURE;
+    value.data.as_structure = data;
+    return value;
+}
+
+value_t value_new_module(module_value_t* data)
+{
+    value_t value = value_new();
+    value.type = VALUE_TYPE_MODULE;
+    value.data.as_module = data;
+    return value;
+}
+
+value_t value_new_array(array_value_t* data)
+{
+    value_t value = value_new();
+    value.type = VALUE_TYPE_ARRAY;
+    value.data.as_array = data;
+    return value;
+}
+
 void value_free(const value_t* value)
 {
     switch (value->type)

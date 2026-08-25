@@ -48,5 +48,7 @@ add_executable(
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
 add_subdirectory(cpesec/io)
+add_subdirectory(cpesec/types)
+add_subdirectory(cpesec/math)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE io)
+target_link_libraries(${PROJECT_NAME} PRIVATE io types math)

@@ -1,6 +1,9 @@
 #ifndef PESEC_VALUE_H
 #define PESEC_VALUE_H
 
+
+#ifndef PESEC_CXX_LIB
+
 #define MAKE_VAL_STR(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRING, .data.as_string = x })
 #define MAKE_VAL_NUM(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_NUMBER, .data.as_number = x })
 #define MAKE_VAL_BOOL(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_BOOLEAN, .data.as_bool = x })
@@ -16,6 +19,8 @@
 #define MAKE_VAL_STRUCT_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRUCTURE, .data.as_structure = x, .control_flow = cf })
 #define MAKE_VAL_MODULE_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_MODULEURE, .data.as_module = x, .control_flow = cf })
 #define MAKE_VAL_ARR_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_ARRAY, .data.as_array = x, .control_flow = cf })
+
+#endif // PESEC_CXX_LIB
 
 #include <stdio.h>
 
@@ -56,6 +61,22 @@ typedef struct
     value_value_t data;
     control_flow_t control_flow;
 } value_t;
+
+value_t value_new();
+
+value_t value_new_string(string_value_t* data);
+
+value_t value_new_number(long double data);
+
+value_t value_new_boolean(bool data);
+
+value_t value_new_function(function_value_t* data);
+
+value_t value_new_structure(structure_value_t* data);
+
+value_t value_new_module(module_value_t* data);
+
+value_t value_new_array(array_value_t* data);
 
 void value_free(const value_t* value);
 
