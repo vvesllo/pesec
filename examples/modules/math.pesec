@@ -1,0 +1,4 @@
+const io = import "../std/io.pesec";
+const math = import "../std/math.pesec";
+
+io.print(math.pi);

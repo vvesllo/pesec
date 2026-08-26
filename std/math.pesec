@@ -1,17 +1,16 @@
-const PI = 3.1415926535897932384626433832795028841971693993751058209749445923;
-const PI_OVER_2 = PI / 2;
-const PI_OVER_4 = PI / 4;
+const cpesec_math = if (__platform == "linux")
+    import "cpesec/math/libmath.so"
+else throw "Unsupported platform";
 
-const pow = fn(x) x * x;
-const lerp = fn(a, b, t) (1 - t) * a + (t * b);
+const pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938446095505822317253594081284811174502841027019385211055596446229489549303819644288109756659334461284756482337867831652712019091456485;
+const pi_over_2 = pi / 2;
+const pi_over_4 = pi / 4;
 
-const to_rad = fn(deg) PI / 180 * deg;
+const to_rad = fn(degrees) pi / 180 * degrees;
+const to_deg = fn(degrees) 180 * degrees / pi;
 
-const vec2_new = fn(x, y) struct {
-    mutab x = x;
-    mutab y = y;
-    const add = fn(other) {
-        this.x = this.x + other.x;
-        this.y = this.y + other.y;
-    };
-};
+const sin = cpesec_math._sin;
+const cos = cpesec_math._cos;
+const tan = fn(value) sin(value) / cos(value);
+const cot = fn(value) cos(value) / sin(value);
+

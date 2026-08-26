@@ -1,0 +1,5 @@
+const cpesec_network = if (__platform == "linux")
+    import "cpesec/network/libnetwork.so"
+else throw "Unsupported platform";
+
+const ahoy = cpesec_network.ahoy;

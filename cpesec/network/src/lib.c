@@ -1,10 +1,8 @@
 #include "../include/lib.h"
 
-#include <math.h>
-
 #include "../../../include/function_value.h"
+#include "../../../include/string_value.h"
 #include "../../../include/value.h"
-#include "include/utils/throw.h"
 
 #define REG_FUNC(function_name, ...) \
     context_push( \
@@ -23,22 +21,12 @@
         true \
     )
 
-static value_t _sin(context_t* context)
+static value_t ahoy(context_t *context)
 {
-    const value_t value = context_get(context, string_view_from("value"))->value;
-    if (value.type == VALUE_TYPE_NUMBER) return MAKE_VAL_NUM(sin(value.data.as_number));
-    THROW("Value should be a number");
-}
-
-static value_t _cos(context_t* context)
-{
-    const value_t value = context_get(context, string_view_from("value"))->value;
-    if (value.type == VALUE_TYPE_NUMBER) return MAKE_VAL_NUM(cos(value.data.as_number));
-    THROW("Value should be a number");
+    return value_new_string(string_value_from_cstr("Ahoy!"));
 }
 
 void init_lib(context_t *context)
 {
-    REG_FUNC(_sin, "value");
-    REG_FUNC(_cos, "value");
+    REG_FUNC(ahoy, nullptr);
 }
