@@ -1,4 +1,5 @@
 const io = import "../std/io.pesec";
 const network = import "../std/network.pesec";
 
-io.print(network.ahoy());
+const response = network.http_get("https://httpbin.org/get");
+io.print(response);
