@@ -1,32 +1,69 @@
 #include "../include/lib.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
-
 #include "../../../include/function_value.h"
 #include "../../../include/string_value.h"
 #include "../../../include/value.h"
+#include "../../../include/number_value.h" // Подключаем заголовок для работы с number_value_t
 #include "include/utils/throw.h"
 
 #define REG_FUNC(function_name, ...) \
-    context_push( \
-        context, \
-        string_view_from(#function_name), \
-        MAKE_VAL_FUNC( \
-            function_value_new( \
-                parameter_new_from_cstr((const char *[]){__VA_ARGS__, nullptr}), \
-                (function_value_value_t){ \
-                    .as_c_function = function_name \
-                }, \
-                FUNCTION_VALUE_TYPE_C_FUNCTION, \
-                context \
-            ) \
-        ), \
-        true \
-    )
+context_push( \
+context, \
+string_view_from(#function_name), \
+MAKE_VAL_FUNC( \
+function_value_new( \
+parameter_new_from_cstr((const char *[]){__VA_ARGS__, nullptr}), \
+(function_value_value_t){ \
+.as_c_function = function_name \
+}, \
+FUNCTION_VALUE_TYPE_C_FUNCTION, \
+context \
+) \
+), \
+true \
+)
+
+
+static char* value_to_string(const value_t value) {
+    char *buffer = NULL;
+    size_t size = 0;
+    FILE *stream = open_memstream(&buffer, &size);
+    if (!stream) {
+        THROW("Failed to open memory stream");
+    }
+    value_print(stream, value);
+    fflush(stream);
+    fclose(stream);
+    return buffer; // вызывающий должен освободить через free()
+}
+
+// Вспомогательная функция для извлечения целого числа из number_value_t
+static long long number_value_to_int(const number_value_t* num) {
+    if (!num || !num->decimal) return 0;
+
+    long long res = 0;
+    long long mul = 1;
+    // В number_value_value_new младший разряд (единицы) сохраняется в data[0],
+    // поэтому идем от начала массива к концу.
+    for (size_t i = 0; i < num->decimal->size; ++i) {
+        res += num->decimal->data[i] * mul;
+        mul *= 10;
+    }
+
+    return num->negative ? -res : res;
+}
+
+// Вспомогательная функция для создания number_value_t из целого числа
+static number_value_t* number_value_from_int(long long value) {
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "%lld", value);
+    // number_value_new скопирует данные из строки, поэтому локальный буфер безопасен
+    return number_value_new(string_view_from(buffer), string_view_from(""));
+}
 
 static FILE* get_stream(const int fd)
 {
@@ -44,39 +81,31 @@ static value_t _write(context_t *context)
     const context_item_t *fd_item = context_get(context, string_view_from("fd"));
     const context_item_t *data_item = context_get(context, string_view_from("data"));
 
-    // Проверка наличия и типа fd
     if (!fd_item) {
         THROW("Missing argument: fd");
     }
     if (fd_item->value.type != VALUE_TYPE_NUMBER) {
         THROW("File descriptor should be a number");
     }
-    // Проверка наличия data
     if (!data_item) {
         THROW("Missing argument: data");
     }
 
-    const int fd = (int)fd_item->value.data.as_number;
+    // Извлекаем дескриптор через вспомогательную функцию
+    const int fd = (int)number_value_to_int(fd_item->value.data.as_number);
 
-    // Для стандартных потоков используем stdio
-    if (0 <= fd && fd <= 2)
-    {
+    if (0 <= fd && fd <= 2) {
         FILE *stream = get_stream(fd);
         value_print(stream, data_item->value);
         fflush(stream);
-        return MAKE_VAL_NUM(1);
+        return MAKE_VAL_NUM(number_value_from_int(1));
     }
 
-    // Для произвольных дескрипторов данные должны быть строкой
-    if (data_item->value.type != VALUE_TYPE_STRING)
-    {
-        THROW("Data should be a string value");
-    }
-
-    const string_value_t *data_value = data_item->value.data.as_string;
-    const ssize_t written = write(fd, data_value->data, data_value->size);
-
-    return MAKE_VAL_NUM((long double)written);
+    // Для произвольного fd преобразуем значение в строку
+    char *str = value_to_string(data_item->value);
+    const ssize_t written = write(fd, str, strlen(str));
+    free(str);
+    return MAKE_VAL_NUM(number_value_from_int(written));
 }
 
 static value_t _read(context_t *context)
@@ -84,7 +113,6 @@ static value_t _read(context_t *context)
     const context_item_t *fd_item = context_get(context, string_view_from("fd"));
     const context_item_t *size_item = context_get(context, string_view_from("size"));
 
-    // Проверка fd
     if (!fd_item) {
         THROW("Missing argument: fd");
     }
@@ -92,31 +120,30 @@ static value_t _read(context_t *context)
         THROW("File descriptor should be a number");
     }
 
-    const int fd = (int)fd_item->value.data.as_number;
-    size_t size = 1024; // значение по умолчанию
+    // Извлекаем дескриптор через вспомогательную функцию
+    const int fd = (int)number_value_to_int(fd_item->value.data.as_number);
+
+    size_t size = 1024;
     if (size_item) {
         if (size_item->value.type != VALUE_TYPE_NUMBER) {
             THROW("Size should be a number");
         }
-        size = (size_t)size_item->value.data.as_number;
+        // Извлекаем размер через вспомогательную функцию
+        size = (size_t)number_value_to_int(size_item->value.data.as_number);
     }
 
-    // Для stdin/stdout/stderr используем getline
     if (0 <= fd && fd <= 2)
     {
         char *line = nullptr;
         size_t capacity = 0;
         ssize_t length = getline(&line, &capacity, get_stream(fd));
-
         if (length != -1)
         {
-            // Удаляем завершающий перевод строки, если есть
             if (length > 0 && line[length - 1] == '\n')
             {
                 line[length - 1] = '\0';
                 length--;
             }
-
             const auto result = MAKE_VAL_STR(string_value_from(line, (size_t)length));
             free(line);
             return result;
@@ -125,10 +152,8 @@ static value_t _read(context_t *context)
         return MAKE_VAL_STR(string_value_from("", 0));
     }
 
-    // Для обычных файловых дескрипторов
     char *buffer = (char*)malloc(size + 1);
     if (!buffer) THROW("Memory allocation failed");
-
     const ssize_t bytes_read = read(fd, buffer, size);
     if (bytes_read > 0)
     {
@@ -137,7 +162,6 @@ static value_t _read(context_t *context)
         free(buffer);
         return result;
     }
-
     free(buffer);
     return MAKE_VAL_STR(string_value_from("", 0));
 }
@@ -150,7 +174,7 @@ static value_t _open(context_t *context)
     if (!filename_item || !mode_item ||
         filename_item->value.type != VALUE_TYPE_STRING ||
         mode_item->value.type != VALUE_TYPE_STRING) {
-        return MAKE_VAL_NUM(-1);
+        return MAKE_VAL_NUM(number_value_from_int(-1));
     }
 
     const char *filename = filename_item->value.data.as_string->data;
@@ -162,12 +186,11 @@ static value_t _open(context_t *context)
     } else if (strcmp(mode, "r+") == 0) {
         flags = O_RDWR;
     } else {
-        // Неподдерживаемый режим – возвращаем -1
-        return MAKE_VAL_NUM(-1);
+        return MAKE_VAL_NUM(number_value_from_int(-1));
     }
 
     int fd = open(filename, flags, 0644);
-    return MAKE_VAL_NUM((long double)fd);
+    return MAKE_VAL_NUM(number_value_from_int(fd));
 }
 
 static value_t _close(context_t *context)
@@ -181,14 +204,13 @@ static value_t _close(context_t *context)
         THROW("File descriptor should be a number");
     }
 
-    int fd = (int)fd_item->value.data.as_number;
+    // Извлекаем дескриптор через вспомогательную функцию
+    int fd = (int)number_value_to_int(fd_item->value.data.as_number);
 
-    // Закрываем только нестандартные дескрипторы
     if (fd > 2) {
         close(fd);
     }
-
-    return MAKE_VAL_NUM(1);
+    return MAKE_VAL_NUM(number_value_from_int(1));
 }
 
 void init_lib(context_t *context)

@@ -5,6 +5,8 @@
 #include "string_value.h"
 #include <stdio.h>
 
+#include "number_value.h"
+
 typedef enum
 {
     TOKEN_TYPE_NUMBER,
@@ -47,7 +49,7 @@ typedef union
 {
     string_view_t as_string_view;
     string_value_t* as_string;
-    long double as_number;
+    number_value_t* as_number;
 } token_value_t;
 
 typedef struct

@@ -12,11 +12,10 @@
 
 value_t value_new()
 {
-    value_t value;
-    value.reference_count = 1;
-    value.control_flow = CONTROL_FLOW_NONE;
-
-    return value;
+    return (value_t) {
+        .reference_count = 1,
+        .control_flow = CONTROL_FLOW_NONE
+    };
 }
 
 value_t value_new_string(string_value_t* data)
@@ -27,7 +26,7 @@ value_t value_new_string(string_value_t* data)
     return value;
 }
 
-value_t value_new_number(const long double data)
+value_t value_new_number(number_value_t* data)
 {
     value_t value = value_new();
     value.type = VALUE_TYPE_NUMBER;
@@ -106,7 +105,7 @@ bool value_get_boolean(const value_t value)
 {
     switch (value.type)
     {
-        case VALUE_TYPE_NUMBER: return value.data.as_number != 0;
+        case VALUE_TYPE_NUMBER: return value.data.as_number->decimal->size;
         case VALUE_TYPE_STRING: return value.data.as_string->size != 0;
         case VALUE_TYPE_BOOLEAN: return value.data.as_bool;
         case VALUE_TYPE_FUNCTION:
@@ -155,9 +154,28 @@ void value_print_string(FILE* stream, const string_value_t* value)
     fprintf(stream, "%s", value->data);
 }
 
-void value_print_number(FILE* stream, const long double value)
+void value_print_number(FILE* stream, const number_value_t* value)
 {
-    fprintf(stream, "%.64Lg", value);
+    const ull_t decimal_buffer_size = value->decimal->length;
+    const auto decimal_buffer = (char*)calloc(decimal_buffer_size + 1, sizeof(char));
+
+    for (ull_t i=0; i < value->decimal->size; ++i)
+        sprintf(decimal_buffer + i * 8, "%llx", value->decimal->data[i]);
+
+
+    const ull_t fraction_buffer_size = value->fraction->length;
+    if (fraction_buffer_size)
+    {
+        const auto fraction_buffer = (char*)calloc(fraction_buffer_size + 1, sizeof(char));
+
+        for (ull_t i=0; i < value->fraction->size; ++i)
+            sprintf(fraction_buffer + i * 8, "%llx", value->fraction->data[i]);
+        fprintf(stream, "%s.%s", decimal_buffer, fraction_buffer);
+        free(fraction_buffer);
+    }
+    else
+        fprintf(stream, "%s", decimal_buffer);
+    free(decimal_buffer);
 }
 
 void value_print_boolean(FILE* stream, const bool value)
@@ -194,7 +212,7 @@ void value_print_array(FILE* stream, const array_value_t* value)
 value_t value_operation_add(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_NUM(left.data.as_number + right.data.as_number);
+        return MAKE_VAL_NUM(number_value_add(left.data.as_number, right.data.as_number));
 
     if (left.type == VALUE_TYPE_STRING && right.type == VALUE_TYPE_STRING)
         return MAKE_VAL_STR(string_value_concat(left.data.as_string, right.data.as_string));
@@ -205,7 +223,7 @@ value_t value_operation_add(const value_t left, const value_t right)
 value_t value_operation_sub(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_NUM(left.data.as_number - right.data.as_number);
+        return MAKE_VAL_NUM(number_value_add(left.data.as_number, right.data.as_number));
 
     THROW("Non number type can't use operator '-'\n");
 }
@@ -213,7 +231,7 @@ value_t value_operation_sub(const value_t left, const value_t right)
 value_t value_operation_mul(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_NUM(left.data.as_number * right.data.as_number);
+        return MAKE_VAL_NUM(number_value_mul(left.data.as_number, right.data.as_number));
 
     THROW("Non number type can't use operator '*'\n");
 }
@@ -222,9 +240,9 @@ value_t value_operation_div(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
     {
-        if (right.data.as_number == 0)
-            THROW("Division by zero is not allowed\n");
-        return MAKE_VAL_NUM(left.data.as_number / right.data.as_number);
+        // if (right.data.as_number == 0)
+        //     THROW("Division by zero is not allowed\n");
+        return MAKE_VAL_NUM(number_value_add(left.data.as_number, right.data.as_number));
     }
     THROW("Non number type can't use operator '/'\n");
 }

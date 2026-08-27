@@ -11,10 +11,11 @@ add_executable(
         src/token.c                                 include/token.h
         src/parser.c                                include/parser.h
         src/value.c                                 include/value.h
+        src/number_value.c                          include/number_value.h
+        src/string_value.c                          include/string_value.h
         src/function_value.c                        include/function_value.h
         src/structure_value.c                       include/structure_value.h
         src/array_value.c                           include/array_value.h
-        src/string_value.c                          include/string_value.h
         src/module_value.c                          include/module_value.h
         src/control_flow.c                          include/control_flow.h
         src/parameter.c                             include/parameter.h
@@ -48,8 +49,15 @@ add_executable(
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
 add_subdirectory(cpesec/io)
-add_subdirectory(cpesec/math)
-add_subdirectory(cpesec/types)
-add_subdirectory(cpesec/network)
+#add_subdirectory(cpesec/math)
+#add_subdirectory(cpesec/types)
+#add_subdirectory(cpesec/network)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE io math types network)
+target_link_libraries(
+        ${PROJECT_NAME}
+        PRIVATE
+        io
+#        math
+#        types
+#        network
+)

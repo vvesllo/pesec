@@ -3,13 +3,12 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "include/utils/throw.h"
 #include "../include/string_value.h"
 
 
-lexer_t* lexer_new(char* source, const unsigned long long length)
+lexer_t* lexer_new(char* source, const ull_t length)
 {
     const auto lexer = (lexer_t*)malloc(sizeof(lexer_t));
 
@@ -79,7 +78,7 @@ token_t lexer_next_token(lexer_t* lexer)
 
     if (!lexer_can_advance(lexer)) return (token_t){
         .line = lexer->line,
-        .value = (token_value_t){ .as_number = 0 },
+        .value = (token_value_t){ .as_string_view = string_view_from("\0") },
         .type = TOKEN_TYPE_EOF
     };
 
@@ -87,47 +86,76 @@ token_t lexer_next_token(lexer_t* lexer)
 
     if (isdigit(current)) return lexer_next_number(lexer);
     if (isalpha(current) || current == '_') return lexer_next_identifier(lexer);
-    if (current == '"') return lexer_next_string(lexer);
+    if (current == '"' || current == '\'' || current == '`') return lexer_next_string(lexer, current);
     return lexer_next_operator(lexer);
 }
 
 token_t lexer_next_number(lexer_t* lexer)
 {
-    const unsigned long long begin = lexer->i;
     bool has_dot = false;
+    ull_t dot_index = 0;
 
-    while (lexer_can_advance(lexer) && (isdigit(lexer_get_current_char(lexer)) || lexer_get_current_char(lexer) == '.'))
+    const ull_t begin = lexer->i;
+
+    while (lexer_can_advance(lexer))
     {
-        if (lexer_get_current_char(lexer) == '.')
+        const char current = lexer_get_current_char(lexer);
+        if (isdigit(current))
         {
-            if (has_dot)
-            {
-                THROW("Invalid number at line %llu\n", lexer->line);
-            }
-            has_dot = true;
+            lexer_advance(lexer);
         }
-        lexer_advance(lexer);
+        else if (current == '.')
+        {
+            if (has_dot) THROW("Invalid number at line %llu: multiple dots\n", lexer->line);
+            has_dot = true;
+            dot_index = lexer->i;
+            lexer_advance(lexer);
+        }
+        else break;
     }
 
-    const unsigned long long buffer_size = lexer->i - begin;
-    const auto buffer = (char*)malloc(sizeof(char) * buffer_size + 1);
-    memcpy(buffer, lexer->source + begin, buffer_size );
-    buffer[buffer_size] = '\0';
+    const ull_t end = lexer->i;
 
-    const long double value = strtold(buffer, nullptr);
+    if (has_dot)
+    {
+        if (dot_index == begin) THROW("Invalid number at line %llu: missing decimal\n", lexer->line);
+        if (end == dot_index + 1) THROW("Invalid number at line %llu: missing fraction\n", lexer->line);
 
-    free(buffer);
+        return (token_t) {
+            .line = lexer->line,
+            .type = TOKEN_TYPE_NUMBER,
+            .value.as_number = number_value_new(
+                (string_view_t) {
+                    .data = lexer->source + begin,
+                    .length = dot_index - begin
+                },
+                (string_view_t) {
+                    .data = lexer->source + dot_index + 1,
+                    .length = end - dot_index - 1
+                }
+            )
+        };
+    }
 
-    return (token_t){
+    return (token_t) {
         .line = lexer->line,
-        .value.as_number = value,
         .type = TOKEN_TYPE_NUMBER,
+        .value.as_number = number_value_new(
+            (string_view_t) {
+                .data = lexer->source + begin,
+                .length = end - begin
+            },
+            (string_view_t) {
+                    .data = lexer->source + begin,
+                    .length = 0
+            }
+        )
     };
 }
 
 token_t lexer_next_identifier(lexer_t* lexer)
 {
-    const unsigned long long begin = lexer->i;
+    const ull_t begin = lexer->i;
 
     while (lexer_can_advance(lexer) && (
             isalnum(lexer_get_current_char(lexer)) ||
@@ -163,21 +191,23 @@ token_t lexer_next_identifier(lexer_t* lexer)
     };
 }
 
-token_t lexer_next_string(lexer_t* lexer)
+token_t lexer_next_string(lexer_t* lexer, const char quote)
 {
     lexer_advance(lexer);
 
     string_value_t* string = string_value_new();
 
     char current;
-    while (lexer_can_advance(lexer) && (current = lexer_get_current_char(lexer)) != '"')
+    while (lexer_can_advance(lexer) && (current = lexer_get_current_char(lexer)) != quote)
     {
         if (current == '\\')
         {
             lexer_advance(lexer);
             switch (lexer_get_current_char(lexer))
             {
-                case '"': string_value_push_back(string, '\"'); break;
+                case '"': string_value_push_back(string, '"'); break;
+                case '`': string_value_push_back(string, '`'); break;
+                case '\'': string_value_push_back(string, '\''); break;
                 case 'n': string_value_push_back(string, '\n'); break;
                 case 't': string_value_push_back(string, '\t'); break;
                 case 'r': string_value_push_back(string, '\r'); break;

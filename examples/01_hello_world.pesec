@@ -1,3 +1,2 @@
-const io = import "../std/io.pesec";
-
-io.print("Hello, Pesec!\n");
+const a = 123.0001;
+throw a;

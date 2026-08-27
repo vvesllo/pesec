@@ -19,6 +19,7 @@
 #define MAKE_VAL_STRUCT_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRUCTURE, .data.as_structure = x, .control_flow = cf })
 #define MAKE_VAL_MODULE_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_MODULEURE, .data.as_module = x, .control_flow = cf })
 #define MAKE_VAL_ARR_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_ARRAY, .data.as_array = x, .control_flow = cf })
+#include "number_value.h"
 
 #endif // PESEC_CXX_LIB
 
@@ -50,8 +51,8 @@ typedef enum
 
 typedef union
 {
-    long double as_number;
     bool as_bool;
+    number_value_t* as_number;
     string_value_t* as_string;
     function_value_t* as_function;
     structure_value_t* as_structure;
@@ -71,7 +72,7 @@ value_t value_new();
 
 value_t value_new_string(string_value_t* data);
 
-value_t value_new_number(long double data);
+value_t value_new_number(number_value_t* data);
 
 value_t value_new_boolean(bool data);
 
@@ -97,7 +98,7 @@ void value_print(FILE* stream, value_t value);
 
 void value_print_string(FILE* stream, const string_value_t* value);
 
-void value_print_number(FILE* stream, long double value);
+void value_print_number(FILE* stream, const number_value_t* value);
 
 void value_print_boolean(FILE* stream, bool value);
 
