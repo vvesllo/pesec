@@ -1,2 +1,19 @@
-const a = 123.0001;
-throw a;
+const io = import "../std/io.pesec";
+
+const compute_pi_series = fn(M) {
+    mutab sum = 0.0;
+    mutab term = 2.0;
+    mutab n = 0;
+
+    while n < M {
+        sum = sum + term;
+        if (n < M - 1) {
+            const ratio = ( (2*n + 1) * (2*n + 1) ) / ( 2.0 * (n + 1) * (2*n + 3) );
+            term = term * ratio;
+        };
+        n = n + 1;
+    };
+    sum;
+};
+
+io.print(compute_pi_series(18446744073709551615));
