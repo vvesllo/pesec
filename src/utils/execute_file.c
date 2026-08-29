@@ -18,7 +18,6 @@ static const char* get_platform()
 #endif
 }
 
-
 static void create_default_values(context_t* context)
 {
     context_push(

@@ -1,6 +1,5 @@
 #include "include/parameter.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
 
@@ -18,7 +17,7 @@ parameter_t* parameter_new_from_cstr(const char** values)
 
     for (const char **p = values; *p; ++p)
     {
-        parameter_push(parameter, string_view_from(*p));
+        parameter_push(parameter, string_view_from(*p), PARAMETER_NODE_TYPE_NORMAL);
     }
 
     return parameter;
@@ -28,17 +27,18 @@ void parameter_push_from_cstr(parameter_t* parameter, const char** values)
 {
     for (const char **p = values; *p; ++p)
     {
-        parameter_push(parameter, string_view_from(*p));
+        parameter_push(parameter, string_view_from(*p), PARAMETER_NODE_TYPE_NORMAL);
     }
 }
 
-void parameter_push(parameter_t* parameter, const string_view_t value)
+void parameter_push(parameter_t* parameter, const string_view_t value, const parameter_node_type_t type)
 {
     ++parameter->count;
 
-    const auto new_node = (parameter_queue_t*)malloc(sizeof(parameter_queue_t));
+    const auto new_node = (parameter_node_t*)malloc(sizeof(parameter_node_t));
 
     new_node->value = value;
+    new_node->type = type;
     new_node->next = nullptr;
 
     if (parameter->parameters == nullptr)
@@ -47,8 +47,7 @@ void parameter_push(parameter_t* parameter, const string_view_t value)
         return;
     }
 
-    parameter_queue_t* current = parameter->parameters;
-
+    parameter_node_t* current = parameter->parameters;
 
     // TODO: сделать указатель на последний элемент и заменить эту хуйню
     while (current->next)
@@ -61,11 +60,11 @@ void parameter_push(parameter_t* parameter, const string_view_t value)
 
 void parameter_free(parameter_t* parameter)
 {
-    parameter_queue_t* current = parameter->parameters;
+    parameter_node_t* current = parameter->parameters;
 
     while (current)
     {
-        parameter_queue_t* next = current->next;
+        parameter_node_t* next = current->next;
         free(current);
         current = next;
     }

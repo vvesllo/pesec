@@ -18,7 +18,7 @@ token_t parser_eat(parser_t *parser, token_type_t type);
 
 ast_node_t *parser_check_and_parse_function_call(parser_t *parser, ast_node_t* callee);
 
-ast_node_t* parser_check_and_parse_structure_field_access(parser_t *parser, ast_node_t* object);
+ast_node_t* parser_check_and_parse_variable_field_access(parser_t *parser, ast_node_t* object);
 
 ast_node_t* parser_check_and_parse_variable_assignment(parser_t *parser, ast_node_t* target);
 
