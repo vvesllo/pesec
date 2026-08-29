@@ -1,14 +1,6 @@
 #ifndef PESEC_VALUE_H
 #define PESEC_VALUE_H
 
-#define MAKE_VAL_STR_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRING, .data.as_string = x, .control_flow = cf })
-#define MAKE_VAL_NUM_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_NUMBER, .data.as_number = x, .control_flow = cf })
-#define MAKE_VAL_BOOL_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_BOOLEAN, .data.as_bool = x, .control_flow = cf })
-#define MAKE_VAL_FUNC_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_FUNCTION, .data.as_function = x, .control_flow = cf })
-#define MAKE_VAL_STRUCT_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRUCTURE, .data.as_structure = x, .control_flow = cf })
-#define MAKE_VAL_MODULE_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_MODULEURE, .data.as_module = x, .control_flow = cf })
-#define MAKE_VAL_ARR_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_ARRAY, .data.as_array = x, .control_flow = cf })
-
 #include <stdio.h>
 
 #include "number_value.h"
@@ -70,6 +62,20 @@ value_t value_new_structure(structure_value_t* data);
 value_t value_new_module(module_value_t* data);
 
 value_t value_new_array(array_value_t* data);
+
+value_t value_new_string_cf(string_value_t* data, control_flow_t control_flow);
+
+value_t value_new_number_cf(number_value_t* data, control_flow_t control_flow);
+
+value_t value_new_boolean_cf(bool data, control_flow_t control_flow);
+
+value_t value_new_function_cf(function_value_t* data, control_flow_t control_flow);
+
+value_t value_new_structure_cf(structure_value_t* data, control_flow_t control_flow);
+
+value_t value_new_module_cf(module_value_t* data, control_flow_t control_flow);
+
+value_t value_new_array_cf(array_value_t* data, control_flow_t control_flow);
 
 void value_free(const value_t* value);
 

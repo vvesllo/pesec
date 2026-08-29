@@ -74,6 +74,55 @@ value_t value_new_array(array_value_t *data)
     return value;
 }
 
+value_t value_new_string_cf(string_value_t *data, const control_flow_t control_flow)
+{
+    value_t value = value_new_string(data);
+    value.control_flow = control_flow;
+    return value;
+}
+
+value_t value_new_number_cf(number_value_t *data, const control_flow_t control_flow)
+{
+    value_t value = value_new_number(data);
+    value.control_flow = control_flow;
+    return value;
+}
+
+value_t value_new_boolean_cf(const bool data, const control_flow_t control_flow)
+{
+    value_t value = value_new_boolean(data);
+    value.control_flow = control_flow;
+    return value;
+}
+
+value_t value_new_function_cf(function_value_t *data, const control_flow_t control_flow)
+{
+    value_t value = value_new_function(data);
+    value.control_flow = control_flow;
+    return value;
+}
+
+value_t value_new_structure_cf(structure_value_t *data, const control_flow_t control_flow)
+{
+    value_t value = value_new_structure(data);
+    value.control_flow = control_flow;
+    return value;
+}
+
+value_t value_new_module_cf(module_value_t *data, const control_flow_t control_flow)
+{
+    value_t value = value_new_module(data);
+    value.control_flow = control_flow;
+    return value;
+}
+
+value_t value_new_array_cf(array_value_t *data, const control_flow_t control_flow)
+{
+    value_t value = value_new_array(data);
+    value.control_flow = control_flow;
+    return value;
+}
+
 void value_free(const value_t *value)
 {
     switch (value->type)
