@@ -1,0 +1,3 @@
+[submodule "pesec-std"]
+	path = pesec-std
+	url = https://github.com/vvesllo/pesec-std.git
