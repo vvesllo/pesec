@@ -117,8 +117,8 @@ ast_node_t *parser_parse_keyword(parser_t *parser)
 {
     const string_view_t name = parser_eat(parser, TOKEN_TYPE_KEYWORD).value.as_string_view;
 
-    if (string_view_equals_cstr(name, "true")) return literal_node_new(MAKE_VAL_BOOL(true));
-    if (string_view_equals_cstr(name, "false")) return literal_node_new(MAKE_VAL_BOOL(false));
+    if (string_view_equals_cstr(name, "true")) return literal_node_new(value_new_boolean(true));
+    if (string_view_equals_cstr(name, "false")) return literal_node_new(value_new_boolean(false));
 
     if (string_view_equals_cstr(name, "mutab")) return parser_parse_variable_definition(parser, false);
     if (string_view_equals_cstr(name, "const")) return parser_parse_variable_definition(parser, true);
@@ -147,7 +147,7 @@ ast_node_t *parser_parse_variable_definition(parser_t *parser, const bool consta
 {
     const string_view_t name = parser_eat(parser, TOKEN_TYPE_IDENTIFIER).value.as_string_view;
 
-    ast_node_t *value = literal_node_new(MAKE_VAL_NUM(0));
+    ast_node_t *value = literal_node_new(value_new_number(0));
 
     if (parser_match(parser, TOKEN_TYPE_EQUALS))
     {
@@ -443,10 +443,10 @@ ast_node_t *parser_parse_factor(parser_t *parser)
     switch (parser->current_token.type)
     {
         case TOKEN_TYPE_NUMBER:
-            node = literal_node_new(MAKE_VAL_NUM(parser_eat(parser, TOKEN_TYPE_NUMBER).value.as_number));
+            node = literal_node_new(value_new_number(parser_eat(parser, TOKEN_TYPE_NUMBER).value.as_number));
             break;
         case TOKEN_TYPE_STRING:
-            node = literal_node_new(MAKE_VAL_STR(parser_eat(parser, TOKEN_TYPE_STRING).value.as_string));
+            node = literal_node_new(value_new_string(parser_eat(parser, TOKEN_TYPE_STRING).value.as_string));
             break;
         case TOKEN_TYPE_IDENTIFIER:
             node = parser_parse_identifier(parser);

@@ -1,17 +1,6 @@
 #ifndef PESEC_VALUE_H
 #define PESEC_VALUE_H
 
-
-#ifndef PESEC_CXX_LIB
-
-#define MAKE_VAL_STR(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRING, .data.as_string = x })
-#define MAKE_VAL_NUM(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_NUMBER, .data.as_number = x })
-#define MAKE_VAL_BOOL(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_BOOLEAN, .data.as_bool = x })
-#define MAKE_VAL_FUNC(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_FUNCTION, .data.as_function = x })
-#define MAKE_VAL_STRUCT(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRUCTURE, .data.as_structure = x })
-#define MAKE_VAL_MODULE(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_MODULE, .data.as_module = x })
-#define MAKE_VAL_ARR(x) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_ARRAY, .data.as_array = x })
-
 #define MAKE_VAL_STR_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRING, .data.as_string = x, .control_flow = cf })
 #define MAKE_VAL_NUM_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_NUMBER, .data.as_number = x, .control_flow = cf })
 #define MAKE_VAL_BOOL_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_BOOLEAN, .data.as_bool = x, .control_flow = cf })
@@ -19,12 +8,10 @@
 #define MAKE_VAL_STRUCT_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_STRUCTURE, .data.as_structure = x, .control_flow = cf })
 #define MAKE_VAL_MODULE_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_MODULEURE, .data.as_module = x, .control_flow = cf })
 #define MAKE_VAL_ARR_CF(x, cf) ((value_t) { .reference_count = 1, .type = VALUE_TYPE_ARRAY, .data.as_array = x, .control_flow = cf })
-#include "number_value.h"
-
-#endif // PESEC_CXX_LIB
 
 #include <stdio.h>
 
+#include "number_value.h"
 #include "string_value.h"
 #include "control_flow.h"
 

@@ -24,7 +24,7 @@ static void create_default_values(context_t* context)
     context_push(
         context,
         string_view_from("__platform"),
-        MAKE_VAL_STR(string_value_from_cstr(get_platform())),
+        value_new_string(string_value_from_cstr(get_platform())),
         true);
 }
 
@@ -47,7 +47,7 @@ value_t execute_file(const char* filepath, context_t* context)
 
     create_default_values(context);
 
-    const value_t result = ast ? ast_node_evaluate(ast, context) : MAKE_VAL_NUM(0);
+    const value_t result = ast ? ast_node_evaluate(ast, context) : value_new_number(0);
 
     switch (result.control_flow)
     {

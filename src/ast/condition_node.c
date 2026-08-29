@@ -29,5 +29,5 @@ value_t condition_node_evaluate(const condition_node_t* condition_node, context_
     const bool value_bool = value_get_boolean(value);
     if (value_bool) return ast_node_evaluate(condition_node->if_body, context);
     if (condition_node->else_body) return ast_node_evaluate(condition_node->else_body, context);
-    return MAKE_VAL_NUM(0);
+    return value_new_number(0);
 }

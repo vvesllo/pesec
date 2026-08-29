@@ -1,8 +1,8 @@
-// number_value.c
 #include "../include/number_value.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "include/utils/throw.h"
 
 static number_value_value_t *number_value_value_new_empty()
@@ -101,7 +101,35 @@ void number_value_free(number_value_t *number_value)
     free(number_value);
 }
 
-static void number_value_normalize(number_value_t *number_value)
+long double number_value_to_long_double(number_value_t* number_value)
+{
+    if (!number_value) return 0.0L;
+
+    long double result = 0.0L;
+    for (ull_t i = 0; i < number_value->decimal->length; ++i)
+        result = result * 10.0L + (long double)number_value->decimal->data[i];
+
+    long double frac = 0.0L;
+    for (ull_t i = 0; i < number_value->fraction->length; ++i)
+        frac = frac * 10.0L + (long double)number_value->fraction->data[i];
+
+    if (number_value->fraction->length > 0)
+    {
+        long double divisor = 1.0L;
+        for (ull_t i = 0; i < number_value->fraction->length; ++i)
+            divisor *= 10.0L;
+
+        frac /= divisor;
+    }
+
+    result += frac;
+
+    if (number_value->negative) result = -result;
+
+    return result;
+}
+
+void number_value_normalize(number_value_t *number_value)
 {
     if (!number_value) return;
     number_value_value_trim_lead(number_value->decimal);
@@ -142,44 +170,45 @@ int number_value_compare(const number_value_t *left, const number_value_t *right
     return left->negative ? -compare : compare;
 }
 
+
 number_value_t *number_value_add_abs(const number_value_t *left, const number_value_t *right)
 {
     const auto result = (number_value_t *) malloc(sizeof(number_value_t));
     result->negative = false;
     const ull_t max_frac = (left->fraction->length > right->fraction->length) ? left->fraction->length : right->fraction->length;
-    const auto frac_res = (ull_t *) calloc(max_frac + 1, sizeof(ull_t));
+    const auto frac_res = (ull_t *) calloc(max_frac, sizeof(ull_t));
     ull_t carry = 0;
 
-    for (ull_t i = 0; i < max_frac; i++)
+
+    for (ull_t i = max_frac; i > 0; i--)
     {
-        const ull_t da = (i < left->fraction->length) ? left->fraction->data[left->fraction->length - 1 - i] : 0;
-        const ull_t db = (i < right->fraction->length) ? right->fraction->data[right->fraction->length - 1 - i] : 0;
-        const ull_t sum = da + db + carry;
-        frac_res[max_frac - i] = sum % 10;
+        ull_t pos = i - 1;
+        ull_t da = (pos < left->fraction->length) ? left->fraction->data[pos] : 0;
+        ull_t db = (pos < right->fraction->length) ? right->fraction->data[pos] : 0;
+        ull_t sum = da + db + carry;
+        frac_res[pos] = sum % 10;
         carry = sum / 10;
     }
 
-    const ull_t int_carry = carry;
-
     result->fraction = number_value_value_new_empty();
-    for (ull_t i = 1; i <= max_frac; i++)
+    for (ull_t i = 0; i < max_frac; i++)
         number_value_value_push_back(result->fraction, frac_res[i]);
     free(frac_res);
+
 
     const ull_t max_int = (left->decimal->length > right->decimal->length) ? left->decimal->length : right->decimal->length;
     const auto int_res = (ull_t *) calloc(max_int + 1, sizeof(ull_t));
 
-    carry = int_carry;
-
     for (ull_t i = 0; i < max_int; i++)
     {
-        const ull_t da = (i < left->decimal->length) ? left->decimal->data[left->decimal->length - 1 - i] : 0;
-        const ull_t db = (i < right->decimal->length) ? right->decimal->data[right->decimal->length - 1 - i] : 0;
-        const ull_t sum = da + db + carry;
+        ull_t da = (i < left->decimal->length) ? left->decimal->data[left->decimal->length - 1 - i] : 0;
+        ull_t db = (i < right->decimal->length) ? right->decimal->data[right->decimal->length - 1 - i] : 0;
+        ull_t sum = da + db + carry;
         int_res[max_int - i] = sum % 10;
         carry = sum / 10;
     }
     int_res[0] = carry;
+
     result->decimal = number_value_value_new_empty();
     const ull_t start = (int_res[0] > 0) ? 0 : 1;
     for (ull_t i = start; i <= max_int; i++)
@@ -189,6 +218,7 @@ number_value_t *number_value_add_abs(const number_value_t *left, const number_va
     return result;
 }
 
+
 number_value_t *number_value_sub_abs(const number_value_t *left, const number_value_t *right)
 {
     const auto result = (number_value_t *) malloc(sizeof(number_value_t));
@@ -196,10 +226,12 @@ number_value_t *number_value_sub_abs(const number_value_t *left, const number_va
     const ull_t max_frac = (left->fraction->length > right->fraction->length) ? left->fraction->length : right->fraction->length;
     const auto frac_res = (ull_t *) calloc(max_frac, sizeof(ull_t));
     ull_t borrow = 0;
-    for (ull_t i = 0; i < max_frac; i++)
+
+    for (ull_t i = max_frac; i > 0; i--)
     {
-        ull_t da = (i < left->fraction->length) ? left->fraction->data[left->fraction->length - 1 - i] : 0;
-        ull_t db = (i < right->fraction->length) ? right->fraction->data[right->fraction->length - 1 - i] : 0;
+        ull_t pos = i - 1;
+        ull_t da = (pos < left->fraction->length) ? left->fraction->data[pos] : 0;
+        ull_t db = (pos < right->fraction->length) ? right->fraction->data[pos] : 0;
         db += borrow;
         if (da < db)
         {
@@ -207,12 +239,15 @@ number_value_t *number_value_sub_abs(const number_value_t *left, const number_va
             borrow = 1;
         } else
             borrow = 0;
-        frac_res[max_frac - 1 - i] = da - db;
+        frac_res[pos] = da - db;
     }
+
     result->fraction = number_value_value_new_empty();
     for (ull_t i = 0; i < max_frac; i++)
         number_value_value_push_back(result->fraction, frac_res[i]);
     free(frac_res);
+
+
     const ull_t max_int = left->decimal->length;
     const auto int_res = (ull_t *) calloc(max_int, sizeof(ull_t));
     for (ull_t i = 0; i < max_int; i++)
@@ -229,6 +264,7 @@ number_value_t *number_value_sub_abs(const number_value_t *left, const number_va
             borrow = 0;
         int_res[max_int - 1 - i] = da - db;
     }
+
     result->decimal = number_value_value_new_empty();
     ull_t start = 0;
     while (start < max_int - 1 && int_res[start] == 0) start++;
@@ -395,6 +431,7 @@ number_value_t *number_value_negate(const number_value_t *number_value)
     result->fraction = number_value_value_clone(number_value->fraction);
     return result;
 }
+
 static number_value_t* number_value_clone_full(const number_value_t* src)
 {
     if (!src) return nullptr;
@@ -405,7 +442,7 @@ static number_value_t* number_value_clone_full(const number_value_t* src)
     return clone;
 }
 
-static void shift_decimal_right(number_value_t* num, ull_t K)
+static void shift_decimal_right(const number_value_t* num, const ull_t K)
 {
     if (K == 0) return;
     if (num->fraction->length >= K)
@@ -462,16 +499,16 @@ static int compare_rem_div(const number_value_value_t* rem, const number_value_v
 
 static void sub_in_place(number_value_value_t* rem, const number_value_value_t* div)
 {
-    ull_t r_len = rem->length;
-    ull_t d_len = div->length;
+    const ull_t r_len = rem->length;
+    const ull_t d_len = div->length;
     ull_t borrow = 0;
 
     for (ull_t i = 0; i < d_len; i++)
     {
-        ull_t r_idx = r_len - 1 - i;
-        ull_t d_idx = d_len - 1 - i;
+        const ull_t r_idx = r_len - 1 - i;
+        const ull_t d_idx = d_len - 1 - i;
         ull_t r_val = rem->data[r_idx];
-        ull_t d_val = div->data[d_idx] + borrow;
+        const ull_t d_val = div->data[d_idx] + borrow;
 
         if (r_val < d_val) { r_val += 10; borrow = 1; }
         else borrow = 0;
@@ -482,7 +519,7 @@ static void sub_in_place(number_value_value_t* rem, const number_value_value_t* 
     ull_t i = d_len;
     while (borrow && i < r_len)
     {
-        ull_t r_idx = r_len - 1 - i;
+        const ull_t r_idx = r_len - 1 - i;
         if (rem->data[r_idx] == 0) { rem->data[r_idx] = 9; borrow = 1; }
         else { rem->data[r_idx]--; borrow = 0; }
         i++;
@@ -494,23 +531,23 @@ number_value_t* number_value_div(const number_value_t* left, const number_value_
 {
     if (!left || !right) return nullptr;
 
-    bool left_is_zero = (right->decimal->length == 1 && right->decimal->data[0] == 0 && right->fraction->length == 0);
+    const bool left_is_zero = (right->decimal->length == 1 && right->decimal->data[0] == 0 && right->fraction->length == 0);
     if (left_is_zero) THROW("Division by zero is not allowed\n");
 
-    bool right_is_zero = (left->decimal->length == 1 && left->decimal->data[0] == 0 && left->fraction->length == 0);
+    const bool right_is_zero = (left->decimal->length == 1 && left->decimal->data[0] == 0 && left->fraction->length == 0);
     if (right_is_zero) return number_value_new(string_view_from("0"), string_view_from(""));
 
-    bool res_neg = left->negative ^ right->negative;
+    const bool res_neg = left->negative ^ right->negative;
 
     number_value_t* A = number_value_clone_full(left);
     number_value_t* B = number_value_clone_full(right);
 
-    ull_t K = B->fraction->length;
+    const ull_t K = B->fraction->length;
     shift_decimal_right(A, K);
     shift_decimal_right(B, K);
 
     number_value_value_t* rem = number_value_value_new_empty();
-    number_value_value_push_back(rem, 0); // Начинаем с 0
+    number_value_value_push_back(rem, 0);
 
     number_value_value_t* q_dec = number_value_value_new_empty();
 
@@ -528,7 +565,7 @@ number_value_t* number_value_div(const number_value_t* left, const number_value_
     number_value_value_trim_lead(q_dec);
 
     number_value_value_t* q_frac = number_value_value_new_empty();
-    constexpr ull_t max_frac = 0xffffffffffffffff;
+    constexpr ull_t max_frac = 128;
     ull_t frac_count = 0;
 
     for (ull_t i = 0; i < A->fraction->length && frac_count < max_frac; i++)
@@ -546,7 +583,7 @@ number_value_t* number_value_div(const number_value_t* left, const number_value_
 
     while (frac_count < max_frac)
     {
-        bool rem_is_zero = (rem->length == 1 && rem->data[0] == 0);
+        const bool rem_is_zero = (rem->length == 1 && rem->data[0] == 0);
         if (rem_is_zero) break;
 
         shift_left_and_add_digit(rem, 0);
@@ -566,7 +603,7 @@ number_value_t* number_value_div(const number_value_t* left, const number_value_
     result->decimal = q_dec;
     result->fraction = q_frac;
 
-    bool is_zero = (q_dec->length == 1 && q_dec->data[0] == 0 && q_frac->length == 0);
+    const bool is_zero = (q_dec->length == 1 && q_dec->data[0] == 0 && q_frac->length == 0);
     if (is_zero) result->negative = false;
 
     number_value_normalize(result);
@@ -577,4 +614,43 @@ number_value_t* number_value_div(const number_value_t* left, const number_value_
     free(rem);
 
     return result;
+}
+
+number_value_t *number_value_from_long_double(const long double value)
+{
+    if (isnan(value) || isinf(value)) THROW("Cannot convert NaN or Inf to number_value");
+
+    const bool negative = (value < 0.0);
+    const long double abs_val = negative ? -value : value;
+    char buffer[128];
+    snprintf(buffer, sizeof(buffer), "%.17Lf", abs_val);
+
+    const char *dot = strchr(buffer, '.');
+    string_view_t decimal_sv, fraction_sv;
+    if (dot)
+    {
+        decimal_sv.data = buffer;
+        decimal_sv.length = dot - buffer;
+        fraction_sv.data = dot + 1;
+        fraction_sv.length = strlen(dot + 1);
+    }
+    else
+    {
+        decimal_sv.data = buffer;
+        decimal_sv.length = strlen(buffer);
+        fraction_sv.data = "";
+        fraction_sv.length = 0;
+    }
+
+
+    if (decimal_sv.length == 0)
+    {
+        decimal_sv.data = "0";
+        decimal_sv.length = 1;
+    }
+
+    number_value_t *num = number_value_new(decimal_sv, fraction_sv);
+    num->negative = negative;
+    number_value_normalize(num);
+    return num;
 }

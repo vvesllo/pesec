@@ -75,7 +75,7 @@ context_item_t* context_get(const context_t* context, const string_view_t key)
 
     while (node)
     {
-        if (node->key.length == key.length && string_view_equals(node->key, key))
+        if (string_view_equals(node->key, key))
             return node;
 
         node = node->next;
@@ -97,7 +97,7 @@ context_item_t* context_get_local(const context_t* context, string_view_t key)
 
     while (node)
     {
-        if (node->key.length == key.length && string_view_equals(node->key, key))
+        if (string_view_equals(node->key, key))
             return node;
 
         node = node->next;

@@ -28,6 +28,12 @@ number_value_t* number_value_new(string_view_t decimal, string_view_t fraction);
 
 void number_value_free(number_value_t* number_value);
 
+long double number_value_to_long_double(number_value_t* number_value);
+
+number_value_t *number_value_from_long_double(long double value);
+
+void number_value_normalize(number_value_t *number_value);
+
 int number_value_compare_abs(const number_value_t* left, const number_value_t* right);
 
 int number_value_compare(const number_value_t* left, const number_value_t* right);

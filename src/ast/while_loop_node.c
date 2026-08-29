@@ -27,7 +27,7 @@ value_t while_loop_node_evaluate(const while_loop_node_t* while_loop_node, conte
 {
     context_t* local_context = context_new(context);
 
-    auto result = MAKE_VAL_NUM(0);
+    auto result = value_new_number(0);
 
     bool is_stopped = false;
 

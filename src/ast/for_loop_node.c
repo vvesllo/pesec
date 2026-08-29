@@ -41,11 +41,11 @@ value_t for_loop_node_evaluate(const for_loop_node_t* for_loop_node, context_t* 
 
     const array_value_t* iterable_array = iterable.data.as_array;
 
-    auto result = MAKE_VAL_NUM(0);
+    auto result = value_new_number(0);
 
     bool is_stopped = false;
 
-    context_push(local_context, for_loop_node->iterator, MAKE_VAL_NUM(0), false);
+    context_push(local_context, for_loop_node->iterator, value_new_number(0), false);
 
     if (iterable_array->size > 0)
     {

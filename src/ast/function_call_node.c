@@ -48,13 +48,13 @@ value_t function_call_node_evaluate(const function_call_node_t* function_call_no
     const statement_sequence_node_queue_t* current = nullptr;
     value_t* evaluated_values = nullptr;
 
-    auto result = MAKE_VAL_NUM(0);
+    auto result = value_new_number(0);
 
     if (statements_count > 0)
     {
         current = function_call_node->arguments->node.statement_sequence->statements;
         evaluated_values = (value_t*)calloc(statements_count, sizeof(value_t));
-        if (!evaluated_values) return MAKE_VAL_NUM(0);
+        if (!evaluated_values) return value_new_number(0);
     }
 
     for (ull_t i = 0; current && i < statements_count; i++, current = current->next)
@@ -62,7 +62,7 @@ value_t function_call_node_evaluate(const function_call_node_t* function_call_no
         if (current->statement)
             evaluated_values[i] = ast_node_evaluate(current->statement, context);
         else
-            evaluated_values[i] = MAKE_VAL_NUM(0);
+            evaluated_values[i] = value_new_number(0);
     }
 
     if (function->parameter->count != statements_count)

@@ -92,5 +92,5 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
         dlclose(handle);
     }
 
-    return MAKE_VAL_MODULE(module_value_new(module_context));
+    return value_new_module(module_value_new(module_context));
 }

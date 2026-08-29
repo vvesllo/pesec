@@ -34,5 +34,5 @@ value_t structure_definition_node_evaluate(const structure_definition_node_t* st
         current_field = current_field->next;
     }
 
-    return MAKE_VAL_STRUCT(structure_value_new(structure_value_context));
+    return value_new_structure(structure_value_new(structure_value_context));
 }

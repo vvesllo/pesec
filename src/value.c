@@ -209,9 +209,9 @@ void value_print_array(FILE *stream, const array_value_t *value)
 value_t value_operation_add(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_NUM(number_value_add(left.data.as_number, right.data.as_number));
+        return value_new_number(number_value_add(left.data.as_number, right.data.as_number));
     if (left.type == VALUE_TYPE_STRING && right.type == VALUE_TYPE_STRING)
-        return MAKE_VAL_STR(string_value_concat(left.data.as_string, right.data.as_string));
+        return value_new_string(string_value_concat(left.data.as_string, right.data.as_string));
 
     THROW("Unsupported operator '+' for types '%d' and '%d'\n", left.type, right.type);
 }
@@ -219,14 +219,14 @@ value_t value_operation_add(const value_t left, const value_t right)
 value_t value_operation_sub(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_NUM(number_value_sub(left.data.as_number, right.data.as_number));
+        return value_new_number(number_value_sub(left.data.as_number, right.data.as_number));
     THROW("Unsupported operator '-' for types '%d' and '%d'\n", left.type, right.type);
 }
 
 value_t value_operation_mul(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_NUM(number_value_mul(left.data.as_number, right.data.as_number));
+        return value_new_number(number_value_mul(left.data.as_number, right.data.as_number));
     THROW("Unsupported operator '*' for types '%d' and '%d'\n", left.type, right.type);
 }
 
@@ -234,7 +234,7 @@ value_t value_operation_div(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
     {
-        return MAKE_VAL_NUM(number_value_div(left.data.as_number, right.data.as_number));
+        return value_new_number(number_value_div(left.data.as_number, right.data.as_number));
     }
     THROW("Unsupported operator '*' for types '%d' and '%d'\n", left.type, right.type);
 }
@@ -242,36 +242,36 @@ value_t value_operation_div(const value_t left, const value_t right)
 value_t value_operation_equals(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_BOOL(number_value_compare(left.data.as_number, right.data.as_number) == 0);
+        return value_new_boolean(number_value_compare(left.data.as_number, right.data.as_number) == 0);
     if (left.type == VALUE_TYPE_STRING && right.type == VALUE_TYPE_STRING)
-        return MAKE_VAL_BOOL(string_value_equals(left.data.as_string, right.data.as_string));
-    return MAKE_VAL_BOOL(false);
+        return value_new_boolean(string_value_equals(left.data.as_string, right.data.as_string));
+    return value_new_boolean(false);
 }
 
 value_t value_operation_less_or_equals(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_BOOL(number_value_compare(left.data.as_number, right.data.as_number) <= 0);
-    return MAKE_VAL_BOOL(false);
+        return value_new_boolean(number_value_compare(left.data.as_number, right.data.as_number) <= 0);
+    return value_new_boolean(false);
 }
 
 value_t value_operation_less(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_BOOL(number_value_compare(left.data.as_number, right.data.as_number) < 0);
-    return MAKE_VAL_BOOL(false);
+        return value_new_boolean(number_value_compare(left.data.as_number, right.data.as_number) < 0);
+    return value_new_boolean(false);
 }
 
 value_t value_operation_greater_or_equals(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_BOOL(number_value_compare(left.data.as_number, right.data.as_number) >= 0);
-    return MAKE_VAL_BOOL(false);
+        return value_new_boolean(number_value_compare(left.data.as_number, right.data.as_number) >= 0);
+    return value_new_boolean(false);
 }
 
 value_t value_operation_greater(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-        return MAKE_VAL_BOOL(number_value_compare(left.data.as_number, right.data.as_number) > 0);
-    return MAKE_VAL_BOOL(false);
+        return value_new_boolean(number_value_compare(left.data.as_number, right.data.as_number) > 0);
+    return value_new_boolean(false);
 }

@@ -33,5 +33,5 @@ value_t array_definition_node_evaluate(const array_definition_node_t* array_defi
         current = current->next;
     }
 
-    return MAKE_VAL_ARR(array_value_new(values, count));
+    return value_new_array(array_value_new(values, count));
 }
