@@ -1,6 +1,8 @@
+const io = import "../std/io.pesec";
+
 # function definition #
 mutab f = fn() {
-    println("one");
+    io.println("one");
 };
 
 f();
@@ -8,17 +10,24 @@ f();
 # instant call #
 mutab a = fn() { "two"; } ();
 
-println(a);
+io.println(a);
 
 fn() {
-    println("three");
+    io.println("three");
 } ();
 
 # functions can look like this #
 f = fn(x) x * x;
 
-println(f(0));
-println(f(1));
-println(f(2));
+io.println(f(0));
+io.println(f(1));
+io.println(f(2));
 
-println(f);
+io.println(f);
+
+# *args #
+const g = fn(*args) {
+    io.println(args);
+};
+
+g(79, 123);

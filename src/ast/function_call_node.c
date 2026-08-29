@@ -1,13 +1,11 @@
 #include "include/ast/function_call_node.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "include/array_value.h"
 #include "include/ast/ast_node.h"
 #include "include/function_value.h"
 #include "include/module_value.h"
-#include "include/structure_value.h"
 #include "include/utils/throw.h"
 
 ast_node_t *function_call_node_new(ast_node_t *callee, function_call_argument_node_t *arguments, const ull_t count)
@@ -48,23 +46,18 @@ value_t function_call_node_evaluate(const function_call_node_t *function_call_no
 
     if (callee_value.type != VALUE_TYPE_FUNCTION) THROW("Value typed %s is not callable\n", value_get_type(callee_value));
 
-    const function_value_t *function = callee_value.data.as_function;
+    const function_value_t* function = callee_value.data.as_function;
     const ull_t total_arguments = function_call_node->arguments_count;
 
     value_t* eval_values = nullptr;
-    string_view_t* arg_names = nullptr;
-
     if (total_arguments > 0)
     {
         eval_values = (value_t*)calloc(total_arguments, sizeof(value_t));
-        arg_names = (string_view_t*)calloc(total_arguments, sizeof(string_view_t));
-    }
-
-    function_call_argument_node_t *current_arg = function_call_node->arguments;
-    for (ull_t i = 0; i < total_arguments && current_arg; i++, current_arg = current_arg->next)
-    {
-        arg_names[i] = current_arg->name;
-        eval_values[i] = ast_node_evaluate(current_arg->value_expr, context);
+        const function_call_argument_node_t* current_arg = function_call_node->arguments;
+        for (ull_t i = 0; i < total_arguments && current_arg; i++, current_arg = current_arg->next)
+        {
+            eval_values[i] = ast_node_evaluate(current_arg->value_expr, context);
+        }
     }
 
     context_t *local_context = nullptr;
@@ -84,93 +77,49 @@ value_t function_call_node_evaluate(const function_call_node_t *function_call_no
     else
         local_context = context_new(function->parent_context);
 
-
-    const parameter_node_t *param = function->parameter->parameters;
+    const parameter_node_t *parameter = function->parameter->parameters;
     ull_t position_index = 0;
 
-    while (param)
+    while (parameter)
     {
-        if (param->type == PARAMETER_NODE_TYPE_NORMAL)
+        if (parameter->type == PARAMETER_NODE_TYPE_NORMAL)
         {
-            value_t value = {0};
-            bool found = false;
+            if (position_index >= total_arguments)
+                THROW("Missing required argument for parameter '%.*s'\n",
+                      (int)parameter->value.length, parameter->value.data);
 
-            if (position_index < total_arguments && arg_names[position_index].length == 0)
-            {
-                value = eval_values[position_index];
-                position_index++;
-                found = true;
-            }
-            else
-            {
-                for (ull_t i = 0; i < total_arguments; i++)
-                {
-                    if (arg_names[i].length > 0 && string_view_equals(arg_names[i], param->value))
-                    {
-                        value = eval_values[i];
-                        arg_names[i].length = 0;
-                        found = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!found) THROW("Missing required argument for parameter '%.*s'\n", (int)param->value.length, param->value.data);
-
-            context_push(local_context, param->value, value, false);
+            context_push(local_context, parameter->value, eval_values[position_index], false);
+            position_index++;
         }
-        else if (param->type == PARAMETER_NODE_TYPE_ARGS)
+        else if (parameter->type == PARAMETER_NODE_TYPE_ARGS)
         {
-            ull_t remaining = 0;
-            for (ull_t i = position_index; i < total_arguments; i++)
-                if (arg_names[i].length == 0) remaining++;
+            const ull_t remaining = total_arguments - position_index;
 
             value_t* arguments_array = nullptr;
             if (remaining > 0)
             {
                 arguments_array = (value_t*)calloc(remaining, sizeof(value_t));
-                ull_t idx = 0;
-                for (ull_t i = position_index; i < total_arguments; i++)
+                for (ull_t i = 0; i < remaining; i++)
                 {
-                    if (arg_names[i].length == 0)
-                        arguments_array[idx++] = eval_values[i];
+                    arguments_array[i] = eval_values[position_index + i];
                 }
             }
 
-            context_push(local_context, param->value, value_new_array(array_value_new(arguments_array, remaining)), false);
+            context_push(local_context, parameter->value, value_new_array(array_value_new(arguments_array, remaining)), false);
 
             position_index = total_arguments;
         }
-        else if (param->type == PARAMETER_NODE_TYPE_KWARGS)
-        {
-            context_t* kwarguments_context = context_new(nullptr);
 
-            for (ull_t i = 0; i < total_arguments; i++)
-            {
-                if (arg_names[i].length > 0)
-                    context_push(kwarguments_context, arg_names[i], eval_values[i], false);
-            }
-
-            context_push(local_context, param->value, value_new_structure(structure_value_new(kwarguments_context)), false);
-        }
-        param = param->next;
-    }
-
-    for (ull_t i = 0; i < total_arguments; i++)
-    {
-        if (arg_names[i].length > 0) THROW("Unexpected keyword argument '%.*s'\n", (int)arg_names[i].length, arg_names[i].data);
+        parameter = parameter->next;
     }
 
     if (position_index < total_arguments) THROW("Too many positional arguments\n");
 
-    value_t result = function_value_call(function, local_context);
+    const value_t result = function_value_call(function, local_context);
     context_free(local_context);
 
     if (total_arguments > 0)
-    {
         free(eval_values);
-        free(arg_names);
-    }
 
     return result;
 }

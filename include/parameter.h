@@ -15,7 +15,6 @@ typedef enum
 {
     PARAMETER_NODE_TYPE_NORMAL,
     PARAMETER_NODE_TYPE_ARGS,
-    PARAMETER_NODE_TYPE_KWARGS,
 } parameter_node_type_t;
 
 typedef struct PARAMETER_NODE_STRUCT

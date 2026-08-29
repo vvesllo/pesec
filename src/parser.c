@@ -179,27 +179,10 @@ ast_node_t *parser_parse_function_call(parser_t *parser, ast_node_t* callee)
         function_call_argument_node_t* arguments_tail = nullptr;
         do
         {
-            ast_node_t* argument_node = parser_parse_statement(parser);
-
-            string_view_t argument_name = {0};
-            ast_node_t* value_expr = argument_node;
-
-            if (argument_node->type == AST_NODE_VARIABLE_ASSIGNMENT)
-            {
-                if (argument_node->node.variable_assignment->target->type == AST_NODE_VARIABLE)
-                {
-                    argument_name = argument_node->node.variable_assignment->target->node.variable->name;
-                    value_expr = argument_node->node.variable_assignment->value;
-
-                    argument_node->node.variable_assignment->target = nullptr;
-                    argument_node->node.variable_assignment->value = nullptr;
-                    free(argument_node->node.variable_assignment);
-                    free(argument_node);
-                }
-            }
+            ast_node_t* value_expr = parser_parse_statement(parser);
 
             const auto new_arg = (function_call_argument_node_t*)malloc(sizeof(function_call_argument_node_t));
-            new_arg->name = argument_name;
+            new_arg->name = (string_view_t){0};
             new_arg->value_expr = value_expr;
             new_arg->next = nullptr;
 
@@ -215,8 +198,7 @@ ast_node_t *parser_parse_function_call(parser_t *parser, ast_node_t* callee)
 
             if (!parser_match(parser, TOKEN_TYPE_COMMA)) break;
             parser_eat(parser, TOKEN_TYPE_COMMA);
-
-        } while (1);
+        } while (true);
     }
 
     parser_eat(parser, TOKEN_TYPE_RPAREN);
@@ -235,40 +217,20 @@ ast_node_t *parser_parse_function_definition(parser_t *parser)
 
     if (!parser_match(parser, TOKEN_TYPE_RPAREN))
     {
-        type = PARAMETER_NODE_TYPE_NORMAL;
-        if (parser_match(parser, TOKEN_TYPE_ASTERISK))
-        {
-            parser_eat(parser, TOKEN_TYPE_ASTERISK);
-            type = PARAMETER_NODE_TYPE_ARGS;
-
-            if (parser_match(parser, TOKEN_TYPE_ASTERISK))
-            {
-                parser_eat(parser, TOKEN_TYPE_ASTERISK);
-                type = PARAMETER_NODE_TYPE_KWARGS;
-            }
-        }
-
-        parameter_push(parameter, parser_eat(parser, TOKEN_TYPE_IDENTIFIER).value.as_string_view, type);
-
-        while (parser_match(parser, TOKEN_TYPE_COMMA))
+        do
         {
             type = PARAMETER_NODE_TYPE_NORMAL;
-            parser_eat(parser, TOKEN_TYPE_COMMA);
 
             if (parser_match(parser, TOKEN_TYPE_ASTERISK))
             {
                 parser_eat(parser, TOKEN_TYPE_ASTERISK);
                 type = PARAMETER_NODE_TYPE_ARGS;
-
-                if (parser_match(parser, TOKEN_TYPE_ASTERISK))
-                {
-                    parser_eat(parser, TOKEN_TYPE_ASTERISK);
-                    type = PARAMETER_NODE_TYPE_KWARGS;
-                }
             }
-
             parameter_push(parameter, parser_eat(parser, TOKEN_TYPE_IDENTIFIER).value.as_string_view, type);
-        }
+
+            if (!parser_match(parser, TOKEN_TYPE_COMMA)) break;
+            parser_eat(parser, TOKEN_TYPE_COMMA);
+        } while (1);
     }
 
     parser_eat(parser, TOKEN_TYPE_RPAREN);

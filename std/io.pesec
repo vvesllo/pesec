@@ -6,8 +6,12 @@ const stdin  = 0;
 const stdout = 1;
 const stderr = 2;
 
-const print = fn(*text) for i in text cpesec._write(stdout, i);
 const input  = fn() cpesec._read(stdin, 1024);
+const print = fn(*text) for i in text cpesec._write(stdout, i);
+const println = fn(*text) {
+    for i in text cpesec._write(stdout, i);
+    print('\n');
+}
 
 const open = fn(path, mode) {
     const fd = cpesec._open(path, mode);
