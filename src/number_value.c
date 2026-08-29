@@ -15,7 +15,7 @@ static number_value_value_t *number_value_value_new_empty()
     return number_value_value;
 }
 
-static void number_value_value_push_back(number_value_value_t *number_value_value, ull_t digit)
+static void number_value_value_push_back(number_value_value_t *number_value_value, const ull_t digit)
 {
     if (number_value_value->length >= number_value_value->capacity)
     {

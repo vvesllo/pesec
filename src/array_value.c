@@ -26,6 +26,17 @@ void array_value_set(const array_value_t* array_value, const ull_t index, const 
     array_value->values[index] = value;
 }
 
+array_value_t* array_value_concat(const array_value_t* left, const array_value_t* right)
+{
+    const ull_t size = left->size + right->size;
+    const auto values = (value_t*)calloc(size, sizeof(value_t));
+
+    for (int i = 0; i < left->size; i++) values[i] = left->values[i];
+    for (int i = 0; i < right->size; i++) values[left->size + i] = right->values[i];
+
+    return array_value_new(values, size);
+}
+
 void array_value_free(array_value_t* array_value)
 {
     free(array_value->values);

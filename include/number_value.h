@@ -9,6 +9,8 @@ extern "C"
 {
 #endif // __cplusplus
 
+#define NUM_VAL_0 number_value_from_long_double(0)
+
 typedef struct
 {
     ull_t size;

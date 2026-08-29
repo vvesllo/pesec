@@ -25,6 +25,8 @@ value_t array_value_get(const array_value_t* array_value, ull_t index);
 
 void array_value_set(const array_value_t* array_value, ull_t index, value_t value);
 
+array_value_t* array_value_concat(const array_value_t* left, const array_value_t* right);
+
 void array_value_free(array_value_t* array_value);
 
 #ifdef __cplusplus

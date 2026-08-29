@@ -25,6 +25,8 @@ io.println(f(2));
 
 io.println(f);
 
+io.println([1, 2] + [3, 4, 5]);
+
 # *args #
 const g = fn(*args) {
     io.println(args);

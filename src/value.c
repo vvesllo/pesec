@@ -212,6 +212,8 @@ value_t value_operation_add(const value_t left, const value_t right)
         return value_new_number(number_value_add(left.data.as_number, right.data.as_number));
     if (left.type == VALUE_TYPE_STRING && right.type == VALUE_TYPE_STRING)
         return value_new_string(string_value_concat(left.data.as_string, right.data.as_string));
+    if (left.type == VALUE_TYPE_ARRAY && right.type == VALUE_TYPE_ARRAY)
+        return value_new_array(array_value_concat(left.data.as_array, right.data.as_array));
 
     THROW("Unsupported operator '+' for types '%d' and '%d'\n", left.type, right.type);
 }
@@ -233,9 +235,7 @@ value_t value_operation_mul(const value_t left, const value_t right)
 value_t value_operation_div(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
-    {
         return value_new_number(number_value_div(left.data.as_number, right.data.as_number));
-    }
     THROW("Unsupported operator '*' for types '%d' and '%d'\n", left.type, right.type);
 }
 

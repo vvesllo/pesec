@@ -46,7 +46,7 @@ value_t execute_file(const char* filepath, context_t* context)
 
     create_default_values(context);
 
-    const value_t result = ast ? ast_node_evaluate(ast, context) : value_new_number(0);
+    const value_t result = ast ? ast_node_evaluate(ast, context) : value_new_number(NUM_VAL_0);
 
     switch (result.control_flow)
     {
