@@ -49,8 +49,7 @@ void statement_sequence_node_free(statement_sequence_node_t *statement_sequence_
     {
         statement_sequence_node_queue_t *next = current->next;
 
-        if (current->statement)
-            ast_node_free(current->statement);
+        if (current->statement) ast_node_free(current->statement);
 
         free(current);
         current = next;
@@ -64,7 +63,7 @@ value_t statement_sequence_node_evaluate(const statement_sequence_node_t *statem
     value_t result;
     result.reference_count = 1;
     result.type = VALUE_TYPE_NUMBER;
-    result.data.as_number = 0;
+    result.data.as_number = NUM_VAL_0;
     result.control_flow = CONTROL_FLOW_NONE;
 
     const statement_sequence_node_queue_t *current = statement_sequence_node->statements;

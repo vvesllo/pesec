@@ -17,6 +17,7 @@ ast_node_t* array_definition_node_new(ast_node_t* values)
 
 void array_definition_node_free(array_definition_node_t* array_definition_node)
 {
+    ast_node_free(array_definition_node->values);
     free(array_definition_node);
 }
 

@@ -20,8 +20,8 @@ ast_node_t* variable_assignment_node_new(ast_node_t* target, ast_node_t* value)
 
 void variable_assignment_node_free(variable_assignment_node_t* variable_assignment_node)
 {
-    if (variable_assignment_node->target) ast_node_free(variable_assignment_node->target);
-    if (variable_assignment_node->value) ast_node_free(variable_assignment_node->value);
+    ast_node_free(variable_assignment_node->target);
+    ast_node_free(variable_assignment_node->value);
     free(variable_assignment_node);
 }
 

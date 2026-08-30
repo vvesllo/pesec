@@ -14,6 +14,7 @@ ast_node_t* break_node_new(ast_node_t* expression)
 
 void break_node_free(break_node_t* break_node)
 {
+    ast_node_free(break_node->expression);
     free(break_node);
 }
 

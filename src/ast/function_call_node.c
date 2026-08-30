@@ -23,14 +23,12 @@ ast_node_t *function_call_node_new(ast_node_t *callee, function_call_argument_no
 
 void function_call_node_free(function_call_node_t *function_call_node)
 {
-    if (function_call_node->callee)
-        ast_node_free(function_call_node->callee);
+    if (function_call_node->callee) ast_node_free(function_call_node->callee);
 
     function_call_argument_node_t *current = function_call_node->arguments;
     while (current)
     {
-        if (current->value_expr)
-            ast_node_free(current->value_expr);
+        if (current->value_expr) ast_node_free(current->value_expr);
 
         function_call_argument_node_t *next = current->next;
         free(current);

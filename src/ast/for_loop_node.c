@@ -7,7 +7,7 @@
 #include "include/utils/throw.h"
 
 
-ast_node_t* for_loop_node_new(string_view_t iterator, ast_node_t *iterable, ast_node_t *for_body, ast_node_t *else_body)
+ast_node_t* for_loop_node_new(const string_view_t iterator, ast_node_t *iterable, ast_node_t *for_body, ast_node_t *else_body)
 {
     const auto node = (ast_node_t*)malloc(sizeof(ast_node_t));
     node->type = AST_NODE_FOR_LOOP;

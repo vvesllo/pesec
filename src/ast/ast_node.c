@@ -36,6 +36,7 @@ void ast_node_free(ast_node_t* node)
 {
     switch(node->type)
     {
+        case AST_NODE_LITERAL: literal_node_free(node->node.literal); break;
         case AST_NODE_BINARY: binary_op_node_free(node->node.binary_op); break;
         case AST_NODE_VARIABLE: variable_node_free(node->node.variable); break;
         case AST_NODE_VARIABLE_DEFINITION: variable_definition_node_free(node->node.variable_definition); break;
@@ -53,7 +54,6 @@ void ast_node_free(ast_node_t* node)
         case AST_NODE_BREAK: break_node_free(node->node._break); break;
         case AST_NODE_IMPORT: import_node_free(node->node._import); break;
         case AST_NODE_THROW: throw_node_free(node->node._throw); break;
-        case AST_NODE_LITERAL: break;
     }
 
     free(node);

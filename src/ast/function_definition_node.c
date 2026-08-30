@@ -18,6 +18,7 @@ ast_node_t* function_definition_node_new(parameter_t* parameter, ast_node_t* bod
 
 void function_definition_node_free(function_definition_node_t* function_definition_node)
 {
+    parameter_free(function_definition_node->parameter);
     ast_node_free(function_definition_node->body);
     free(function_definition_node);
 }

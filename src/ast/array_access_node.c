@@ -19,6 +19,8 @@ ast_node_t* array_access_node_new(ast_node_t* array, ast_node_t* index)
 
 void array_access_node_free(array_access_node_t* array_access_node)
 {
+    ast_node_free(array_access_node->array);
+    ast_node_free(array_access_node->index);
     free(array_access_node);
 }
 
