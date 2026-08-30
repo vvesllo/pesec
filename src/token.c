@@ -7,7 +7,7 @@ void token_print(FILE* stream, const token_t token)
     switch (token.type)
     {
         case TOKEN_TYPE_NUMBER:
-            fprintf(stream, "number: %Lf", token.value.as_number); break;
+            fprintf(stream, "number: %Lf", number_value_to_long_double(token.value.as_number)); break;
         case TOKEN_TYPE_IDENTIFIER:
             fprintf(stream, "identifier: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
         case TOKEN_TYPE_KEYWORD:
