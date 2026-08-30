@@ -9,6 +9,10 @@
 #include "include/utils/memory.h"
 #include "include/utils/throw.h"
 
+#define PESEC_MAJOR_VERSION 1
+#define PESEC_MINOR_VERSION 0
+#define PESEC_PATCH_VERSION 0
+
 static bool is_tag(const char* arg)
 {
     return strlen(arg) > 2 &&
@@ -23,9 +27,10 @@ static bool arg_equals(const char* arg, const char* value)
 static void print_help()
 {
     printf(
-        "Pesec help\n"
+        "pesec-%d.%d.%d help\n"
         "\t--file [FILE] - run file\n"
-        "\t--nacc [SIZE] - sets number fraction part accuracy\n"
+        "\t--nacc [SIZE] - sets number fraction part accuracy\n",
+        PESEC_MAJOR_VERSION, PESEC_MINOR_VERSION, PESEC_PATCH_VERSION
         );
 }
 
@@ -49,7 +54,7 @@ static void process_args(const int argc, const char** argv)
                 interpret_info_get()->number_accurate = strtoull(argv[i], nullptr, 10);
             }
         }
-        else THROW("Unknown tag: `%s`\n", argv[i]);
+        else THROW("Unknown tag: %s, use 'pesec --help'\n", argv[i]);
         i++;
     }
 }

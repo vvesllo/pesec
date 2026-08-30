@@ -1,3 +1,3 @@
 const io = import "../pesec-std/io.pesec";
 
-io.println(2 / 3);
+io.println(1/3 + 1/3 + 1/3);
