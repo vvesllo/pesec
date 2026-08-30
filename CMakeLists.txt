@@ -53,17 +53,3 @@ add_executable(
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
-
-add_subdirectory(pesec-std/io)
-add_subdirectory(pesec-std/math)
-#add_subdirectory(pesec-std/types)
-#add_subdirectory(pesec-std/network)
-
-target_link_libraries(
-        ${PROJECT_NAME}
-        PRIVATE
-        io
-        math
-#        types
-#        network
-)
