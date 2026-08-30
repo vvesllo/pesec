@@ -5,14 +5,9 @@
 #include "include/context.h"
 #include "include/function_value.h"
 #include "include/utils/execute_file.h"
+#include "include/utils/interpret_info.h"
+#include "include/utils/memory.h"
 #include "include/utils/throw.h"
-
-
-static struct
-{
-    ull_t number_accurate;
-    const char* filename;
-} interpret_info;
 
 static bool is_tag(const char* arg)
 {
@@ -46,12 +41,12 @@ static void process_args(const int argc, const char** argv)
             else if (arg_equals(argv[i], "--file"))
             {
                 if (++i >= argc) THROW("Missing argument for --file\n");
-                interpret_info.filename = argv[i];
+                interpret_info_get()->filename = argv[i];
             }
             else if (arg_equals(argv[i], "--nacc"))
             {
                 if (++i >= argc) THROW("Missing argument for --nacc\n");
-                interpret_info.number_accurate = strtoull(argv[i], nullptr, 10);
+                interpret_info_get()->number_accurate = strtoull(argv[i], nullptr, 10);
             }
         }
         else THROW("Unknown tag: `%s`\n", argv[i]);
@@ -62,17 +57,17 @@ static void process_args(const int argc, const char** argv)
 
 int main(const int argc, const char** argv)
 {
-    interpret_info.number_accurate = 16;
+    interpret_info_get()->number_accurate = 8;
 
     process_args(argc, argv);
 
-    if (!interpret_info.filename)
+    if (!interpret_info_get()->filename)
     {
         print_help();
         return -1;
     }
 
-    const char* filename = interpret_info.filename;
+    const char* filename = interpret_info_get()->filename;
 
     context_t* context = context_new(nullptr);
     const value_t result = execute_file(filename, context);
@@ -80,6 +75,10 @@ int main(const int argc, const char** argv)
         value_print(stderr, result);
 
     context_free(context);
+
+    free(interpret_info_get());
+
+    memory_free(memory_get());
 
     return EXIT_SUCCESS;
 }

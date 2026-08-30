@@ -25,6 +25,9 @@ add_executable(
 
         src/utils/execute_file.c                    include/utils/execute_file.h
         src/utils/string_view.c                     include/utils/string_view.h
+        src/utils/interpret_info.c                  include/utils/interpret_info.h
+        src/utils/memory.c                          include/utils/memory.h
+        src/utils/typedefs.c                        include/utils/typedefs.h
         src/utils/throw.c                           include/utils/throw.h
 
         src/ast/ast_node.c                          include/ast/ast_node.h

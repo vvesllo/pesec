@@ -5,6 +5,7 @@
 #include "include/function_value.h"
 #include "include/lexer.h"
 #include "include/parser.h"
+#include "include/utils/memory.h"
 #include "include/utils/throw.h"
 
 static const char* get_platform()
@@ -33,14 +34,20 @@ value_t execute_file(const char* filepath, context_t* context)
 
     if (!file) THROW("Could not open file %s\n", filepath);
 
+
     fseek(file, 0, SEEK_END);
     const ull_t source_size = ftell(file);
     fseek (file, 0, SEEK_SET);
-    const auto source = (char*)malloc(source_size);
-    fread(source, 1, source_size, file);
+
+    const auto source = memory_push(memory_get(), (memory_value_t) {
+        .value.as_char = (char*)malloc(source_size),
+        .type = MEMORY_VALUE_TYPE_CHAR,
+    });
+
+    fread(source->value.as_char, 1, source_size, file);
     fclose(file);
 
-    lexer_t* lexer = lexer_new(source, source_size);
+    lexer_t* lexer = lexer_new(source->value.as_char, source_size);
     parser_t* parser = parser_new(lexer);
     ast_node_t* ast = parser_parse(parser);
 

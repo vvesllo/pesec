@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+#include "include/utils/interpret_info.h"
 #include "include/utils/throw.h"
 
 static number_value_value_t *number_value_value_new_empty()
@@ -565,7 +567,7 @@ number_value_t* number_value_div(const number_value_t* left, const number_value_
     number_value_value_trim_lead(q_dec);
 
     number_value_value_t* q_frac = number_value_value_new_empty();
-    constexpr ull_t max_frac = 128;
+    const ull_t max_frac = interpret_info_get()->number_accurate;
     ull_t frac_count = 0;
 
     for (ull_t i = 0; i < A->fraction->length && frac_count < max_frac; i++)
@@ -622,8 +624,8 @@ number_value_t *number_value_from_long_double(const long double value)
 
     const bool negative = (value < 0.0);
     const long double abs_val = negative ? -value : value;
-    char buffer[128];
-    snprintf(buffer, sizeof(buffer), "%.17Lf", abs_val);
+    char* buffer = alloca(interpret_info_get()->number_accurate);
+    snprintf(buffer, interpret_info_get()->number_accurate * sizeof(char), "%.*Lf", (unsigned int)interpret_info_get()->number_accurate, abs_val);
 
     const char *dot = strchr(buffer, '.');
     string_view_t decimal_sv, fraction_sv;
