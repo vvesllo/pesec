@@ -79,7 +79,7 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
 
         if (!handle) THROW("%s\n", dlerror());
 
-        void (*init_lib)(context_t*) = dlsym(handle, "init_lib");
+        void (*module_init)(context_t*) = dlsym(handle, "module_init");
 
         if ((error = dlerror()) != nullptr)
         {
@@ -87,7 +87,7 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
             THROW("%s\n", error);
         }
 
-        init_lib(module_context);
+        module_init(module_context);
 
         dlclose(handle);
     }
