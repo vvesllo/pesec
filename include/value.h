@@ -39,7 +39,7 @@ typedef union
     module_value_t* as_module;
 } value_value_t;
 
-typedef struct
+typedef struct VALUE_STRUCT
 {
     ull_t reference_count;
     value_type_t type;

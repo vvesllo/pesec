@@ -9,7 +9,7 @@ extern "C"
 {
 #endif // __cplusplus
 
-typedef struct
+typedef struct STRING_VALUE_STRUCT
 {
     char* data;
     ull_t size;

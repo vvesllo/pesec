@@ -19,7 +19,7 @@ typedef struct
     ull_t* data;
 } number_value_value_t;
 
-typedef struct
+typedef struct NUMBER_VALUE_STRUCT
 {
     bool negative;
     number_value_value_t* decimal;
