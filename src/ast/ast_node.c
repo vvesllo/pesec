@@ -11,6 +11,7 @@ value_t ast_node_evaluate(const ast_node_t* node, context_t* context)
     {
         case AST_NODE_LITERAL: return literal_node_evaluate(node->node.literal, context);
         case AST_NODE_BINARY: return binary_op_node_evaluate(node->node.binary_op, context);
+        case AST_NODE_UNARY: return unary_op_node_evaluate(node->node.unary_op, context);
         case AST_NODE_VARIABLE: return variable_node_evaluate(node->node.variable, context);
         case AST_NODE_VARIABLE_DEFINITION: return variable_definition_node_evaluate(node->node.variable_definition, context);
         case AST_NODE_VARIABLE_ASSIGNMENT: return variable_assignment_node_evaluate(node->node.variable_assignment, context);
@@ -38,6 +39,7 @@ void ast_node_free(ast_node_t* node)
     {
         case AST_NODE_LITERAL: literal_node_free(node->node.literal); break;
         case AST_NODE_BINARY: binary_op_node_free(node->node.binary_op); break;
+        case AST_NODE_UNARY: unary_op_node_free(node->node.unary_op); break;
         case AST_NODE_VARIABLE: variable_node_free(node->node.variable); break;
         case AST_NODE_VARIABLE_DEFINITION: variable_definition_node_free(node->node.variable_definition); break;
         case AST_NODE_VARIABLE_ASSIGNMENT: variable_assignment_node_free(node->node.variable_assignment); break;

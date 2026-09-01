@@ -446,11 +446,28 @@ ast_node_t *parser_parse_expression(parser_t *parser)
 
 ast_node_t *parser_parse_term(parser_t *parser)
 {
-    ast_node_t *left = parser_parse_factor(parser);
+    ast_node_t *left = parser_parse_power(parser);
     ast_node_t *right = nullptr;
 
     while (parser_match(parser, TOKEN_TYPE_ASTERISK) ||
-           parser_match(parser, TOKEN_TYPE_SLASH))
+        parser_match(parser, TOKEN_TYPE_SLASH) ||
+        parser_match(parser, TOKEN_TYPE_SLASH_SLASH))
+    {
+        const token_t operation = parser_eat(parser, parser->current_token.type);
+
+        right = parser_parse_power(parser);
+        left = binary_op_node_new(operation, left, right);
+    }
+
+    return left;
+}
+
+ast_node_t *parser_parse_power(parser_t *parser)
+{
+    ast_node_t *left = parser_parse_factor(parser);
+    ast_node_t *right = nullptr;
+
+    while (parser_match(parser, TOKEN_TYPE_ASTERISK_ASTERISK))
     {
         const token_t operation = parser_eat(parser, parser->current_token.type);
 
@@ -463,6 +480,15 @@ ast_node_t *parser_parse_term(parser_t *parser)
 
 ast_node_t *parser_parse_factor(parser_t *parser)
 {
+    if (parser_match(parser, TOKEN_TYPE_MINUS) ||
+        parser_match(parser, TOKEN_TYPE_PLUS) ||
+        parser_match(parser, TOKEN_TYPE_EXCLAMATION_MARK))
+    {
+        const token_t op = parser_eat(parser, parser->current_token.type);
+        ast_node_t *operand = parser_parse_factor(parser);
+        return unary_op_node_new(op, operand);
+    }
+
     ast_node_t *node = nullptr;
 
     switch (parser->current_token.type)

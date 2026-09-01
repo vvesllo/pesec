@@ -103,6 +103,10 @@ void value_print_module(FILE* stream, const module_value_t* value);
 
 void value_print_array(FILE* stream, const array_value_t* value);
 
+value_t value_operation_not(value_t value);
+
+value_t value_operation_negate(value_t value);
+
 value_t value_operation_add(value_t left, value_t right);
 
 value_t value_operation_sub(value_t left, value_t right);
@@ -111,8 +115,13 @@ value_t value_operation_mul(value_t left, value_t right);
 
 value_t value_operation_div(value_t left, value_t right);
 
+value_t value_operation_floor_div(value_t left, value_t right);
+
+value_t value_operation_pow(value_t left, value_t right);
 
 value_t value_operation_equals(value_t left, value_t right);
+
+value_t value_operation_not_equals(value_t left, value_t right);
 
 value_t value_operation_less_or_equals(value_t left, value_t right);
 

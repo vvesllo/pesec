@@ -72,6 +72,8 @@ ast_node_t *parser_parse_expression(parser_t *parser);
 
 ast_node_t *parser_parse_term(parser_t *parser);
 
+ast_node_t *parser_parse_power(parser_t *parser);
+
 ast_node_t *parser_parse_factor(parser_t *parser);
 
 void parser_free(parser_t *parser);

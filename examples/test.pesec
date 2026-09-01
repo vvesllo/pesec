@@ -1,0 +1,2 @@
+const io = import "std/io.pesec";
+io.print(-1);

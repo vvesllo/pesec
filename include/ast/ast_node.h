@@ -19,12 +19,14 @@
 #include "for_loop_node.h"
 #include "import_node.h"
 #include "throw_node.h"
+#include "unary_op_node.h"
 
 #include "include/context.h"
 
 typedef enum
 {
     AST_NODE_LITERAL,
+    AST_NODE_UNARY,
     AST_NODE_BINARY,
     AST_NODE_VARIABLE,
     AST_NODE_VARIABLE_DEFINITION,
@@ -51,6 +53,7 @@ typedef struct AST_NODE_STRUCT
     {
         literal_node_t* literal;
         binary_op_node_t* binary_op;
+        unary_op_node_t* unary_op;
         variable_node_t* variable;
         variable_definition_node_t* variable_definition;
         variable_assignment_node_t* variable_assignment;

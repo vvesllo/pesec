@@ -21,12 +21,19 @@ context_t* context_new(context_t* parent)
 
 ull_t context_hash(const context_t* context, const string_view_t key)
 {
-    unsigned long long sum = 0;
-    for (unsigned long long i = 0; i < key.length; i++)
+    constexpr ull_t FNV_OFFSET = 14695981039346656037ULL;
+
+    ull_t hash = FNV_OFFSET;
+    const auto data = (const unsigned char*)key.data;
+
+    for (ull_t i = 0; i < key.length; i++)
     {
-        sum += (key.data[i] * (i + 256)) ^ 'f' ^ 'u' ^ 'c' ^ 'k';
+        constexpr ull_t FNV_PRIME  = 1099511628211ULL;
+        hash ^= (ull_t)data[i];
+        hash *= FNV_PRIME;
     }
-    return sum % context->capacity;
+
+    return hash % context->capacity;
 }
 
 void context_push(context_t* context, const string_view_t key, value_t value, const bool constant)

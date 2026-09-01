@@ -187,20 +187,13 @@ void value_print(FILE *stream, const value_t value)
 {
     switch (value.type)
     {
-        case VALUE_TYPE_STRING: value_print_string(stream, value.data.as_string);
-            return;
-        case VALUE_TYPE_NUMBER: value_print_number(stream, value.data.as_number);
-            return;
-        case VALUE_TYPE_BOOLEAN: value_print_boolean(stream, value.data.as_bool);
-            return;
-        case VALUE_TYPE_FUNCTION: value_print_function(stream, value.data.as_function);
-            return;
-        case VALUE_TYPE_STRUCTURE: value_print_structure(stream, value.data.as_structure);
-            return;
-        case VALUE_TYPE_ARRAY: value_print_array(stream, value.data.as_array);
-            return;
-        case VALUE_TYPE_MODULE: value_print_module(stream, value.data.as_module);
-            return;
+        case VALUE_TYPE_STRING: value_print_string(stream, value.data.as_string); return;
+        case VALUE_TYPE_NUMBER: value_print_number(stream, value.data.as_number); return;
+        case VALUE_TYPE_BOOLEAN: value_print_boolean(stream, value.data.as_bool); return;
+        case VALUE_TYPE_FUNCTION: value_print_function(stream, value.data.as_function); return;
+        case VALUE_TYPE_STRUCTURE: value_print_structure(stream, value.data.as_structure); return;
+        case VALUE_TYPE_ARRAY: value_print_array(stream, value.data.as_array); return;
+        case VALUE_TYPE_MODULE: value_print_module(stream, value.data.as_module); return;
     }
 
     THROW("Value type '%d' is not a valid value type\n", value.type);
@@ -213,6 +206,8 @@ void value_print_string(FILE *stream, const string_value_t *value)
 
 void value_print_number(FILE *stream, const number_value_t *value)
 {
+    if (value->negative) fprintf(stream, "-");
+
     for (ull_t i = 0; i < value->decimal->length; ++i)
         fprintf(stream, "%llu", value->decimal->data[i]);
 
@@ -255,6 +250,19 @@ void value_print_array(FILE *stream, const array_value_t *value)
     fprintf(stream, "]");
 }
 
+value_t value_operation_not(const value_t value)
+{
+    return value_new_boolean(!value_get_boolean(value));
+}
+
+value_t value_operation_negate(const value_t value)
+{
+    if (value.type == VALUE_TYPE_NUMBER)
+        return value_new_number(number_value_negate(value.data.as_number));
+
+    THROW("Unsupported operator '-' for '%s'\n", value_get_type(value));
+}
+
 value_t value_operation_add(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
@@ -264,28 +272,42 @@ value_t value_operation_add(const value_t left, const value_t right)
     if (left.type == VALUE_TYPE_ARRAY && right.type == VALUE_TYPE_ARRAY)
         return value_new_array(array_value_concat(left.data.as_array, right.data.as_array));
 
-    THROW("Unsupported operator '+' for types '%d' and '%d'\n", left.type, right.type);
+    THROW("Unsupported operator '+' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
 value_t value_operation_sub(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
         return value_new_number(number_value_sub(left.data.as_number, right.data.as_number));
-    THROW("Unsupported operator '-' for types '%d' and '%d'\n", left.type, right.type);
+    THROW("Unsupported operator '-' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
 value_t value_operation_mul(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
         return value_new_number(number_value_mul(left.data.as_number, right.data.as_number));
-    THROW("Unsupported operator '*' for types '%d' and '%d'\n", left.type, right.type);
+    THROW("Unsupported operator '*' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
 value_t value_operation_div(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
         return value_new_number(number_value_div(left.data.as_number, right.data.as_number));
-    THROW("Unsupported operator '*' for types '%d' and '%d'\n", left.type, right.type);
+    THROW("Unsupported operator '/' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
+}
+
+value_t value_operation_floor_div(const value_t left, const value_t right){
+
+    if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
+        return value_new_number(number_value_floor_div(left.data.as_number, right.data.as_number));
+    THROW("Unsupported operator '//' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
+}
+
+value_t value_operation_pow(const value_t left, const value_t right)
+{
+    if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
+        return value_new_number(number_value_pow(left.data.as_number, right.data.as_number));
+    THROW("Unsupported operator '**' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
 value_t value_operation_equals(const value_t left, const value_t right)

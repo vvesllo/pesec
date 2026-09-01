@@ -33,8 +33,11 @@ value_t binary_op_node_evaluate(const binary_op_node_t* binary_op_node, context_
     {
         case TOKEN_TYPE_PLUS: return value_operation_add(left_value, right_value);
         case TOKEN_TYPE_MINUS: return value_operation_sub(left_value, right_value);
-        case TOKEN_TYPE_ASTERISK: return value_operation_mul(left_value, right_value);
         case TOKEN_TYPE_SLASH: return value_operation_div(left_value, right_value);
+        case TOKEN_TYPE_SLASH_SLASH: return value_operation_floor_div(left_value, right_value);
+        case TOKEN_TYPE_ASTERISK: return value_operation_mul(left_value, right_value);
+        case TOKEN_TYPE_ASTERISK_ASTERISK: return value_operation_pow(left_value, right_value);
+
 
         case TOKEN_TYPE_EQUALS_EQUALS: return value_operation_equals(left_value, right_value);
         case TOKEN_TYPE_LESS_EQUALS: return value_operation_less_or_equals(left_value, right_value);
