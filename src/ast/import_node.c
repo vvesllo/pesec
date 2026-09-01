@@ -79,7 +79,7 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
 
         if (!handle) THROW("%s\n", dlerror());
 
-        void (*module_init)(context_t*) = dlsym(handle, "module_init");
+        void (*pesec_module_init)(context_t*) = dlsym(handle, "pesec_module_init");
 
         if ((error = dlerror()) != nullptr)
         {
@@ -87,9 +87,9 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
             THROW("%s\n", error);
         }
 
-        module_init(module_context);
+        pesec_module_init(module_context);
 
-        dlclose(handle);
+        // dlclose(handle);
     }
 
     return value_new_module(module_value_new(module_context));
