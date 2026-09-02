@@ -148,7 +148,7 @@ ast_node_t *parser_parse_variable_definition(parser_t *parser, const bool consta
 {
     const string_view_t name = parser_eat(parser, TOKEN_TYPE_IDENTIFIER).value.as_string_view;
 
-    ast_node_t *value = literal_node_new(value_new_number(number_value_from_long_double(0.0L)));
+    ast_node_t *value = literal_node_new(value_new_number(NUM_VAL_0));
 
     if (parser_match(parser, TOKEN_TYPE_EQUALS))
     {

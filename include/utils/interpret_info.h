@@ -4,7 +4,7 @@
 
 typedef struct INTERPRET_INFO_STRUCT
 {
-    ull_t number_accurate;
+    ull_t number_accuracy;
     const char* filename;
 } interpret_info_t;
 

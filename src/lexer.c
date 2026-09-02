@@ -92,66 +92,31 @@ token_t lexer_next_token(lexer_t* lexer)
 
 token_t lexer_next_number(lexer_t* lexer)
 {
+    const unsigned long long begin = lexer->i;
     bool has_dot = false;
-    ull_t dot_index = 0;
 
-    const ull_t begin = lexer->i;
-
-    while (lexer_can_advance(lexer))
+    while (lexer_can_advance(lexer) && (isdigit(lexer_get_current_char(lexer)) || lexer_get_current_char(lexer) == '.'))
     {
-        const char current = lexer_get_current_char(lexer);
-        if (isdigit(current))
+        if (lexer_get_current_char(lexer) == '.')
         {
-            lexer_advance(lexer);
-        }
-        else if (current == '.')
-        {
-            if (has_dot) THROW("Invalid number at line %llu: multiple dots\n", lexer->line);
+            if (has_dot) THROW("Invalid number at line %llu\n", lexer->line);
             has_dot = true;
-            dot_index = lexer->i;
-            lexer_advance(lexer);
         }
-        else break;
+        lexer_advance(lexer);
     }
 
-    const ull_t end = lexer->i;
-
-    if (has_dot)
-    {
-        if (dot_index == begin) THROW("Invalid number at line %llu: missing decimal\n", lexer->line);
-        if (end == dot_index + 1) THROW("Invalid number at line %llu: missing fraction\n", lexer->line);
-
-        return (token_t) {
-            .line = lexer->line,
-            .type = TOKEN_TYPE_NUMBER,
-            .value.as_number = number_value_new(
-                (string_view_t) {
-                    .data = lexer->source + begin,
-                    .length = dot_index - begin
-                },
-                (string_view_t) {
-                    .data = lexer->source + dot_index + 1,
-                    .length = end - dot_index - 1
-                }
-            )
-        };
-    }
+    const auto value = (string_view_t) {
+        .data = lexer->source + begin,
+        .length = lexer->i - begin,
+    };
 
     return (token_t) {
         .line = lexer->line,
+        .value.as_number = number_value_new(value),
         .type = TOKEN_TYPE_NUMBER,
-        .value.as_number = number_value_new(
-            (string_view_t) {
-                .data = lexer->source + begin,
-                .length = end - begin
-            },
-            (string_view_t) {
-                    .data = lexer->source + begin,
-                    .length = 0
-            }
-        )
     };
 }
+
 
 token_t lexer_next_identifier(lexer_t* lexer)
 {

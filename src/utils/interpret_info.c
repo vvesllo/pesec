@@ -8,7 +8,7 @@ interpret_info_t* interpret_info_get()
     if (!interpret_info)
     {
         interpret_info = (interpret_info_t*)malloc(sizeof(interpret_info_t));
-        interpret_info->number_accurate=16;
+        interpret_info->number_accuracy=16;
         interpret_info->filename="stdin";
     }
 

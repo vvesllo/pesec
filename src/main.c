@@ -51,7 +51,7 @@ static void process_args(const int argc, const char** argv)
             else if (arg_equals(argv[i], "--nacc"))
             {
                 if (++i >= argc) THROW("Missing argument for --nacc\n");
-                interpret_info_get()->number_accurate = strtoull(argv[i], nullptr, 10);
+                interpret_info_get()->number_accuracy = strtoull(argv[i], nullptr, 10);
             }
         }
         else THROW("Unknown tag: %s, use 'pesec --help'\n", argv[i]);
@@ -62,7 +62,7 @@ static void process_args(const int argc, const char** argv)
 
 int main(const int argc, const char** argv)
 {
-    interpret_info_get()->number_accurate = 8;
+    interpret_info_get()->number_accuracy = 8;
 
     process_args(argc, argv);
 

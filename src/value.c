@@ -26,7 +26,7 @@ value_t value_new_string(string_value_t *data)
     return value;
 }
 
-value_t value_new_number(number_value_t *data)
+value_t value_new_number(number_value_t* data)
 {
     value_t value = value_new();
     value.type = VALUE_TYPE_NUMBER;
@@ -155,7 +155,7 @@ bool value_get_boolean(const value_t value)
 {
     switch (value.type)
     {
-        case VALUE_TYPE_NUMBER: return value.data.as_number->decimal->size;
+        case VALUE_TYPE_NUMBER: return true; // uhhhh
         case VALUE_TYPE_STRING: return value.data.as_string->size != 0;
         case VALUE_TYPE_BOOLEAN: return value.data.as_bool;
         case VALUE_TYPE_FUNCTION:
@@ -208,15 +208,9 @@ void value_print_number(FILE *stream, const number_value_t *value)
 {
     if (value->negative) fprintf(stream, "-");
 
-    for (ull_t i = 0; i < value->decimal->length; ++i)
-        fprintf(stream, "%llu", value->decimal->data[i]);
-
-    if (value->fraction->length > 0)
-    {
-        fprintf(stream, ".");
-        for (ull_t i = 0; i < value->fraction->length; ++i)
-            fprintf(stream, "%llu", value->fraction->data[i]);
-    }
+    for (ull_t i=0; i < value->mantissa->size; i++)
+        fprintf(stream, "%d",
+            number_value_mantissa_get_digit(value->mantissa, i));
 }
 
 void value_print_boolean(FILE *stream, const bool value)
