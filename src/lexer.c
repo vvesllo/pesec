@@ -112,7 +112,7 @@ token_t lexer_next_number(lexer_t* lexer)
 
     return (token_t) {
         .line = lexer->line,
-        .value.as_number = number_value_new(value),
+        .value.as_number = number_value_from_sv(value),
         .type = TOKEN_TYPE_NUMBER,
     };
 }

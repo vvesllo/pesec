@@ -28,7 +28,7 @@ ull_t context_hash(const context_t* context, const string_view_t key)
 
     for (ull_t i = 0; i < key.length; i++)
     {
-        constexpr ull_t FNV_PRIME  = 1099511628211ULL;
+        constexpr ull_t FNV_PRIME = 1099511628211ULL;
         hash ^= (ull_t)data[i];
         hash *= FNV_PRIME;
     }

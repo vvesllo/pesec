@@ -10,7 +10,7 @@
 #include "include/utils/throw.h"
 
 
-value_t value_new()
+static value_t value_new()
 {
     return (value_t){
         .reference_count = 1,
@@ -206,11 +206,37 @@ void value_print_string(FILE *stream, const string_value_t *value)
 
 void value_print_number(FILE *stream, const number_value_t *value)
 {
+    const ull_t significant = number_value_mantissa_significant_size(value->mantissa);
+
+    if (significant == 0)
+    {
+        fprintf(stream, "0");
+        return;
+    }
+
     if (value->negative) fprintf(stream, "-");
 
-    for (ull_t i=0; i < value->mantissa->size; i++)
-        fprintf(stream, "%d",
-            number_value_mantissa_get_digit(value->mantissa, i));
+    const ull_t exponent = value->exponent;
+    const ull_t offset = value->mantissa->size - significant; /* skip leading zeros */
+    const ull_t integer_digits = significant > exponent ? significant - exponent : 0;
+    const ull_t fractional_zeros = significant > exponent ? 0 : exponent - significant;
+    const ull_t fractional_digits = significant > exponent ? exponent : significant;
+
+    if (integer_digits == 0) fprintf(stream, "0");
+
+    for (ull_t i = 0; i < integer_digits; ++i)
+        fprintf(stream, "%d", number_value_mantissa_get_digit(value->mantissa, offset + i));
+
+    if (fractional_digits > 0)
+    {
+        fprintf(stream, ".");
+
+        for (ull_t i = 0; i < fractional_zeros; ++i)
+            fprintf(stream, "0");
+
+        for (ull_t i = 0; i < fractional_digits; ++i)
+            fprintf(stream, "%d", number_value_mantissa_get_digit(value->mantissa, offset + integer_digits + i));
+    }
 }
 
 void value_print_boolean(FILE *stream, const bool value)
@@ -290,8 +316,8 @@ value_t value_operation_div(const value_t left, const value_t right)
     THROW("Unsupported operator '/' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
-value_t value_operation_floor_div(const value_t left, const value_t right){
-
+value_t value_operation_floor_div(const value_t left, const value_t right)
+{
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
         return value_new_number(number_value_floor_div(left.data.as_number, right.data.as_number));
     THROW("Unsupported operator '//' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
@@ -310,6 +336,8 @@ value_t value_operation_equals(const value_t left, const value_t right)
         return value_new_boolean(number_value_compare(left.data.as_number, right.data.as_number) == 0);
     if (left.type == VALUE_TYPE_STRING && right.type == VALUE_TYPE_STRING)
         return value_new_boolean(string_value_equals(left.data.as_string, right.data.as_string));
+    if (left.type == VALUE_TYPE_BOOLEAN && right.type == VALUE_TYPE_BOOLEAN)
+        return value_new_boolean(left.data.as_string == right.data.as_string);
     return value_new_boolean(false);
 }
 

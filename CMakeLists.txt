@@ -53,4 +53,5 @@ add_executable(
         src/ast/throw_node.c                        include/ast/throw_node.h
 )
 
+target_link_libraries(${PROJECT_NAME} PRIVATE m)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})

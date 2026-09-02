@@ -9,7 +9,7 @@ extern "C"
 {
 #endif // __cplusplus
 
-#define NUM_VAL_0 number_value_new(string_view_from("0"))
+#define NUM_VAL_0 number_value_from_sv(string_view_from("0"))
 
 typedef struct
 {
@@ -22,24 +22,32 @@ typedef struct NUMBER_VALUE_STRUCT
 {
     bool negative;
     number_value_mantissa_t* mantissa;
-    ull_t exponent;
+    ull_t exponent; // 10^{-exponent}
 } number_value_t;
 
-void number_value_mantissa_set_digit(const number_value_mantissa_t* number_value_mantissa, const ull_t index, unsigned char digit);
+void number_value_mantissa_set_digit(const number_value_mantissa_t* number_value_mantissa, ull_t index, unsigned char digit);
 
 void number_value_mantissa_push_digit(number_value_mantissa_t* number_value_mantissa, unsigned char digit);
 
-unsigned char number_value_mantissa_get_digit(const number_value_mantissa_t* number_value_mantissa, const ull_t index);
+unsigned char number_value_mantissa_get_digit(const number_value_mantissa_t* number_value_mantissa, ull_t index);
 
-number_value_t* number_value_new(string_view_t number_string_view);
+ull_t number_value_mantissa_significant_size(const number_value_mantissa_t* number_value_mantissa);
+
+number_value_t* number_value_from_sv(string_view_t string_view);
+
+number_value_t* number_value_new(number_value_mantissa_t* mantissa, ull_t exponent);
 
 void number_value_free(number_value_t* number_value);
 
-long double number_value_to_long_double(number_value_t* number_value);
+long double number_value_to_long_double(const number_value_t* number_value);
 
 number_value_t *number_value_from_long_double(long double value);
 
 number_value_t* number_value_negate(const number_value_t* number_value);
+
+unsigned char number_value_aligned_digit_from_lsb(const number_value_t* number_value, ull_t aligned_exponent, ull_t index);
+
+int number_value_compare_abs(const number_value_t* left, const number_value_t* right);
 
 short number_value_compare(const number_value_t* left, const number_value_t* right);
 

@@ -47,8 +47,6 @@ typedef struct VALUE_STRUCT
     control_flow_t control_flow;
 } value_t;
 
-value_t value_new();
-
 value_t value_new_string(string_value_t* data);
 
 value_t value_new_number(number_value_t* data);
