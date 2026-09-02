@@ -29,7 +29,7 @@ value_t break_node_evaluate(const break_node_t* break_node, context_t* context)
     }
     else
     {
-        result = value_new_number_cf(0, CONTROL_FLOW_BREAK);
+        result = value_new_null_cf(CONTROL_FLOW_BREAK);
     }
 
     return result;

@@ -59,7 +59,7 @@ value_t execute_file(const char* filepath, context_t* context)
     {
         case CONTROL_FLOW_BREAK: THROW("Break outside of loop\n"); break;
         case CONTROL_FLOW_CONTINUE: THROW("Continue outside of loop\n"); break;
-        case CONTROL_FLOW_THROW:
+        case CONTROL_FLOW_PANIC:
         default: break;
     }
 

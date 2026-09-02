@@ -25,7 +25,7 @@ void function_definition_node_free(function_definition_node_t* function_definiti
 
 value_t function_definition_node_evaluate(const function_definition_node_t* function_definition_node, context_t* context)
 {
-    const auto value = value_new_function(
+    return value_new_function(
         function_value_new(
             function_definition_node->parameter,
             (function_value_value_t){
@@ -35,5 +35,4 @@ value_t function_definition_node_evaluate(const function_definition_node_t* func
             context
         )
     );
-    return value;
 }

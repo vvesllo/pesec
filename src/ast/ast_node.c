@@ -25,9 +25,10 @@ value_t ast_node_evaluate(const ast_node_t* node, context_t* context)
         case AST_NODE_CONDITION: return condition_node_evaluate(node->node.condition, context);
         case AST_NODE_WHILE_LOOP: return while_loop_node_evaluate(node->node.while_loop, context);
         case AST_NODE_FOR_LOOP: return for_loop_node_evaluate(node->node.for_loop, context);
+        case AST_NODE_PANIC: return panic_node_evaluate(node->node.panic, context);
         case AST_NODE_BREAK: return break_node_evaluate(node->node._break, context);
         case AST_NODE_IMPORT: return import_node_evaluate(node->node._import, context);
-        case AST_NODE_THROW: return throw_node_evaluate(node->node._throw, context);
+        case AST_NODE_RETURN: return return_node_evaluate(node->node._return, context);
     }
 
     THROW("Unknown node type: %d\n", node->type);
@@ -53,9 +54,10 @@ void ast_node_free(ast_node_t* node)
         case AST_NODE_CONDITION: condition_node_free(node->node.condition); break;
         case AST_NODE_WHILE_LOOP: while_loop_node_free(node->node.while_loop); break;
         case AST_NODE_FOR_LOOP: for_loop_node_free(node->node.for_loop); break;
+        case AST_NODE_PANIC: panic_node_free(node->node.panic); break;
         case AST_NODE_BREAK: break_node_free(node->node._break); break;
         case AST_NODE_IMPORT: import_node_free(node->node._import); break;
-        case AST_NODE_THROW: throw_node_free(node->node._throw); break;
+        case AST_NODE_RETURN: return_node_free(node->node._return); break;
     }
 
     free(node);

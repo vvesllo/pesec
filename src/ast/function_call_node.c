@@ -119,5 +119,8 @@ value_t function_call_node_evaluate(const function_call_node_t *function_call_no
     if (total_arguments > 0)
         free(eval_values);
 
-    return result;
+    if (result.control_flow == CONTROL_FLOW_RETURN)
+        return result;
+
+    return value_new_null();
 }

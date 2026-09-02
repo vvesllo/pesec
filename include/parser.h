@@ -62,7 +62,9 @@ ast_node_t *parser_parse_break(parser_t *parser);
 
 ast_node_t *parser_parse_import(parser_t *parser);
 
-ast_node_t *parser_parse_throw(parser_t *parser);
+ast_node_t *parser_parse_panic(parser_t *parser);
+
+ast_node_t *parser_parse_return(parser_t *parser);
 
 ast_node_t *parser_parse_statement(parser_t *parser);
 

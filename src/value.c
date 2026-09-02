@@ -76,6 +76,14 @@ value_t value_new_array(array_value_t *data)
     return value;
 }
 
+value_t value_new_null()
+{
+    value_t value = value_new();
+    value.type = VALUE_TYPE_NULL;
+    value.data.as_null = nullptr;
+    return value;
+}
+
 value_t value_new_string_cf(string_value_t *data, const control_flow_t control_flow)
 {
     value_t value = value_new_string(data);
@@ -125,6 +133,13 @@ value_t value_new_array_cf(array_value_t *data, const control_flow_t control_flo
     return value;
 }
 
+value_t value_new_null_cf(const control_flow_t control_flow)
+{
+    value_t value = value_new_null();
+    value.control_flow = control_flow;
+    return value;
+}
+
 void value_free(const value_t *value)
 {
     switch (value->type)
@@ -164,6 +179,7 @@ bool value_get_boolean(const value_t value)
         case VALUE_TYPE_ARRAY:
         case VALUE_TYPE_MODULE:
         case VALUE_TYPE_STRUCTURE: return true;
+        case VALUE_TYPE_NULL: return false;
     }
 
     THROW("Value type '%d' is not a valid value type\n", value.type);
@@ -180,6 +196,7 @@ char *value_get_type(const value_t value)
         case VALUE_TYPE_STRUCTURE: return "structure";
         case VALUE_TYPE_ARRAY: return "array";
         case VALUE_TYPE_MODULE: return "module";
+        case VALUE_TYPE_NULL: return "null";
     }
 
     THROW("Value type '%d' is not a valid value type\n", value.type);
@@ -196,6 +213,7 @@ void value_print(FILE *stream, const value_t value)
         case VALUE_TYPE_STRUCTURE: value_print_structure(stream, value.data.as_structure); return;
         case VALUE_TYPE_ARRAY: value_print_array(stream, value.data.as_array); return;
         case VALUE_TYPE_MODULE: value_print_module(stream, value.data.as_module); return;
+        case VALUE_TYPE_NULL: fprintf(stream, "null"); return;
     }
 
     THROW("Value type '%d' is not a valid value type\n", value.type);

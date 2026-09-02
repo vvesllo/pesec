@@ -45,12 +45,13 @@ add_executable(
         src/ast/variable_definition_node.c          include/ast/variable_definition_node.h
         src/ast/variable_assignment_node.c          include/ast/variable_assignment_node.h
         src/ast/import_node.c                       include/ast/import_node.h
+        src/ast/return_node.c                       include/ast/return_node.h
 
         src/ast/condition_node.c                    include/ast/condition_node.h
         src/ast/while_loop_node.c                   include/ast/while_loop_node.h
         src/ast/for_loop_node.c                     include/ast/for_loop_node.h
         src/ast/break_node.c                        include/ast/break_node.h
-        src/ast/throw_node.c                        include/ast/throw_node.h
+        src/ast/panic_node.c include/ast/panic_node.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE m)

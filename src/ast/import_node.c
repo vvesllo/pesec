@@ -68,7 +68,7 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
         {
             case CONTROL_FLOW_BREAK: THROW("Break outside of loop\n"); break;
             case CONTROL_FLOW_CONTINUE: THROW("Continue outside of loop\n"); break;
-            case CONTROL_FLOW_THROW: context_free(module_context); return result;
+            case CONTROL_FLOW_PANIC: context_free(module_context); return result;
             default: break;
         }
     }

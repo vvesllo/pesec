@@ -76,7 +76,7 @@ int main(const int argc, const char** argv)
 
     context_t* context = context_new(nullptr);
     const value_t result = execute_file(filename, context);
-    if (result.control_flow == CONTROL_FLOW_THROW)
+    if (result.control_flow == CONTROL_FLOW_PANIC)
         value_print(stderr, result);
 
     context_free(context);

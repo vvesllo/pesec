@@ -80,7 +80,8 @@ value_t statement_sequence_node_evaluate(const statement_sequence_node_t *statem
             {
                 case CONTROL_FLOW_BREAK:
                 case CONTROL_FLOW_CONTINUE:
-                case CONTROL_FLOW_THROW:
+                case CONTROL_FLOW_PANIC:
+                case CONTROL_FLOW_RETURN:
                     return result;
                 default: break;
             }

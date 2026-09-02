@@ -27,14 +27,11 @@ value_t while_loop_node_evaluate(const while_loop_node_t* while_loop_node, conte
 {
     context_t* local_context = context_new(context);
 
-    auto result = value_new_number(NUM_VAL_0);
-
     bool is_stopped = false;
 
     while (value_get_boolean(ast_node_evaluate(while_loop_node->condition, local_context)))
     {
-        result = ast_node_evaluate(while_loop_node->while_body, local_context);
-
+        value_t result = ast_node_evaluate(while_loop_node->while_body, local_context);
 
         switch (result.control_flow)
         {
@@ -42,7 +39,8 @@ value_t while_loop_node_evaluate(const while_loop_node_t* while_loop_node, conte
                 result.control_flow = CONTROL_FLOW_NONE;
                 is_stopped = true;
                 break;
-            case CONTROL_FLOW_THROW: return result;
+            case CONTROL_FLOW_RETURN:
+            case CONTROL_FLOW_PANIC: return result;
             default: break;
         }
     }
@@ -52,9 +50,10 @@ value_t while_loop_node_evaluate(const while_loop_node_t* while_loop_node, conte
     if (!is_stopped && while_loop_node->else_body)
     {
         local_context = context_new(context);
-        result = ast_node_evaluate(while_loop_node->else_body, local_context);
+        const value_t result = ast_node_evaluate(while_loop_node->else_body, local_context);
         context_free(local_context);
+        return result;
     }
 
-    return result;
+    return value_new_null();
 }

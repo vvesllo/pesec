@@ -27,6 +27,7 @@ typedef enum
     VALUE_TYPE_STRUCTURE,
     VALUE_TYPE_MODULE,
     VALUE_TYPE_ARRAY,
+    VALUE_TYPE_NULL,
 } value_type_t;
 
 typedef union
@@ -38,6 +39,7 @@ typedef union
     structure_value_t* as_structure;
     array_value_t* as_array;
     module_value_t* as_module;
+    void* as_null;
 } value_value_t;
 
 typedef struct VALUE_STRUCT
@@ -62,6 +64,8 @@ value_t value_new_module(module_value_t* data);
 
 value_t value_new_array(array_value_t* data);
 
+value_t value_new_null();
+
 value_t value_new_string_cf(string_value_t* data, control_flow_t control_flow);
 
 value_t value_new_number_cf(number_value_t* data, control_flow_t control_flow);
@@ -75,6 +79,8 @@ value_t value_new_structure_cf(structure_value_t* data, control_flow_t control_f
 value_t value_new_module_cf(module_value_t* data, control_flow_t control_flow);
 
 value_t value_new_array_cf(array_value_t* data, control_flow_t control_flow);
+
+value_t value_new_null_cf(control_flow_t control_flow);
 
 void value_free(const value_t* value);
 

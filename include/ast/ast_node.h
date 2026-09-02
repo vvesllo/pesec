@@ -18,8 +18,9 @@
 #include "break_node.h"
 #include "for_loop_node.h"
 #include "import_node.h"
-#include "throw_node.h"
+#include "panic_node.h"
 #include "unary_op_node.h"
+#include "return_node.h"
 
 #include "include/context.h"
 
@@ -43,7 +44,8 @@ typedef enum
     AST_NODE_FOR_LOOP,
     AST_NODE_BREAK,
     AST_NODE_IMPORT,
-    AST_NODE_THROW,
+    AST_NODE_PANIC,
+    AST_NODE_RETURN,
 } ast_node_type_t;
 
 typedef struct AST_NODE_STRUCT
@@ -67,9 +69,10 @@ typedef struct AST_NODE_STRUCT
         condition_node_t* condition;
         while_loop_node_t* while_loop;
         for_loop_node_t* for_loop;
+        panic_node_t* panic;
         break_node_t* _break;
         import_node_t* _import;
-        throw_node_t* _throw;
+        return_node_t* _return;
     } node;
 } ast_node_t;
 

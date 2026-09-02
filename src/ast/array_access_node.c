@@ -29,18 +29,14 @@ value_t array_access_node_evaluate(const array_access_node_t* array_access_node,
     const value_t array = ast_node_evaluate(array_access_node->array, context);
 
     if (array.type != VALUE_TYPE_ARRAY)
-    {
         THROW("Variable is not array");
-    }
 
     const value_t index = ast_node_evaluate(array_access_node->index, context);
     if (index.type != VALUE_TYPE_NUMBER)
-    {
         THROW("Index should be an number");
-    }
 
     const array_value_t* array_value = array.data.as_array;
 
 
-    return array_value_get(array_value, (ull_t)index.data.as_number);
+    return array_value_get(array_value, (long long)number_value_to_long_double(index.data.as_number));
 }

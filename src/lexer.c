@@ -142,11 +142,13 @@ token_t lexer_next_identifier(lexer_t* lexer)
         string_view_equals_cstr(value, "for") ||
         string_view_equals_cstr(value, "in") ||
         string_view_equals_cstr(value, "break") ||
-        string_view_equals_cstr(value, "throw") ||
+        string_view_equals_cstr(value, "panic") ||
+        string_view_equals_cstr(value, "return") ||
         string_view_equals_cstr(value, "struct") ||
         string_view_equals_cstr(value, "import") ||
         string_view_equals_cstr(value, "true") ||
-        string_view_equals_cstr(value, "false")
+        string_view_equals_cstr(value, "false") ||
+        string_view_equals_cstr(value, "null")
         ) type = TOKEN_TYPE_KEYWORD;
 
     return (token_t) {
@@ -192,7 +194,7 @@ token_t lexer_next_string(lexer_t* lexer, const char quote)
     return (token_t) {
         .line = lexer->line,
         .value.as_string = string,
-        .type = TOKEN_TYPE_STRING,
+        .type = TOKEN_TYPE_STRING, // todo: add format string (`text {}`)
     };
 }
 

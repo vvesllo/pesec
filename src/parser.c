@@ -92,7 +92,7 @@ ast_node_t *parser_parse_statement_sequence(parser_t *parser, const bool between
     while (!parser_match(parser, TOKEN_TYPE_EOF) && (!between_braces || !parser_match(parser, TOKEN_TYPE_RBRACE)))
     {
         statement_sequence_node_push(statement_sequence->node.statement_sequence, parser_parse_statement(parser));
-        if (parser_match(parser, TOKEN_TYPE_SEMICOLON)) parser_eat(parser, TOKEN_TYPE_SEMICOLON);
+        parser_eat(parser, TOKEN_TYPE_SEMICOLON);
     }
 
     if (between_braces) parser_eat(parser, TOKEN_TYPE_RBRACE);
@@ -121,6 +121,8 @@ ast_node_t *parser_parse_keyword(parser_t *parser)
     if (string_view_equals_cstr(name, "true")) return literal_node_new(value_new_boolean(true));
     if (string_view_equals_cstr(name, "false")) return literal_node_new(value_new_boolean(false));
 
+    if (string_view_equals_cstr(name, "null")) return literal_node_new(value_new_null());
+
     if (string_view_equals_cstr(name, "mutab")) return parser_parse_variable_definition(parser, false);
     if (string_view_equals_cstr(name, "const")) return parser_parse_variable_definition(parser, true);
 
@@ -134,7 +136,9 @@ ast_node_t *parser_parse_keyword(parser_t *parser)
     if (string_view_equals_cstr(name, "import")) return parser_parse_import(parser);
 
     if (string_view_equals_cstr(name, "break")) return parser_parse_break(parser);
-    if (string_view_equals_cstr(name, "throw")) return parser_parse_throw(parser);
+    if (string_view_equals_cstr(name, "panic")) return parser_parse_panic(parser);
+
+    if (string_view_equals_cstr(name, "return")) return parser_parse_return(parser);
 
     THROW("Unknown keyword \"%.*s\" at line %llu", (unsigned int)name.length, name.data, parser->current_token.line);
 }
@@ -395,11 +399,21 @@ ast_node_t *parser_parse_import(parser_t *parser)
     return import_node_new(source);
 }
 
-ast_node_t *parser_parse_throw(parser_t *parser)
+ast_node_t *parser_parse_panic(parser_t *parser)
 {
     ast_node_t* value = parser_parse_statement(parser);
 
-    return throw_node_new(value);
+    return panic_node_new(value);
+}
+
+ast_node_t *parser_parse_return(parser_t *parser)
+{
+    ast_node_t* return_body = nullptr;
+
+    if (!parser_match(parser, TOKEN_TYPE_SEMICOLON))
+        return_body = parser_parse_statement(parser);
+
+    return break_node_new(return_body);
 }
 
 ast_node_t* parser_parse_statement(parser_t* parser)

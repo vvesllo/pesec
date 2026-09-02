@@ -41,8 +41,6 @@ value_t for_loop_node_evaluate(const for_loop_node_t* for_loop_node, context_t* 
 
     const array_value_t* iterable_array = iterable.data.as_array;
 
-    auto result = value_new_number(NUM_VAL_0);
-
     bool is_stopped = false;
 
     context_push(local_context, for_loop_node->iterator, value_new_number(NUM_VAL_0), false);
@@ -53,7 +51,7 @@ value_t for_loop_node_evaluate(const for_loop_node_t* for_loop_node, context_t* 
         {
             context_set(local_context, for_loop_node->iterator, iterable_array->values[i]);
 
-            result = ast_node_evaluate(for_loop_node->for_body, local_context);
+            value_t result = ast_node_evaluate(for_loop_node->for_body, local_context);
 
             switch (result.control_flow)
             {
@@ -61,7 +59,8 @@ value_t for_loop_node_evaluate(const for_loop_node_t* for_loop_node, context_t* 
                     result.control_flow = CONTROL_FLOW_NONE;
                     is_stopped = true;
                     break;
-                case CONTROL_FLOW_THROW: return result;
+                case CONTROL_FLOW_RETURN:
+                case CONTROL_FLOW_PANIC: return result;
                 default: break;
             }
         }
@@ -72,9 +71,10 @@ value_t for_loop_node_evaluate(const for_loop_node_t* for_loop_node, context_t* 
     if (!is_stopped && for_loop_node->else_body)
     {
         local_context = context_new(context);
-        result = ast_node_evaluate(for_loop_node->else_body, local_context);
+        const value_t result = ast_node_evaluate(for_loop_node->else_body, local_context);
         context_free(local_context);
+        return result;
     }
 
-    return result;
+    return value_new_null();
 }
