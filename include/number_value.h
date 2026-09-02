@@ -35,6 +35,10 @@ ull_t number_value_mantissa_significant_size(const number_value_mantissa_t* numb
 
 number_value_t* number_value_from_sv(string_view_t string_view);
 
+number_value_t* number_value_one();
+
+number_value_t* number_value_zero();
+
 number_value_t* number_value_new(number_value_mantissa_t* mantissa, ull_t exponent);
 
 void number_value_free(number_value_t* number_value);

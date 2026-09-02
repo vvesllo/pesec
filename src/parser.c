@@ -204,7 +204,7 @@ ast_node_t *parser_parse_function_call(parser_t *parser, ast_node_t* callee)
     parser_eat(parser, TOKEN_TYPE_RPAREN);
 
     ast_node_t* node = function_call_node_new(callee, arguments_head, count);
-    node = parser_check_and_do_everything(parser, node);
+    // node = parser_check_and_do_everything(parser, node);
     return node;
 }
 
@@ -238,7 +238,7 @@ ast_node_t *parser_parse_function_definition(parser_t *parser)
     ast_node_t *body = parser_parse_statement(parser);
     ast_node_t *node = function_definition_node_new(parameter, body);
 
-    node = parser_check_and_do_everything(parser, node);
+    // node = parser_check_and_do_everything(parser, node);
 
     return node;
 }
@@ -265,7 +265,8 @@ ast_node_t *parser_parse_structure_definition(parser_t *parser)
 
     parser_eat(parser, TOKEN_TYPE_RBRACE);
 
-    return structure_definition_node_new(fields);
+    ast_node_t* node = structure_definition_node_new(fields);
+    return node;
 }
 
 ast_node_t *parser_parse_variable_field_access(parser_t *parser, ast_node_t* object)
@@ -300,7 +301,7 @@ ast_node_t *parser_parse_array_definition(parser_t *parser)
     parser_eat(parser, TOKEN_TYPE_RBRACKET);
 
     ast_node_t *node = array_definition_node_new(statement_sequence);
-
+    // node = parser_check_and_do_everything(parser, node);
     return node;
 }
 
@@ -310,10 +311,9 @@ ast_node_t *parser_parse_array_access(parser_t *parser, ast_node_t* array)
     ast_node_t* index = parser_parse_statement(parser);
     parser_eat(parser, TOKEN_TYPE_RBRACKET);
 
+
     ast_node_t *node = array_access_node_new(array, index);
-
-    node = parser_check_and_do_everything(parser, node);
-
+    //node = parser_check_and_do_everything(parser, node);
     return node;
 }
 
@@ -512,9 +512,6 @@ ast_node_t *parser_parse_factor(parser_t *parser)
             parser_eat(parser, TOKEN_TYPE_LPAREN);
             node = parser_parse_statement(parser);
             parser_eat(parser, TOKEN_TYPE_RPAREN);
-
-            node = parser_check_and_do_everything(parser, node);
-
             break;
         case TOKEN_TYPE_LBRACE:
             node = parser_parse_statement_sequence(parser, true);
@@ -522,6 +519,8 @@ ast_node_t *parser_parse_factor(parser_t *parser)
         default:
             break;
     }
+
+    node = parser_check_and_do_everything(parser, node);
 
     if (!node)
     {

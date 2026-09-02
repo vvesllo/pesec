@@ -3,9 +3,8 @@
 
 #include <stdio.h>
 
-#include "number_value.h"
-#include "string_value.h"
 #include "control_flow.h"
+#include "utils/typedefs.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -16,6 +15,8 @@ typedef struct FUNCTION_VALUE_STRUCT function_value_t;
 typedef struct STRUCTURE_VALUE_STRUCT structure_value_t;
 typedef struct MODULE_VALUE_STRUCT module_value_t;
 typedef struct ARRAY_VALUE_STRUCT array_value_t;
+typedef struct STRING_VALUE_STRUCT string_value_t;
+typedef struct NUMBER_VALUE_STRUCT number_value_t;
 
 typedef enum
 {

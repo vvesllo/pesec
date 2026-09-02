@@ -336,13 +336,6 @@ static void number_value_normalize(number_value_t* number_value)
     }
 }
 
-static number_value_t* number_value_one()
-{
-    number_value_mantissa_t* mantissa = number_value_mantissa_new(1);
-    number_value_mantissa_set_digit(mantissa, 0, 1);
-    return number_value_new(mantissa, 0);
-}
-
 static number_value_t* number_value_clone(const number_value_t* source)
 {
     number_value_t* clone = number_value_new(number_value_mantissa_clone(source->mantissa), source->exponent);
@@ -396,6 +389,20 @@ number_value_t* number_value_from_sv(const string_view_t string_view)
     }
 
     return number_value_new(mantissa, exponent);
+}
+
+number_value_t* number_value_one()
+{
+    number_value_mantissa_t* mantissa = number_value_mantissa_new(1);
+    number_value_mantissa_set_digit(mantissa, 0, 1);
+    return number_value_new(mantissa, 0);
+}
+
+number_value_t* number_value_zero()
+{
+    number_value_mantissa_t* mantissa = number_value_mantissa_new(1);
+    number_value_mantissa_set_digit(mantissa, 0, 0);
+    return number_value_new(mantissa, 0);
 }
 
 number_value_t* number_value_new(number_value_mantissa_t* mantissa, const ull_t exponent)

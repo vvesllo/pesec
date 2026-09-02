@@ -1,8 +1,10 @@
 #include "../include/string_value.h"
+#include "../include/function_value.h"
 
 #include <stdlib.h>
 #include <string.h>
 
+#include "include/number_value.h"
 #include "include/utils/throw.h"
 
 
@@ -74,4 +76,18 @@ void string_value_free(string_value_t* string)
 {
     free(string->data);
     free(string);
+}
+
+
+value_t string_value_resolve_field(const value_t string_value, const string_view_t name, context_t* context)
+{
+    if (string_view_equals_cstr(name, "size")) return STRING_METHOD_0(string_value_method_size);
+
+
+    THROW("Variable '%s' does not have a field", name.data);
+}
+
+value_t string_value_method_size(const value_t string_value, context_t* context)
+{
+    return value_new_number(number_value_from_long_double(string_value.data.as_string->size));
 }

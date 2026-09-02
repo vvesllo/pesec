@@ -3,6 +3,7 @@
 #include "include/ast/ast_node.h"
 #include <stdlib.h>
 
+#include "include/array_value.h"
 #include "include/module_value.h"
 #include "include/structure_value.h"
 #include "include/utils/throw.h"
@@ -30,13 +31,10 @@ value_t variable_field_access_node_evaluate(const variable_field_access_node_t* 
 
     switch (item.type)
     {
-    case VALUE_TYPE_STRUCTURE:
-        const structure_value_t* structure_value = item.data.as_structure;
-        return structure_value_get(structure_value, variable_field_node->field);
-    case VALUE_TYPE_MODULE:
-        const module_value_t* module_value = item.data.as_module;
-        return module_value_get(module_value, variable_field_node->field);
-    default:
-        THROW("Variable don't have fields");
+        case VALUE_TYPE_STRUCTURE: return structure_value_get(item.data.as_structure, variable_field_node->field);
+        case VALUE_TYPE_MODULE: return module_value_get(item.data.as_module, variable_field_node->field);
+        case VALUE_TYPE_ARRAY: return array_value_resolve_field(item, variable_field_node->field, context);
+        case VALUE_TYPE_STRING: return string_value_resolve_field(item, variable_field_node->field, context);
+        default: THROW("Variable of type '%s' does not have fields or methods", value_get_type(item));
     }
 }

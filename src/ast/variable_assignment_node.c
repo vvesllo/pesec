@@ -69,7 +69,7 @@ value_t variable_assignment_node_evaluate(const variable_assignment_node_t* vari
 
             array_value_set(
                 array_value.data.as_array,
-                (ull_t)index_value.data.as_number,
+                (long long)number_value_to_long_double(index_value.data.as_number),
                 value
             );
 

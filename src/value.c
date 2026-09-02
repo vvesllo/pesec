@@ -6,6 +6,8 @@
 #include "include/array_value.h"
 #include "include/structure_value.h"
 #include "include/function_value.h"
+#include "include/string_value.h"
+#include "include/number_value.h"
 #include "include/module_value.h"
 #include "include/utils/throw.h"
 
@@ -155,7 +157,7 @@ bool value_get_boolean(const value_t value)
 {
     switch (value.type)
     {
-        case VALUE_TYPE_NUMBER: return true; // uhhhh
+        case VALUE_TYPE_NUMBER: return number_value_compare(value.data.as_number, number_value_zero());
         case VALUE_TYPE_STRING: return value.data.as_string->size != 0;
         case VALUE_TYPE_BOOLEAN: return value.data.as_bool;
         case VALUE_TYPE_FUNCTION:
@@ -217,7 +219,7 @@ void value_print_number(FILE *stream, const number_value_t *value)
     if (value->negative) fprintf(stream, "-");
 
     const ull_t exponent = value->exponent;
-    const ull_t offset = value->mantissa->size - significant; /* skip leading zeros */
+    const ull_t offset = value->mantissa->size - significant;
     const ull_t integer_digits = significant > exponent ? significant - exponent : 0;
     const ull_t fractional_zeros = significant > exponent ? 0 : exponent - significant;
     const ull_t fractional_digits = significant > exponent ? exponent : significant;
@@ -338,7 +340,7 @@ value_t value_operation_equals(const value_t left, const value_t right)
         return value_new_boolean(string_value_equals(left.data.as_string, right.data.as_string));
     if (left.type == VALUE_TYPE_BOOLEAN && right.type == VALUE_TYPE_BOOLEAN)
         return value_new_boolean(left.data.as_string == right.data.as_string);
-    return value_new_boolean(false);
+    THROW("Unsupported operator '==' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
 value_t value_operation_less_or_equals(const value_t left, const value_t right)

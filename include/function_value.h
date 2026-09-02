@@ -15,12 +15,20 @@ typedef enum
 {
     FUNCTION_VALUE_TYPE_NODE,
     FUNCTION_VALUE_TYPE_C_FUNCTION,
+    FUNCTION_VALUE_TYPE_BOUND_METHOD,
 } function_value_type_t;
+
+typedef struct BOUND_METHOD_DATA_STRUCT
+{
+    value_t self;
+    value_t (*method)(value_t self, context_t* context);
+} bound_method_data_t;
 
 typedef union
 {
     ast_node_t* as_node;
     value_t (*as_c_function)(context_t* context);
+    bound_method_data_t as_bound_method;
 } function_value_value_t;
 
 typedef struct FUNCTION_VALUE_STRUCT

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "include/ast/ast_node.h"
+#include "include/utils/throw.h"
 
 function_value_t* function_value_new(parameter_t* parameter, const function_value_value_t body, const function_value_type_t type, context_t* parent_context)
 {
@@ -25,7 +26,12 @@ void function_value_free(function_value_t* function_value)
 
 value_t function_value_call(const function_value_t* function_value, context_t* context)
 {
-    if (function_value->type == FUNCTION_VALUE_TYPE_NODE)
-        return ast_node_evaluate(function_value->body.as_node, context);
-    return function_value->body.as_c_function(context);
+    switch (function_value->type)
+    {
+        case FUNCTION_VALUE_TYPE_NODE: return ast_node_evaluate(function_value->body.as_node, context);
+        case FUNCTION_VALUE_TYPE_C_FUNCTION: return function_value->body.as_c_function(context);
+        case FUNCTION_VALUE_TYPE_BOUND_METHOD: return function_value->body.as_bound_method.method(function_value->body.as_bound_method.self, context);
+    }
+
+    THROW("Unknown function value type");
 }
