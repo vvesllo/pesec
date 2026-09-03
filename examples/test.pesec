@@ -1,0 +1,5 @@
+const f = fn() {
+    return 420;
+};
+
+panic f();

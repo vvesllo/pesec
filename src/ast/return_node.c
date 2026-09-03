@@ -20,7 +20,7 @@ void return_node_free(return_node_t* return_node)
 
 value_t return_node_evaluate(const return_node_t* return_node, context_t* context)
 {
-    if (!return_node->expression) return value_new_null();
+    if (!return_node->expression) return value_new_null_cf(CONTROL_FLOW_RETURN);
 
     value_t result = ast_node_evaluate(return_node->expression, context);
     result.control_flow = CONTROL_FLOW_RETURN;

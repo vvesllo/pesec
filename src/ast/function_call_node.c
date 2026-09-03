@@ -113,14 +113,16 @@ value_t function_call_node_evaluate(const function_call_node_t *function_call_no
 
     if (position_index < total_arguments) THROW("Too many positional arguments\n");
 
-    const value_t result = function_value_call(function, local_context);
+    value_t result = function_value_call(function, local_context);
     context_free(local_context);
 
     if (total_arguments > 0)
         free(eval_values);
 
     if (result.control_flow == CONTROL_FLOW_RETURN)
+    {
+        result.control_flow = CONTROL_FLOW_NONE;
         return result;
-
+    }
     return value_new_null();
 }

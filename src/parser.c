@@ -413,7 +413,7 @@ ast_node_t *parser_parse_return(parser_t *parser)
     if (!parser_match(parser, TOKEN_TYPE_SEMICOLON))
         return_body = parser_parse_statement(parser);
 
-    return break_node_new(return_body);
+    return return_node_new(return_body);
 }
 
 ast_node_t* parser_parse_statement(parser_t* parser)
