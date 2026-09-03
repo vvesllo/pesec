@@ -22,7 +22,7 @@ ast_node_t* parser_check_and_parse_variable_field_access(parser_t *parser, ast_n
 
 ast_node_t* parser_check_and_parse_variable_assignment(parser_t *parser, ast_node_t* target);
 
-ast_node_t* parser_check_and_parse_array_access(parser_t *parser, ast_node_t* array);
+ast_node_t* parser_check_and_parse_vector_access(parser_t *parser, ast_node_t* vector);
 
 ast_node_t* parser_check_and_do_everything(parser_t *parser, ast_node_t* node);
 
@@ -48,9 +48,9 @@ ast_node_t *parser_parse_structure_definition(parser_t *parser);
 
 ast_node_t *parser_parse_variable_field_access(parser_t *parser, ast_node_t* object);
 
-ast_node_t *parser_parse_array_definition(parser_t *parser);
+ast_node_t *parser_parse_vector_definition(parser_t *parser);
 
-ast_node_t *parser_parse_array_access(parser_t *parser, ast_node_t* array);
+ast_node_t *parser_parse_vector_access(parser_t *parser, ast_node_t* vector);
 
 ast_node_t *parser_parse_if(parser_t *parser);
 

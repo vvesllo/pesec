@@ -60,12 +60,12 @@ ast_node_t* parser_check_and_parse_variable_assignment(parser_t *parser, ast_nod
     return target;
 }
 
-ast_node_t* parser_check_and_parse_array_access(parser_t *parser, ast_node_t* array)
+ast_node_t* parser_check_and_parse_vector_access(parser_t *parser, ast_node_t* vector)
 {
     if (parser_match(parser, TOKEN_TYPE_LBRACKET))
-        return parser_parse_array_access(parser, array);
+        return parser_parse_vector_access(parser, vector);
 
-    return array;
+    return vector;
 }
 
 ast_node_t* parser_check_and_do_everything(parser_t *parser, ast_node_t* node)
@@ -73,7 +73,7 @@ ast_node_t* parser_check_and_do_everything(parser_t *parser, ast_node_t* node)
     node = parser_check_and_parse_function_call(parser, node);
     node = parser_check_and_parse_variable_field_access(parser, node);
     node = parser_check_and_parse_variable_assignment(parser, node);
-    node = parser_check_and_parse_array_access(parser, node);
+    node = parser_check_and_parse_vector_access(parser, node);
 
     return node;
 }
@@ -109,7 +109,7 @@ ast_node_t *parser_parse_identifier(parser_t *parser)
     if (parser_match(parser, TOKEN_TYPE_LPAREN))    return parser_parse_function_call(parser, variable_node);
     if (parser_match(parser, TOKEN_TYPE_EQUALS))    return parser_parse_variable_assignment(parser, variable_node);
     if (parser_match(parser, TOKEN_TYPE_DOT))       return parser_parse_variable_field_access(parser, variable_node);
-    if (parser_match(parser, TOKEN_TYPE_LBRACKET))  return parser_parse_array_access(parser, variable_node);
+    if (parser_match(parser, TOKEN_TYPE_LBRACKET))  return parser_parse_vector_access(parser, variable_node);
 
     return variable_node;
 }
@@ -286,7 +286,7 @@ ast_node_t *parser_parse_variable_field_access(parser_t *parser, ast_node_t* obj
     return node;
 }
 
-ast_node_t *parser_parse_array_definition(parser_t *parser)
+ast_node_t *parser_parse_vector_definition(parser_t *parser)
 {
     parser_eat(parser, TOKEN_TYPE_LBRACKET);
 
@@ -304,20 +304,19 @@ ast_node_t *parser_parse_array_definition(parser_t *parser)
     }
     parser_eat(parser, TOKEN_TYPE_RBRACKET);
 
-    ast_node_t *node = array_definition_node_new(statement_sequence);
-    // node = parser_check_and_do_everything(parser, node);
+    ast_node_t *node = vector_definition_node_new(statement_sequence);
+
     return node;
 }
 
-ast_node_t *parser_parse_array_access(parser_t *parser, ast_node_t* array)
+ast_node_t *parser_parse_vector_access(parser_t *parser, ast_node_t* vector)
 {
     parser_eat(parser, TOKEN_TYPE_LBRACKET);
     ast_node_t* index = parser_parse_statement(parser);
     parser_eat(parser, TOKEN_TYPE_RBRACKET);
 
+    ast_node_t *node = vector_access_node_new(vector, index);
 
-    ast_node_t *node = array_access_node_new(array, index);
-    //node = parser_check_and_do_everything(parser, node);
     return node;
 }
 
@@ -520,7 +519,7 @@ ast_node_t *parser_parse_factor(parser_t *parser)
             node = parser_parse_keyword(parser);
             break;
         case TOKEN_TYPE_LBRACKET:
-            node = parser_parse_array_definition(parser);
+            node = parser_parse_vector_definition(parser);
             break;
         case TOKEN_TYPE_LPAREN:
             parser_eat(parser, TOKEN_TYPE_LPAREN);

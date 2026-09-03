@@ -26,11 +26,18 @@ void function_value_free(function_value_t* function_value)
 
 value_t function_value_call(const function_value_t* function_value, context_t* context)
 {
+    value_t result = value_new_null();
     switch (function_value->type)
     {
         case FUNCTION_VALUE_TYPE_NODE: return ast_node_evaluate(function_value->body.as_node, context);
-        case FUNCTION_VALUE_TYPE_C_FUNCTION: return function_value->body.as_c_function(context);
-        case FUNCTION_VALUE_TYPE_BOUND_METHOD: return function_value->body.as_bound_method.method(function_value->body.as_bound_method.self, context);
+        case FUNCTION_VALUE_TYPE_C_FUNCTION:
+            result = function_value->body.as_c_function(context);
+            result.control_flow = CONTROL_FLOW_RETURN;
+            return result;
+        case FUNCTION_VALUE_TYPE_BOUND_METHOD:
+            result = function_value->body.as_bound_method.method(function_value->body.as_bound_method.self, context);
+            result.control_flow = CONTROL_FLOW_RETURN;
+            return result;
     }
 
     THROW("Unknown function value type");

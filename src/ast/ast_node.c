@@ -19,8 +19,8 @@ value_t ast_node_evaluate(const ast_node_t* node, context_t* context)
         case AST_NODE_FUNCTION_DEFINITION: return function_definition_node_evaluate(node->node.function_definition, context);
         case AST_NODE_STRUCTURE_DEFINITION: return structure_definition_node_evaluate(node->node.structure_definition, context);
         case AST_NODE_VARIABLE_FIELD_ACCESS: return variable_field_access_node_evaluate(node->node.variable_field_access, context);
-        case AST_NODE_ARRAY_DEFINITION: return array_definition_node_evaluate(node->node.array_definition, context);
-        case AST_NODE_ARRAY_ACCESS: return array_access_node_evaluate(node->node.array_access, context);
+        case AST_NODE_VECTOR_DEFINITION: return vector_definition_node_evaluate(node->node.vector_definition, context);
+        case AST_NODE_VECTOR_ACCESS: return vector_access_node_evaluate(node->node.vector_access, context);
         case AST_NODE_STATEMENT_SEQUENCE: return statement_sequence_node_evaluate(node->node.statement_sequence, context);
         case AST_NODE_CONDITION: return condition_node_evaluate(node->node.condition, context);
         case AST_NODE_WHILE_LOOP: return while_loop_node_evaluate(node->node.while_loop, context);
@@ -48,8 +48,8 @@ void ast_node_free(ast_node_t* node)
         case AST_NODE_FUNCTION_DEFINITION: function_definition_node_free(node->node.function_definition); break;
         case AST_NODE_STRUCTURE_DEFINITION: structure_definition_node_free(node->node.structure_definition); break;
         case AST_NODE_VARIABLE_FIELD_ACCESS: variable_field_access_node_free(node->node.variable_field_access); break;
-        case AST_NODE_ARRAY_DEFINITION: array_definition_node_free(node->node.array_definition); break;
-        case AST_NODE_ARRAY_ACCESS: array_access_node_free(node->node.array_access); break;
+        case AST_NODE_VECTOR_DEFINITION: vector_definition_node_free(node->node.vector_definition); break;
+        case AST_NODE_VECTOR_ACCESS: vector_access_node_free(node->node.vector_access); break;
         case AST_NODE_STATEMENT_SEQUENCE: statement_sequence_node_free(node->node.statement_sequence); break;
         case AST_NODE_CONDITION: condition_node_free(node->node.condition); break;
         case AST_NODE_WHILE_LOOP: while_loop_node_free(node->node.while_loop); break;

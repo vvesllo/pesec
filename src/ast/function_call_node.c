@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "include/array_value.h"
+#include "include/vector_value.h"
 #include "include/ast/ast_node.h"
 #include "include/function_value.h"
 #include "include/module_value.h"
@@ -103,7 +103,7 @@ value_t function_call_node_evaluate(const function_call_node_t *function_call_no
                 }
             }
 
-            context_push(local_context, parameter->value, value_new_array(array_value_new(arguments_array, remaining)), false);
+            context_push(local_context, parameter->value, value_new_vector(vector_value_new(arguments_array, remaining)), false);
 
             position_index = total_arguments;
         }

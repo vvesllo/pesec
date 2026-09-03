@@ -18,7 +18,7 @@ add_executable(
         src/string_value.c                          include/string_value.h
         src/function_value.c                        include/function_value.h
         src/structure_value.c                       include/structure_value.h
-        src/array_value.c                           include/array_value.h
+        src/vector_value.c                          include/vector_value.h
         src/module_value.c                          include/module_value.h
         src/control_flow.c                          include/control_flow.h
         src/parameter.c                             include/parameter.h
@@ -39,8 +39,8 @@ add_executable(
         src/ast/function_definition_node.c          include/ast/function_definition_node.h
         src/ast/structure_definition_node.c         include/ast/structure_definition_node.h
         src/ast/variable_field_access_node.c        include/ast/variable_field_access_node.h
-        src/ast/array_definition_node.c             include/ast/array_definition_node.h
-        src/ast/array_access_node.c                 include/ast/array_access_node.h
+        src/ast/vector_definition_node.c            include/ast/vector_definition_node.h
+        src/ast/vector_access_node.c                include/ast/vector_access_node.h
         src/ast/statement_sequence_node.c           include/ast/statement_sequence_node.h
         src/ast/variable_definition_node.c          include/ast/variable_definition_node.h
         src/ast/variable_assignment_node.c          include/ast/variable_assignment_node.h

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "include/array_value.h"
+#include "include/vector_value.h"
 #include "include/structure_value.h"
 #include "include/function_value.h"
 #include "include/string_value.h"
@@ -68,11 +68,11 @@ value_t value_new_module(module_value_t *data)
     return value;
 }
 
-value_t value_new_array(array_value_t *data)
+value_t value_new_vector(vector_value_t *data)
 {
     value_t value = value_new();
-    value.type = VALUE_TYPE_ARRAY;
-    value.data.as_array = data;
+    value.type = VALUE_TYPE_VECTOR;
+    value.data.as_vector = data;
     return value;
 }
 
@@ -126,9 +126,9 @@ value_t value_new_module_cf(module_value_t *data, const control_flow_t control_f
     return value;
 }
 
-value_t value_new_array_cf(array_value_t *data, const control_flow_t control_flow)
+value_t value_new_vector_cf(vector_value_t *data, const control_flow_t control_flow)
 {
-    value_t value = value_new_array(data);
+    value_t value = value_new_vector(data);
     value.control_flow = control_flow;
     return value;
 }
@@ -145,7 +145,7 @@ void value_free(const value_t *value)
     switch (value->type)
     {
         case VALUE_TYPE_NUMBER: number_value_free(value->data.as_number); break;
-        case VALUE_TYPE_ARRAY: array_value_free(value->data.as_array); break;
+        case VALUE_TYPE_VECTOR: vector_value_free(value->data.as_vector); break;
         case VALUE_TYPE_STRING: string_value_free(value->data.as_string); break;
         case VALUE_TYPE_STRUCTURE: structure_value_free(value->data.as_structure); break;
         case VALUE_TYPE_FUNCTION: function_value_free(value->data.as_function); break;
@@ -176,7 +176,7 @@ bool value_get_boolean(const value_t value)
         case VALUE_TYPE_STRING: return value.data.as_string->size != 0;
         case VALUE_TYPE_BOOLEAN: return value.data.as_bool;
         case VALUE_TYPE_FUNCTION:
-        case VALUE_TYPE_ARRAY:
+        case VALUE_TYPE_VECTOR:
         case VALUE_TYPE_MODULE:
         case VALUE_TYPE_STRUCTURE: return true;
         case VALUE_TYPE_NULL: return false;
@@ -194,7 +194,7 @@ char *value_get_type(const value_t value)
         case VALUE_TYPE_BOOLEAN: return "boolean";
         case VALUE_TYPE_FUNCTION: return "function";
         case VALUE_TYPE_STRUCTURE: return "structure";
-        case VALUE_TYPE_ARRAY: return "array";
+        case VALUE_TYPE_VECTOR: return "vector";
         case VALUE_TYPE_MODULE: return "module";
         case VALUE_TYPE_NULL: return "null";
     }
@@ -211,7 +211,7 @@ void value_print(FILE *stream, const value_t value)
         case VALUE_TYPE_BOOLEAN: value_print_boolean(stream, value.data.as_bool); return;
         case VALUE_TYPE_FUNCTION: value_print_function(stream, value.data.as_function); return;
         case VALUE_TYPE_STRUCTURE: value_print_structure(stream, value.data.as_structure); return;
-        case VALUE_TYPE_ARRAY: value_print_array(stream, value.data.as_array); return;
+        case VALUE_TYPE_VECTOR: value_print_vector(stream, value.data.as_vector); return;
         case VALUE_TYPE_MODULE: value_print_module(stream, value.data.as_module); return;
         case VALUE_TYPE_NULL: fprintf(stream, "null"); return;
     }
@@ -279,7 +279,7 @@ void value_print_module(FILE *stream, const module_value_t *value)
     fprintf(stream, "<module:%p>", &value);
 }
 
-void value_print_array(FILE *stream, const array_value_t *value)
+void value_print_vector(FILE *stream, const vector_value_t *value)
 {
     fprintf(stream, "[");
     for (ull_t i = 0; i < value->size; ++i)
@@ -309,8 +309,8 @@ value_t value_operation_add(const value_t left, const value_t right)
         return value_new_number(number_value_add(left.data.as_number, right.data.as_number));
     if (left.type == VALUE_TYPE_STRING && right.type == VALUE_TYPE_STRING)
         return value_new_string(string_value_concat(left.data.as_string, right.data.as_string));
-    if (left.type == VALUE_TYPE_ARRAY && right.type == VALUE_TYPE_ARRAY)
-        return value_new_array(array_value_concat(left.data.as_array, right.data.as_array));
+    if (left.type == VALUE_TYPE_VECTOR && right.type == VALUE_TYPE_VECTOR)
+        return value_new_vector(vector_value_concat(left.data.as_vector, right.data.as_vector));
 
     THROW("Unsupported operator '+' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }

@@ -3,7 +3,7 @@
 #include "include/ast/ast_node.h"
 #include <stdlib.h>
 
-#include "include/array_value.h"
+#include "include/vector_value.h"
 #include "include/utils/throw.h"
 
 
@@ -33,23 +33,23 @@ value_t for_loop_node_evaluate(const for_loop_node_t* for_loop_node, context_t* 
 
     const value_t iterable = ast_node_evaluate(for_loop_node->iterable, context);
 
-    if (iterable.type != VALUE_TYPE_ARRAY)
+    if (iterable.type != VALUE_TYPE_VECTOR)
     {
-        THROW("Iterable should be array");
+        THROW("Iterable should be vector");
     }
 
 
-    const array_value_t* iterable_array = iterable.data.as_array;
+    const vector_value_t* iterable_vector = iterable.data.as_vector;
 
     bool is_stopped = false;
 
     context_push(local_context, for_loop_node->iterator, value_new_number(NUM_VAL_0), false);
 
-    if (iterable_array->size > 0)
+    if (iterable_vector->size > 0)
     {
-        for (ull_t i = 0; i < iterable_array->size; i++)
+        for (ull_t i = 0; i < iterable_vector->size; i++)
         {
-            context_set(local_context, for_loop_node->iterator, iterable_array->values[i]);
+            context_set(local_context, for_loop_node->iterator, iterable_vector->values[i]);
 
             value_t result = ast_node_evaluate(for_loop_node->for_body, local_context);
 

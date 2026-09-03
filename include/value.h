@@ -14,7 +14,7 @@ extern "C"
 typedef struct FUNCTION_VALUE_STRUCT function_value_t;
 typedef struct STRUCTURE_VALUE_STRUCT structure_value_t;
 typedef struct MODULE_VALUE_STRUCT module_value_t;
-typedef struct ARRAY_VALUE_STRUCT array_value_t;
+typedef struct VECTOR_VALUE_STRUCT vector_value_t;
 typedef struct STRING_VALUE_STRUCT string_value_t;
 typedef struct NUMBER_VALUE_STRUCT number_value_t;
 
@@ -26,7 +26,7 @@ typedef enum
     VALUE_TYPE_FUNCTION,
     VALUE_TYPE_STRUCTURE,
     VALUE_TYPE_MODULE,
-    VALUE_TYPE_ARRAY,
+    VALUE_TYPE_VECTOR,
     VALUE_TYPE_NULL,
 } value_type_t;
 
@@ -37,7 +37,7 @@ typedef union
     string_value_t* as_string;
     function_value_t* as_function;
     structure_value_t* as_structure;
-    array_value_t* as_array;
+    vector_value_t* as_vector;
     module_value_t* as_module;
     void* as_null;
 } value_value_t;
@@ -62,7 +62,7 @@ value_t value_new_structure(structure_value_t* data);
 
 value_t value_new_module(module_value_t* data);
 
-value_t value_new_array(array_value_t* data);
+value_t value_new_vector(vector_value_t* data);
 
 value_t value_new_null();
 
@@ -78,7 +78,7 @@ value_t value_new_structure_cf(structure_value_t* data, control_flow_t control_f
 
 value_t value_new_module_cf(module_value_t* data, control_flow_t control_flow);
 
-value_t value_new_array_cf(array_value_t* data, control_flow_t control_flow);
+value_t value_new_vector_cf(vector_value_t* data, control_flow_t control_flow);
 
 value_t value_new_null_cf(control_flow_t control_flow);
 
@@ -106,7 +106,7 @@ void value_print_structure(FILE* stream, const structure_value_t* value);
 
 void value_print_module(FILE* stream, const module_value_t* value);
 
-void value_print_array(FILE* stream, const array_value_t* value);
+void value_print_vector(FILE* stream, const vector_value_t* value);
 
 value_t value_operation_not(value_t value);
 

@@ -3,7 +3,7 @@
 #include "include/ast/ast_node.h"
 #include <stdlib.h>
 
-#include "include/array_value.h"
+#include "include/vector_value.h"
 #include "include/structure_value.h"
 #include "include/utils/throw.h"
 
@@ -50,25 +50,25 @@ value_t variable_assignment_node_evaluate(const variable_assignment_node_t* vari
             );
 
             break;
-        case AST_NODE_ARRAY_ACCESS:
-            const value_t array_value = ast_node_evaluate(
-                variable_assignment_node->target->node.array_access->array,
+        case AST_NODE_VECTOR_ACCESS:
+            const value_t vector_value = ast_node_evaluate(
+                variable_assignment_node->target->node.vector_access->vector,
                 context
             );
 
-            if (array_value.type != VALUE_TYPE_ARRAY)
-                THROW("Cannot assign a index to a non array\n");
+            if (vector_value.type != VALUE_TYPE_VECTOR)
+                THROW("Cannot assign a index to a non vector\n");
 
             const value_t index_value = ast_node_evaluate(
-                variable_assignment_node->target->node.array_access->index,
+                variable_assignment_node->target->node.vector_access->index,
                 context
             );
 
             if (index_value.type != VALUE_TYPE_NUMBER)
                 THROW("Index should be a number\n");
 
-            array_value_set(
-                array_value.data.as_array,
+            vector_value_set(
+                vector_value.data.as_vector,
                 (long long)number_value_to_long_double(index_value.data.as_number),
                 value
             );
