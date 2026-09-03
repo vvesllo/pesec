@@ -4,6 +4,7 @@
 
 #include "include/context.h"
 #include "include/function_value.h"
+#include "include/string_value.h"
 #include "include/utils/execute_file.h"
 #include "include/utils/interpret_info.h"
 #include "include/utils/memory.h"
@@ -77,7 +78,10 @@ int main(const int argc, const char** argv)
     context_t* context = context_new(nullptr);
     const value_t result = execute_file(filename, context);
     if (result.control_flow == CONTROL_FLOW_PANIC)
-        value_print(stderr, result);
+    {
+        const value_t result_string = value_to_string(result);
+        fprintf(stderr, "panic: %.*s", (int)result_string.data.as_string->size, result_string.data.as_string->data);
+    }
 
     context_free(context);
 

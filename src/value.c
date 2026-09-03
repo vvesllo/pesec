@@ -11,7 +11,6 @@
 #include "include/module_value.h"
 #include "include/utils/throw.h"
 
-
 static value_t value_new()
 {
     return (value_t){
@@ -28,7 +27,7 @@ value_t value_new_string(string_value_t *data)
     return value;
 }
 
-value_t value_new_number(number_value_t* data)
+value_t value_new_number(number_value_t *data)
 {
     value_t value = value_new();
     value.type = VALUE_TYPE_NUMBER;
@@ -80,7 +79,7 @@ value_t value_new_null()
 {
     value_t value = value_new();
     value.type = VALUE_TYPE_NULL;
-    value.data.as_null = nullptr;
+    value.data.as_null = NULL;
     return value;
 }
 
@@ -142,15 +141,27 @@ value_t value_new_null_cf(const control_flow_t control_flow)
 
 void value_free(const value_t *value)
 {
-    switch (value->type)
-    {
-        case VALUE_TYPE_NUMBER: number_value_free(value->data.as_number); break;
-        case VALUE_TYPE_VECTOR: vector_value_free(value->data.as_vector); break;
-        case VALUE_TYPE_STRING: string_value_free(value->data.as_string); break;
-        case VALUE_TYPE_STRUCTURE: structure_value_free(value->data.as_structure); break;
-        case VALUE_TYPE_FUNCTION: function_value_free(value->data.as_function); break;
-        case VALUE_TYPE_MODULE: module_value_free(value->data.as_module); break;
-        default: break;
+    switch (value->type) {
+    case VALUE_TYPE_NUMBER:
+        number_value_free(value->data.as_number);
+        break;
+    case VALUE_TYPE_VECTOR:
+        vector_value_free(value->data.as_vector);
+        break;
+    case VALUE_TYPE_STRING:
+        string_value_free(value->data.as_string);
+        break;
+    case VALUE_TYPE_STRUCTURE:
+        structure_value_free(value->data.as_structure);
+        break;
+    case VALUE_TYPE_FUNCTION:
+        function_value_free(value->data.as_function);
+        break;
+    case VALUE_TYPE_MODULE:
+        module_value_free(value->data.as_module);
+        break;
+    default:
+        break;
     }
 }
 
@@ -161,25 +172,28 @@ void value_increase_reference(value_t *value)
 
 void value_decrease_reference(value_t *value)
 {
-    --value->reference_count;
-    if (value->reference_count <= 0)
-    {
+    if (value->reference_count == 0)
+        return;
+    if (--value->reference_count == 0)
         value_free(value);
-    }
 }
 
 bool value_get_boolean(const value_t value)
 {
-    switch (value.type)
-    {
-        case VALUE_TYPE_NUMBER: return number_value_compare(value.data.as_number, number_value_zero());
-        case VALUE_TYPE_STRING: return value.data.as_string->size != 0;
-        case VALUE_TYPE_BOOLEAN: return value.data.as_bool;
-        case VALUE_TYPE_FUNCTION:
-        case VALUE_TYPE_VECTOR:
-        case VALUE_TYPE_MODULE:
-        case VALUE_TYPE_STRUCTURE: return true;
-        case VALUE_TYPE_NULL: return false;
+    switch (value.type) {
+    case VALUE_TYPE_NUMBER:
+        return number_value_compare(value.data.as_number, number_value_zero());
+    case VALUE_TYPE_STRING:
+        return value.data.as_string->size != 0;
+    case VALUE_TYPE_BOOLEAN:
+        return value.data.as_bool;
+    case VALUE_TYPE_FUNCTION:
+    case VALUE_TYPE_VECTOR:
+    case VALUE_TYPE_MODULE:
+    case VALUE_TYPE_STRUCTURE:
+        return true;
+    case VALUE_TYPE_NULL:
+        return false;
     }
 
     THROW("Value type '%d' is not a valid value type\n", value.type);
@@ -187,107 +201,145 @@ bool value_get_boolean(const value_t value)
 
 char *value_get_type(const value_t value)
 {
-    switch (value.type)
-    {
-        case VALUE_TYPE_NUMBER: return "number";
-        case VALUE_TYPE_STRING: return "string";
-        case VALUE_TYPE_BOOLEAN: return "boolean";
-        case VALUE_TYPE_FUNCTION: return "function";
-        case VALUE_TYPE_STRUCTURE: return "structure";
-        case VALUE_TYPE_VECTOR: return "vector";
-        case VALUE_TYPE_MODULE: return "module";
-        case VALUE_TYPE_NULL: return "null";
+    switch (value.type) {
+    case VALUE_TYPE_NUMBER:
+        return "number";
+    case VALUE_TYPE_STRING:
+        return "string";
+    case VALUE_TYPE_BOOLEAN:
+        return "boolean";
+    case VALUE_TYPE_FUNCTION:
+        return "function";
+    case VALUE_TYPE_STRUCTURE:
+        return "structure";
+    case VALUE_TYPE_VECTOR:
+        return "vector";
+    case VALUE_TYPE_MODULE:
+        return "module";
+    case VALUE_TYPE_NULL:
+        return "null";
     }
 
     THROW("Value type '%d' is not a valid value type\n", value.type);
 }
 
-void value_print(FILE *stream, const value_t value)
+static void string_value_append_cstr(string_value_t *out, const char *str)
 {
-    switch (value.type)
-    {
-        case VALUE_TYPE_STRING: value_print_string(stream, value.data.as_string); return;
-        case VALUE_TYPE_NUMBER: value_print_number(stream, value.data.as_number); return;
-        case VALUE_TYPE_BOOLEAN: value_print_boolean(stream, value.data.as_bool); return;
-        case VALUE_TYPE_FUNCTION: value_print_function(stream, value.data.as_function); return;
-        case VALUE_TYPE_STRUCTURE: value_print_structure(stream, value.data.as_structure); return;
-        case VALUE_TYPE_VECTOR: value_print_vector(stream, value.data.as_vector); return;
-        case VALUE_TYPE_MODULE: value_print_module(stream, value.data.as_module); return;
-        case VALUE_TYPE_NULL: fprintf(stream, "null"); return;
-    }
-
-    THROW("Value type '%d' is not a valid value type\n", value.type);
+    for (const char *p = str; *p; ++p)
+        string_value_push_back(out, *p);
 }
 
-void value_print_string(FILE *stream, const string_value_t *value)
+static void string_value_append_string(string_value_t *out, const string_value_t *src)
 {
-    fprintf(stream, "%s", value->data);
+    for (ull_t i = 0; i < src->size; ++i)
+        string_value_push_back(out, src->data[i]);
 }
 
-void value_print_number(FILE *stream, const number_value_t *value)
+static void value_string_to_string(string_value_t *out, const string_value_t *data)
 {
-    const ull_t significant = number_value_mantissa_significant_size(value->mantissa);
+    string_value_append_string(out, data);
+}
 
-    if (significant == 0)
-    {
-        fprintf(stream, "0");
+static void value_number_to_string(string_value_t *out, const number_value_t *data)
+{
+    const long double val = number_value_to_long_double(data);
+    char buffer[1024];
+    snprintf(buffer, sizeof(buffer), "%.*Lg", 16, val);
+    string_value_append_cstr(out, buffer);
+}
+
+static void value_boolean_to_string(string_value_t *out, bool data)
+{
+    string_value_append_cstr(out, data ? "true" : "false");
+}
+
+static void value_null_to_string(string_value_t *out)
+{
+    string_value_append_cstr(out, "null");
+}
+
+/* Исправлено: теперь адрес подставляется через snprintf */
+static void value_function_to_string(string_value_t *out, const function_value_t *data)
+{
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "<function:%p>", (void *)data);
+    string_value_append_cstr(out, buffer);
+}
+
+static void value_module_to_string(string_value_t *out, const module_value_t *data)
+{
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "<module:%p>", (void *)data);
+    string_value_append_cstr(out, buffer);
+}
+
+static void value_structure_to_string(string_value_t *out, const structure_value_t *data)
+{
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "<structure:%p>", (void *)data);
+    string_value_append_cstr(out, buffer);
+}
+
+static void value_vector_to_string(string_value_t *out, const vector_value_t *data)
+{
+    if (!data) {
+        string_value_append_cstr(out, "null");
         return;
     }
 
-    if (value->negative) fprintf(stream, "-");
+    string_value_push_back(out, '[');
 
-    const ull_t exponent = value->exponent;
-    const ull_t offset = value->mantissa->size - significant;
-    const ull_t integer_digits = significant > exponent ? significant - exponent : 0;
-    const ull_t fractional_zeros = significant > exponent ? 0 : exponent - significant;
-    const ull_t fractional_digits = significant > exponent ? exponent : significant;
+    for (ull_t i = 0; i < data->size; ++i) {
+        if (i > 0)
+            string_value_append_cstr(out, ", ");
 
-    if (integer_digits == 0) fprintf(stream, "0");
+        value_t elem_str = value_to_string(data->values[i]);
+        if (elem_str.type == VALUE_TYPE_STRING)
+            string_value_append_string(out, elem_str.data.as_string);
+        else
+            string_value_append_cstr(out, "<error>");
 
-    for (ull_t i = 0; i < integer_digits; ++i)
-        fprintf(stream, "%d", number_value_mantissa_get_digit(value->mantissa, offset + i));
-
-    if (fractional_digits > 0)
-    {
-        fprintf(stream, ".");
-
-        for (ull_t i = 0; i < fractional_zeros; ++i)
-            fprintf(stream, "0");
-
-        for (ull_t i = 0; i < fractional_digits; ++i)
-            fprintf(stream, "%d", number_value_mantissa_get_digit(value->mantissa, offset + integer_digits + i));
+        value_decrease_reference(&elem_str);
     }
+
+    string_value_push_back(out, ']');
 }
 
-void value_print_boolean(FILE *stream, const bool value)
+value_t value_to_string(const value_t value)
 {
-    fprintf(stream, value ? "true" : "false");
-}
+    string_value_t *result = string_value_new();
 
-void value_print_function(FILE *stream, const function_value_t *value)
-{
-    fprintf(stream, "<function:%p>", &value);
-}
-
-void value_print_structure(FILE *stream, const structure_value_t *value)
-{
-    fprintf(stream, "<structure:%p>", &value);
-}
-
-void value_print_module(FILE *stream, const module_value_t *value)
-{
-    fprintf(stream, "<module:%p>", &value);
-}
-
-void value_print_vector(FILE *stream, const vector_value_t *value)
-{
-    fprintf(stream, "[");
-    for (ull_t i = 0; i < value->size; ++i)
-    {
-        if (i > 0) fprintf(stream, ", ");
-        value_print(stream, value->values[i]);
+    switch (value.type) {
+    case VALUE_TYPE_STRING:
+        value_string_to_string(result, value.data.as_string);
+        break;
+    case VALUE_TYPE_NUMBER:
+        value_number_to_string(result, value.data.as_number);
+        break;
+    case VALUE_TYPE_BOOLEAN:
+        value_boolean_to_string(result, value.data.as_bool);
+        break;
+    case VALUE_TYPE_FUNCTION:
+        value_function_to_string(result, value.data.as_function);
+        break;
+    case VALUE_TYPE_STRUCTURE:
+        value_structure_to_string(result, value.data.as_structure);
+        break;
+    case VALUE_TYPE_VECTOR:
+        value_vector_to_string(result, value.data.as_vector);
+        break;
+    case VALUE_TYPE_MODULE:
+        value_module_to_string(result, value.data.as_module);
+        break;
+    case VALUE_TYPE_NULL:
+        value_null_to_string(result);
+        break;
+    default:
+        string_value_append_cstr(result, "<unknown>");
+        break;
     }
-    fprintf(stream, "]");
+
+    return value_new_string(result);
 }
 
 value_t value_operation_not(const value_t value)
@@ -319,6 +371,7 @@ value_t value_operation_sub(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
         return value_new_number(number_value_sub(left.data.as_number, right.data.as_number));
+
     THROW("Unsupported operator '-' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
@@ -326,6 +379,7 @@ value_t value_operation_mul(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
         return value_new_number(number_value_mul(left.data.as_number, right.data.as_number));
+
     THROW("Unsupported operator '*' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
@@ -333,6 +387,7 @@ value_t value_operation_div(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
         return value_new_number(number_value_div(left.data.as_number, right.data.as_number));
+
     THROW("Unsupported operator '/' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
@@ -340,6 +395,7 @@ value_t value_operation_floor_div(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
         return value_new_number(number_value_floor_div(left.data.as_number, right.data.as_number));
+
     THROW("Unsupported operator '//' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
@@ -347,6 +403,7 @@ value_t value_operation_pow(const value_t left, const value_t right)
 {
     if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
         return value_new_number(number_value_pow(left.data.as_number, right.data.as_number));
+
     THROW("Unsupported operator '**' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 
@@ -357,7 +414,8 @@ value_t value_operation_equals(const value_t left, const value_t right)
     if (left.type == VALUE_TYPE_STRING && right.type == VALUE_TYPE_STRING)
         return value_new_boolean(string_value_equals(left.data.as_string, right.data.as_string));
     if (left.type == VALUE_TYPE_BOOLEAN && right.type == VALUE_TYPE_BOOLEAN)
-        return value_new_boolean(left.data.as_string == right.data.as_string);
+        return value_new_boolean(left.data.as_bool == right.data.as_bool);
+
     THROW("Unsupported operator '==' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
 }
 

@@ -66,6 +66,10 @@ value_t string_value_resolve_field(value_t string_value, string_view_t name, con
 
 value_t string_value_method_size(value_t string_value, context_t* context);
 
+value_t string_value_method_to_vector(value_t string_value, context_t* context);
+
+value_t string_value_method_join(value_t string_value, context_t* context);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

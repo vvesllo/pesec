@@ -64,15 +64,15 @@ void vector_value_push(vector_value_t* vector_value, value_t value);
 
 value_t vector_value_pop(vector_value_t* vector_value);
 
-vector_value_t* vector_value_concat(const vector_value_t* left, const vector_value_t* right);
-
 long long vector_value_index_of(const vector_value_t* vector_value, value_t value);
 
 bool vector_value_contains(const vector_value_t* vector_value, value_t value);
 
-void vector_value_reverse(const vector_value_t* vector_value);
-
 void vector_value_clear(vector_value_t* vector_value);
+
+vector_value_t* vector_value_concat(const vector_value_t* left, const vector_value_t* right);
+
+vector_value_t* vector_value_reverse(const vector_value_t* source);
 
 // ================================================================================
 
@@ -84,15 +84,19 @@ value_t vector_value_method_push(value_t vector_value, context_t* context);
 
 value_t vector_value_method_pop(value_t vector_value, context_t* context);
 
-value_t vector_value_method_concat(value_t vector_value, context_t* context);
-
 value_t vector_value_method_index_of(value_t vector_value, context_t* context);
 
 value_t vector_value_method_contains(value_t vector_value, context_t* context);
 
+value_t vector_value_method_clear(value_t vector_value, context_t* context);
+
+value_t vector_value_method_concat(value_t vector_value, context_t* context);
+
 value_t vector_value_method_reverse(value_t vector_value, context_t* context);
 
-value_t vector_value_method_clear(value_t vector_value, context_t* context);
+value_t vector_value_method_map(value_t vector_value, context_t* context);
+
+value_t vector_value_method_filter(value_t vector_value, context_t* context);
 
 #ifdef __cplusplus
 }
