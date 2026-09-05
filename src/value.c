@@ -307,7 +307,6 @@ static void value_null_to_string(string_value_t *out)
     string_value_append_cstr(out, "null");
 }
 
-/* Исправлено: теперь адрес подставляется через snprintf */
 static void value_function_to_string(string_value_t *out, const function_value_t *data)
 {
     char buffer[64];
@@ -344,7 +343,11 @@ static void value_vector_to_string(string_value_t *out, const vector_value_t *da
 
         value_t elem_str = value_to_string(data->values[i]);
         if (elem_str.type == VALUE_TYPE_STRING)
+        {
+            string_value_push_back(out, '"');
             string_value_append_string(out, elem_str.data.as_string);
+            string_value_push_back(out, '"');
+        }
         else
             string_value_append_cstr(out, "<error>");
 

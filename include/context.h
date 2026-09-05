@@ -12,6 +12,13 @@ extern "C"
 typedef struct CONTEXT_STRUCT context_t;
 typedef struct CONTEXT_ITEM_STRUCT context_item_t;
 
+typedef struct CONTEXT_KEYS_STRUCT
+{
+    string_view_t* keys;
+    ull_t size;
+    ull_t capacity;
+} context_keys_t;
+
 typedef struct CONTEXT_ITEM_STRUCT
 {
     string_view_t key;
@@ -26,6 +33,7 @@ typedef struct CONTEXT_STRUCT
     ull_t size;
     ull_t capacity;
     context_t* parent;
+    context_keys_t* keys;
 } context_t;
 
 context_t* context_new(context_t* parent);

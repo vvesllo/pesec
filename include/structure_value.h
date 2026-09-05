@@ -24,6 +24,8 @@ void structure_value_set(const structure_value_t* structure_value, string_view_t
 
 void structure_value_free(structure_value_t* structure_value);
 
+value_t structure_value_get_fields(const structure_value_t* structure_value);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

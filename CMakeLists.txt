@@ -33,6 +33,7 @@ add_executable(
         src/ast/ast_node.c                          include/ast/ast_node.h
         src/ast/binary_op_node.c                    include/ast/binary_op_node.h
         src/ast/unary_op_node.c                     include/ast/unary_op_node.h
+        src/ast/value_meta_op_node.c                include/ast/value_meta_op_node.h
         src/ast/literal_node.c                      include/ast/literal_node.h
         src/ast/variable_node.c                     include/ast/variable_node.h
         src/ast/function_call_node.c                include/ast/function_call_node.h

@@ -53,6 +53,8 @@ string_value_t* string_value_from(char* data, ull_t size);
 
 string_value_t* string_value_from_cstr(const char* data);
 
+string_value_t* string_value_from_string_view(string_view_t string_view);
+
 void string_value_free(string_value_t* string);
 
 void string_value_push_back(string_value_t* string, char data);
@@ -61,8 +63,10 @@ bool string_value_equals(const string_value_t* left, const string_value_t* right
 
 string_value_t* string_value_concat(const string_value_t* left, const string_value_t* right);
 
-value_t string_value_resolve_field(value_t string_value, string_view_t name, context_t* context);
+value_t string_value_get_fields(const string_value_t* string_value);
 
+
+value_t string_value_resolve_field(value_t string_value, string_view_t name, context_t* context);
 
 value_t string_value_method_size(value_t string_value, context_t* context);
 

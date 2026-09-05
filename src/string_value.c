@@ -40,6 +40,14 @@ string_value_t* string_value_from_cstr(const char* data)
     return string;
 }
 
+string_value_t* string_value_from_string_view(string_view_t string_view)
+{
+    string_value_t* string = string_value_new();
+    for (ull_t i = 0; i < string_view.length; i++)
+        string_value_push_back(string, string_view.data[i]);
+    return string;
+}
+
 void string_value_push_back(string_value_t* string, const char data)
 {
     if (string->size + 1 >= string->capacity)
@@ -77,6 +85,15 @@ void string_value_free(string_value_t* string)
 {
     free(string->data);
     free(string);
+}
+
+value_t string_value_get_fields(const string_value_t* string_value)
+{
+    vector_value_t* fields_vector = vector_value_new_size(0);
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("size")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("to_vector")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("join")));
+    return value_new_vector(fields_vector);
 }
 
 

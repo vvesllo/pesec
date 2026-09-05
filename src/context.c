@@ -16,6 +16,11 @@ context_t* context_new(context_t* parent)
     context->items = (context_item_t**)calloc(context->capacity,sizeof(context_item_t*));
     context->parent = parent;
 
+    context->keys = (context_keys_t*)malloc(sizeof(context_keys_t));
+    context->keys->capacity = 16;
+    context->keys->size = 0;
+    context->keys->keys = (string_view_t*)calloc(context->keys->capacity, sizeof(string_view_t));
+
     return context;
 }
 
@@ -60,6 +65,15 @@ void context_push(context_t* context, const string_view_t key, value_t value, co
     else context->items[hash_index] = item;
 
     ++context->size;
+
+    if (context->keys->size >= context->keys->capacity)
+    {
+        context->keys->capacity *= 2;
+        context->keys->keys = (string_view_t*)realloc(context->keys, sizeof(string_view_t) * context->keys->capacity);
+    }
+
+    context->keys->keys[context->keys->size] = key;
+    context->keys->size++;
 }
 
 void context_set(const context_t* context, const string_view_t key, value_t value)

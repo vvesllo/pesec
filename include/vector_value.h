@@ -50,6 +50,8 @@ typedef struct VECTOR_VALUE_STRUCT
 
 vector_value_t* vector_value_new(value_t* values, ull_t size);
 
+vector_value_t* vector_value_new_size(ull_t size);
+
 vector_value_t* vector_value_copy(const vector_value_t* source);
 
 void vector_value_free(vector_value_t* vector_value);
@@ -63,6 +65,8 @@ value_t vector_value_get(const vector_value_t* vector_value, long long index);
 void vector_value_push(vector_value_t* vector_value, value_t value);
 
 value_t vector_value_pop(vector_value_t* vector_value);
+
+value_t vector_value_get_fields(const vector_value_t* vector_value);
 
 long long vector_value_index_of(const vector_value_t* vector_value, value_t value);
 

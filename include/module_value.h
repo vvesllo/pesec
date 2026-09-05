@@ -24,6 +24,8 @@ void module_value_set(const module_value_t* module_value, string_view_t name, va
 
 void module_value_free(module_value_t* module_value);
 
+value_t module_value_get_fields(const module_value_t* module_value);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

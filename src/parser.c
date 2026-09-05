@@ -91,9 +91,9 @@ ast_node_t *parser_parse_value_meta_op(parser_t *parser, ast_node_t* node)
 {
     parser_eat(parser, TOKEN_TYPE_AT_SIGN);
 
-    token_t meta_operator = parser_eat(parser, TOKEN_TYPE_IDENTIFIER);
+    const token_t meta_operator = parser_eat(parser, TOKEN_TYPE_IDENTIFIER);
 
-    return value_meta_op_node(node, meta_operator);
+    return value_meta_op_node_new(node, meta_operator.value.as_string_view);
 }
 
 ast_node_t *parser_parse(parser_t *parser)
@@ -226,7 +226,7 @@ ast_node_t *parser_parse_function_call(parser_t *parser, ast_node_t* callee)
     parser_eat(parser, TOKEN_TYPE_RPAREN);
 
     ast_node_t* node = function_call_node_new(callee, arguments_head, count);
-    // node = parser_check_and_do_everything(parser, node);
+
     return node;
 }
 
@@ -259,8 +259,6 @@ ast_node_t *parser_parse_function_definition(parser_t *parser)
 
     ast_node_t *body = parser_parse_statement(parser);
     ast_node_t *node = function_definition_node_new(parameter, body);
-
-    // node = parser_check_and_do_everything(parser, node);
 
     return node;
 }

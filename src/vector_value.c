@@ -25,6 +25,17 @@ vector_value_t* vector_value_new(value_t* values, const ull_t size)
     return vector_value;
 }
 
+vector_value_t* vector_value_new_size(const ull_t size)
+{
+    const auto vector_value = (vector_value_t*)malloc(sizeof(vector_value_t));
+
+    vector_value->capacity = size + 1;
+    vector_value->size = size;
+    vector_value->values = (value_t*)calloc(vector_value->capacity, sizeof(value_t));
+
+    return vector_value;
+}
+
 vector_value_t* vector_value_copy(const vector_value_t* source)
 {
     const auto values = (value_t*)malloc(sizeof(value_t) * source->size);
@@ -68,6 +79,23 @@ value_t vector_value_pop(vector_value_t* vector_value)
     const value_t value = vector_value->values[vector_value->size - 1];
     --vector_value->size;
     return value;
+}
+
+value_t vector_value_get_fields(const vector_value_t* vector_value)
+{
+    vector_value_t* fields_vector = vector_value_new_size(0);
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("size")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("push")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("pop")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("concat")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("index_of")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("contains")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("clear")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("copy")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("reverse")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("map")));
+    vector_value_push(fields_vector, value_new_string(string_value_from_cstr("filter")));
+    return value_new_vector(fields_vector);
 }
 
 value_t vector_value_resolve_field(const value_t vector_value, const string_view_t name, context_t* context)
