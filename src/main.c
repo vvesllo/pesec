@@ -10,7 +10,7 @@
 
 #define PESEC_MAJOR_VERSION 1
 #define PESEC_MINOR_VERSION 1
-#define PESEC_PATCH_VERSION 0
+#define PESEC_PATCH_VERSION 1
 
 static void print_help()
 {
