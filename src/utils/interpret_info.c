@@ -9,7 +9,7 @@ interpret_info_t* interpret_info_get()
     {
         interpret_info = (interpret_info_t*)malloc(sizeof(interpret_info_t));
         interpret_info->number_accuracy=16;
-        interpret_info->filename="stdin";
+        interpret_info->filename=nullptr;
     }
 
     return interpret_info;

@@ -21,7 +21,8 @@ ast_node_t* variable_field_access_node_new(ast_node_t* object, const string_view
 
 void variable_field_access_node_free(variable_field_access_node_t* variable_field_node)
 {
-    ast_node_free(variable_field_node->object);
+    if (!variable_field_node) return;
+    if (variable_field_node->object) ast_node_free(variable_field_node->object);
     free(variable_field_node);
 }
 

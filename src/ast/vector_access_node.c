@@ -19,8 +19,9 @@ ast_node_t* vector_access_node_new(ast_node_t* vector, ast_node_t* index)
 
 void vector_access_node_free(vector_access_node_t* vector_access_node)
 {
-    ast_node_free(vector_access_node->vector);
-    ast_node_free(vector_access_node->index);
+    if (!vector_access_node) return;
+    if (vector_access_node->vector) ast_node_free(vector_access_node->vector);
+    if (vector_access_node->index) ast_node_free(vector_access_node->index);
     free(vector_access_node);
 }
 

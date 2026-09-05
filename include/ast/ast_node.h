@@ -6,6 +6,7 @@
 #include "variable_node.h"
 #include "variable_definition_node.h"
 #include "variable_assignment_node.h"
+#include "variable_complex_assignment_node.h"
 #include "function_call_node.h"
 #include "function_definition_node.h"
 #include "structure_definition_node.h"
@@ -33,6 +34,7 @@ typedef enum
     AST_NODE_VARIABLE,
     AST_NODE_VARIABLE_DEFINITION,
     AST_NODE_VARIABLE_ASSIGNMENT,
+    AST_NODE_VARIABLE_COMPLEX_ASSIGNMENT,
     AST_NODE_FUNCTION_CALL,
     AST_NODE_FUNCTION_DEFINITION,
     AST_NODE_STRUCTURE_DEFINITION,
@@ -61,6 +63,7 @@ typedef struct AST_NODE_STRUCT
         variable_node_t* variable;
         variable_definition_node_t* variable_definition;
         variable_assignment_node_t* variable_assignment;
+        variable_complex_assignment_node_t* variable_complex_assignment;
         function_call_node_t* function_call;
         function_definition_node_t* function_definition;
         structure_definition_node_t* structure_definition;

@@ -247,14 +247,38 @@ token_t lexer_next_operator(lexer_t* lexer)
                 return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_GREATER_EQUALS);
             }
             return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_GREATER);
-        case '+': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_PLUS);
-        case '-': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_MINUS);
+        case '+':
+            lexer_advance(lexer);
+            if (lexer_get_current_char(lexer) == '=')
+            {
+                lexer_advance(lexer);
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_PLUS_EQUALS);
+            }
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_PLUS);
+        case '-':
+            lexer_advance(lexer);
+            if (lexer_get_current_char(lexer) == '=')
+            {
+                lexer_advance(lexer);
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_MINUS_EQUALS);
+            }
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_MINUS);
         case '*':
             lexer_advance(lexer);
             if (lexer_get_current_char(lexer) == '*')
             {
                 lexer_advance(lexer);
+                if (lexer_get_current_char(lexer) == '=')
+                {
+                    lexer_advance(lexer);
+                    return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 3, TOKEN_TYPE_ASTERISK_ASTERISK_EQUALS);
+                }
                 return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_ASTERISK_ASTERISK);
+            }
+            if (lexer_get_current_char(lexer) == '=')
+            {
+                lexer_advance(lexer);
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_ASTERISK_EQUALS);
             }
             return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_ASTERISK);
         case '/':
@@ -262,7 +286,18 @@ token_t lexer_next_operator(lexer_t* lexer)
             if (lexer_get_current_char(lexer) == '/')
             {
                 lexer_advance(lexer);
+
+                if (lexer_get_current_char(lexer) == '=')
+                {
+                    lexer_advance(lexer);
+                    return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 3, TOKEN_TYPE_SLASH_SLASH_EQUALS);
+                }
                 return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_SLASH_SLASH);
+            }
+            if (lexer_get_current_char(lexer) == '=')
+            {
+                lexer_advance(lexer);
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_SLASH_EQUALS);
             }
             return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_SLASH);
         default:

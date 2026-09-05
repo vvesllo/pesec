@@ -19,8 +19,9 @@ ast_node_t* binary_op_node_new(const token_t operation, ast_node_t* left, ast_no
 
 void binary_op_node_free(binary_op_node_t* binary_op_node)
 {
-    ast_node_free(binary_op_node->left);
-    ast_node_free(binary_op_node->right);
+    if (!binary_op_node) return;
+    if (binary_op_node->left) ast_node_free(binary_op_node->left);
+    if (binary_op_node->right) ast_node_free(binary_op_node->right);
     free(binary_op_node);
 }
 

@@ -17,9 +17,10 @@ ast_node_t* while_loop_node_new(ast_node_t *condition, ast_node_t *while_body, a
 
 void while_loop_node_free(while_loop_node_t* while_loop_node)
 {
-    free(while_loop_node->condition);
-    free(while_loop_node->while_body);
-    free(while_loop_node->else_body);
+    if (!while_loop_node) return;
+    if (while_loop_node->condition) free(while_loop_node->condition);
+    if (while_loop_node->while_body) free(while_loop_node->while_body);
+    if (while_loop_node->else_body) free(while_loop_node->else_body);
     free(while_loop_node);
 }
 

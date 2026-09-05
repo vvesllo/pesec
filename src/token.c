@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include "include/utils/throw.h"
+
 void token_print(FILE* stream, const token_t token)
 {
     switch (token.type)
@@ -53,4 +55,49 @@ void token_print(FILE* stream, const token_t token)
         case TOKEN_TYPE_EOF:
             fprintf(stream, "end of file"); break;
     }
+}
+
+const char* token_get_type(const token_t token)
+{
+    switch (token.type)
+    {
+        case TOKEN_TYPE_NUMBER: return "number";
+        case TOKEN_TYPE_IDENTIFIER: return "identifier";
+        case TOKEN_TYPE_KEYWORD: return "keyword";
+        case TOKEN_TYPE_STRING: return "string";
+        case TOKEN_TYPE_EQUALS: return "=";
+        case TOKEN_TYPE_EQUALS_EQUALS: return "==";
+        case TOKEN_TYPE_LESS: return "<";
+        case TOKEN_TYPE_LESS_EQUALS: return "<=";
+        case TOKEN_TYPE_GREATER: return ">";
+        case TOKEN_TYPE_GREATER_EQUALS: return ">=";
+        case TOKEN_TYPE_NOT_EQUALS: return "!=";
+        case TOKEN_TYPE_PLUS: return "+";
+        case TOKEN_TYPE_MINUS: return "-";
+        case TOKEN_TYPE_SLASH: return "/";
+        case TOKEN_TYPE_SLASH_SLASH: return "//";
+        case TOKEN_TYPE_ASTERISK: return "*";
+        case TOKEN_TYPE_ASTERISK_ASTERISK: return "**";
+        case TOKEN_TYPE_LPAREN: return "(";
+        case TOKEN_TYPE_RPAREN: return ")";
+        case TOKEN_TYPE_LBRACE: return "{";
+        case TOKEN_TYPE_RBRACE: return "}";
+        case TOKEN_TYPE_LBRACKET: return "[";
+        case TOKEN_TYPE_RBRACKET: return "]";
+        case TOKEN_TYPE_COMMA: return ",";
+        case TOKEN_TYPE_DOT: return ".";
+        case TOKEN_TYPE_AT_SIGN: return "@";
+        case TOKEN_TYPE_SEMICOLON: return ";";
+        case TOKEN_TYPE_QUESTION_MARK: return "?";
+        case TOKEN_TYPE_EXCLAMATION_MARK: return "!";
+        case TOKEN_TYPE_EOF: return "eof";
+        case TOKEN_TYPE_PLUS_EQUALS: return "+=";
+        case TOKEN_TYPE_MINUS_EQUALS: return "-=";
+        case TOKEN_TYPE_SLASH_EQUALS: return "/=";
+        case TOKEN_TYPE_SLASH_SLASH_EQUALS: return "//=";
+        case TOKEN_TYPE_ASTERISK_EQUALS: return "*=";
+        case TOKEN_TYPE_ASTERISK_ASTERISK_EQUALS:return "**=";
+    }
+
+    THROW("Unknown token type");
 }

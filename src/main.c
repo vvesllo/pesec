@@ -11,7 +11,7 @@
 #include "include/utils/throw.h"
 
 #define PESEC_MAJOR_VERSION 1
-#define PESEC_MINOR_VERSION 0
+#define PESEC_MINOR_VERSION 1
 #define PESEC_PATCH_VERSION 0
 
 static bool is_tag(const char* arg)
@@ -60,6 +60,7 @@ static void process_args(const int argc, const char** argv)
     }
 }
 
+context_t* global_current_context = nullptr;
 
 int main(const int argc, const char** argv)
 {
@@ -75,18 +76,16 @@ int main(const int argc, const char** argv)
 
     const char* filename = interpret_info_get()->filename;
 
-    context_t* context = context_new(nullptr);
-    const value_t result = execute_file(filename, context);
+    global_current_context = context_new(nullptr);
+    const value_t result = execute_file(filename, global_current_context);
     if (result.control_flow == CONTROL_FLOW_PANIC)
     {
         const value_t result_string = value_to_string(result);
         fprintf(stderr, "panic: %.*s", (int)result_string.data.as_string->size, result_string.data.as_string->data);
     }
 
-    context_free(context);
-
+    context_free(global_current_context);
     free(interpret_info_get());
-
     memory_free(memory_get());
 
     return EXIT_SUCCESS;

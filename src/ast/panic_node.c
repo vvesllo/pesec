@@ -14,7 +14,8 @@ ast_node_t* panic_node_new(ast_node_t* expression)
 
 void panic_node_free(panic_node_t* panic_node)
 {
-    ast_node_free(panic_node->expression);
+    if (!panic_node) return;
+    if (panic_node->expression) ast_node_free(panic_node->expression);
     free(panic_node);
 }
 

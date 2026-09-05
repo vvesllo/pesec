@@ -17,7 +17,8 @@ ast_node_t* structure_definition_node_new(ast_node_t* fields)
 
 void structure_definition_node_free(structure_definition_node_t* structure_definition_node)
 {
-    ast_node_free(structure_definition_node->fields);
+    if (!structure_definition_node) return;
+    if (structure_definition_node->fields) ast_node_free(structure_definition_node->fields);
     free(structure_definition_node);
 }
 

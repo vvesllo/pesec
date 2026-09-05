@@ -15,7 +15,8 @@ ast_node_t* variable_node_new(const string_view_t name)
 
 void variable_node_free(variable_node_t* variable_node)
 {
-    free(variable_node);
+    if (variable_node)
+        free(variable_node);
 }
 
 value_t variable_node_evaluate(const variable_node_t* variable_node, const context_t* context)

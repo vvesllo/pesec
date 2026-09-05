@@ -14,7 +14,8 @@ ast_node_t* return_node_new(ast_node_t* expression)
 
 void return_node_free(return_node_t* return_node)
 {
-    ast_node_free(return_node->expression);
+    if (!return_node) return;
+    if (return_node->expression) ast_node_free(return_node->expression);
     free(return_node);
 }
 

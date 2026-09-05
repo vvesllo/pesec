@@ -18,7 +18,8 @@ ast_node_t* unary_op_node_new(const token_t operation, ast_node_t* right)
 
 void unary_op_node_free(unary_op_node_t* unary_op_node)
 {
-    ast_node_free(unary_op_node->right);
+    if (!unary_op_node) return;
+    if (unary_op_node->right) ast_node_free(unary_op_node->right);
     free(unary_op_node);
 }
 

@@ -17,7 +17,8 @@ ast_node_t* vector_definition_node_new(ast_node_t* values)
 
 void vector_definition_node_free(vector_definition_node_t* vector_definition_node)
 {
-    ast_node_free(vector_definition_node->values);
+    if (!vector_definition_node) return;
+    if (vector_definition_node->values) ast_node_free(vector_definition_node->values);
     free(vector_definition_node);
 }
 

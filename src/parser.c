@@ -28,6 +28,7 @@ token_t parser_eat(parser_t *parser, const token_type_t type)
         fprintf(stderr, "Unexpected token \"");
         token_print(stderr, parser->current_token);
         fprintf(stderr, "\" at line %llu\n", parser->current_token.line);
+        throw_cleanup();
         exit(EXIT_FAILURE);
     }
     const token_t prev_token = parser->current_token;
@@ -60,6 +61,19 @@ ast_node_t* parser_check_and_parse_variable_assignment(parser_t *parser, ast_nod
     return target;
 }
 
+ast_node_t* parser_check_and_parse_variable_complex_assignment(parser_t *parser, ast_node_t* target)
+{
+    if (parser_match(parser, TOKEN_TYPE_PLUS_EQUALS) ||
+        parser_match(parser, TOKEN_TYPE_MINUS_EQUALS) ||
+        parser_match(parser, TOKEN_TYPE_ASTERISK_EQUALS) ||
+        parser_match(parser, TOKEN_TYPE_SLASH_EQUALS) ||
+        parser_match(parser, TOKEN_TYPE_ASTERISK_ASTERISK_EQUALS) ||
+        parser_match(parser, TOKEN_TYPE_SLASH_SLASH_EQUALS))
+        return parser_parse_variable_complex_assignment(parser, target);
+
+    return target;
+}
+
 ast_node_t* parser_check_and_parse_vector_access(parser_t *parser, ast_node_t* vector)
 {
     if (parser_match(parser, TOKEN_TYPE_LBRACKET))
@@ -83,6 +97,7 @@ ast_node_t* parser_check_and_do_everything(parser_t *parser, ast_node_t* node)
     node = parser_check_and_parse_variable_assignment(parser, node);
     node = parser_check_and_parse_vector_access(parser, node);
     node = parser_check_and_parse_meta_op(parser, node);
+    node = parser_check_and_parse_variable_complex_assignment(parser, node);
 
     return node;
 }
@@ -124,12 +139,7 @@ ast_node_t *parser_parse_identifier(parser_t *parser)
 
     ast_node_t* variable_node = parser_parse_variable(parser, name);
 
-    if (parser_match(parser, TOKEN_TYPE_LPAREN))    return parser_parse_function_call(parser, variable_node);
-    if (parser_match(parser, TOKEN_TYPE_EQUALS))    return parser_parse_variable_assignment(parser, variable_node);
-    if (parser_match(parser, TOKEN_TYPE_DOT))       return parser_parse_variable_field_access(parser, variable_node);
-    if (parser_match(parser, TOKEN_TYPE_LBRACKET))  return parser_parse_vector_access(parser, variable_node);
-
-    return variable_node;
+    return parser_check_and_do_everything(parser, variable_node);
 }
 
 ast_node_t *parser_parse_keyword(parser_t *parser)
@@ -187,6 +197,17 @@ ast_node_t *parser_parse_variable_assignment(parser_t *parser, ast_node_t* targe
     ast_node_t *value = parser_parse_statement(parser);
 
     return variable_assignment_node_new(target, value);
+}
+
+ast_node_t *parser_parse_variable_complex_assignment(parser_t *parser, ast_node_t *target)
+{
+    const token_t operation = parser->current_token;
+
+    parser_eat(parser, operation.type);
+
+    ast_node_t *value = parser_parse_statement(parser);
+
+    return variable_complex_assignment_node_new(operation, target, value);
 }
 
 ast_node_t *parser_parse_function_call(parser_t *parser, ast_node_t* callee)
@@ -552,7 +573,7 @@ ast_node_t *parser_parse_factor(parser_t *parser)
     node = parser_check_and_do_everything(parser, node);
 
     if (!node)
-        THROW("unexpected token type '%d' at line %llu", parser->current_token.type, parser->current_token.line);
+        THROW("unexpected token type '%s' at line %llu", token_get_type(parser->current_token), parser->current_token.line);
 
     return node;
 }

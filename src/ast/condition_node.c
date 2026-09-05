@@ -17,9 +17,10 @@ ast_node_t* condition_node_new(ast_node_t *condition, ast_node_t *if_body, ast_n
 
 void condition_node_free(condition_node_t* condition_node)
 {
-    free(condition_node->condition);
-    free(condition_node->if_body);
-    free(condition_node->else_body);
+    if (!condition_node) return;
+    if (condition_node->condition) free(condition_node->condition);
+    if (condition_node->if_body) free(condition_node->if_body);
+    if (condition_node->else_body) free(condition_node->else_body);
     free(condition_node);
 }
 

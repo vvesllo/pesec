@@ -17,7 +17,8 @@ ast_node_t* variable_definition_node_new(const string_view_t name, ast_node_t* v
 
 void variable_definition_node_free(variable_definition_node_t* variable_definition_node)
 {
-    free(variable_definition_node);
+    if (variable_definition_node)
+        free(variable_definition_node);
 }
 
 value_t variable_definition_node_evaluate(const variable_definition_node_t* variable_definition_node, context_t* context)

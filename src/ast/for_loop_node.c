@@ -21,9 +21,10 @@ ast_node_t* for_loop_node_new(const string_view_t iterator, ast_node_t *iterable
 
 void for_loop_node_free(for_loop_node_t* for_loop_node)
 {
-    free(for_loop_node->iterable);
-    free(for_loop_node->for_body);
-    free(for_loop_node->else_body);
+    if (!for_loop_node) return;
+    if (for_loop_node->iterable) free(for_loop_node->iterable);
+    if (for_loop_node->for_body) free(for_loop_node->for_body);
+    if (for_loop_node->else_body) free(for_loop_node->else_body);
     free(for_loop_node);
 }
 

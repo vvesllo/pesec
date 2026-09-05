@@ -33,6 +33,13 @@ typedef enum
     TOKEN_TYPE_ASTERISK,
     TOKEN_TYPE_ASTERISK_ASTERISK,
 
+    TOKEN_TYPE_PLUS_EQUALS,
+    TOKEN_TYPE_MINUS_EQUALS,
+    TOKEN_TYPE_SLASH_EQUALS,
+    TOKEN_TYPE_SLASH_SLASH_EQUALS,
+    TOKEN_TYPE_ASTERISK_EQUALS,
+    TOKEN_TYPE_ASTERISK_ASTERISK_EQUALS,
+
     TOKEN_TYPE_LPAREN,
     TOKEN_TYPE_RPAREN,
 
@@ -69,5 +76,7 @@ typedef struct
 } token_t;
 
 void token_print(FILE* stream, token_t token);
+
+const char* token_get_type(token_t token);
 
 #endif // PESEC_TOKEN_H

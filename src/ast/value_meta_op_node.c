@@ -21,7 +21,8 @@ ast_node_t* value_meta_op_node_new(ast_node_t* value, const string_view_t _opera
 
 void value_meta_op_node_free(value_meta_op_node_t* value_meta_op_node)
 {
-    ast_node_free(value_meta_op_node->value);
+    if (!value_meta_op_node) return;
+    if (value_meta_op_node->value) ast_node_free(value_meta_op_node->value);
     free(value_meta_op_node);
 }
 

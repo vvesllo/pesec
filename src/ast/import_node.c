@@ -46,7 +46,8 @@ ast_node_t* import_node_new(ast_node_t* source)
 
 void import_node_free(import_node_t* import_node)
 {
-    ast_node_free(import_node->source);
+    if (!import_node) return;
+    if (import_node->source) ast_node_free(import_node->source);
     free(import_node);
 }
 

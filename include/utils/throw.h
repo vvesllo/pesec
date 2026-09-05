@@ -7,8 +7,11 @@
 #define THROW(...) \
     do { \
         fprintf(stderr, __VA_ARGS__); \
+        throw_cleanup(); \
         exit(EXIT_FAILURE);\
     } while (0)
+
+void throw_cleanup();
 
 
 #endif // PESEC_THROW_H

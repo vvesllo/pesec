@@ -45,6 +45,7 @@ add_executable(
         src/ast/statement_sequence_node.c           include/ast/statement_sequence_node.h
         src/ast/variable_definition_node.c          include/ast/variable_definition_node.h
         src/ast/variable_assignment_node.c          include/ast/variable_assignment_node.h
+        src/ast/variable_complex_assignment_node.c  include/ast/variable_complex_assignment_node.h
         src/ast/import_node.c                       include/ast/import_node.h
         src/ast/return_node.c                       include/ast/return_node.h
 
@@ -52,7 +53,7 @@ add_executable(
         src/ast/while_loop_node.c                   include/ast/while_loop_node.h
         src/ast/for_loop_node.c                     include/ast/for_loop_node.h
         src/ast/break_node.c                        include/ast/break_node.h
-        src/ast/panic_node.c include/ast/panic_node.h
+        src/ast/panic_node.c                        include/ast/panic_node.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE m)
