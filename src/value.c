@@ -274,7 +274,7 @@ static void value_number_to_string(string_value_t *out, const number_value_t *da
             string_value_push_back(out, (char)('0' + number_value_mantissa_get_digit(mantissa, i)));
         return;
     }
-    
+
     const ull_t point = size - exponent;
 
     if (first < point)
@@ -344,9 +344,9 @@ static void value_vector_to_string(string_value_t *out, const vector_value_t *da
         value_t elem_str = value_to_string(data->values[i]);
         if (elem_str.type == VALUE_TYPE_STRING)
         {
-            string_value_push_back(out, '"');
+            if (data->values[i].type == VALUE_TYPE_STRING) string_value_push_back(out, '"');
             string_value_append_string(out, elem_str.data.as_string);
-            string_value_push_back(out, '"');
+            if (data->values[i].type == VALUE_TYPE_STRING) string_value_push_back(out, '"');
         }
         else
             string_value_append_cstr(out, "<error>");

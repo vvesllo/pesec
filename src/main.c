@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "include/context.h"
 #include "include/function_value.h"
@@ -8,65 +7,38 @@
 #include "include/utils/execute_file.h"
 #include "include/utils/interpret_info.h"
 #include "include/utils/memory.h"
-#include "include/utils/throw.h"
 
 #define PESEC_MAJOR_VERSION 1
 #define PESEC_MINOR_VERSION 1
 #define PESEC_PATCH_VERSION 0
 
-static bool is_tag(const char* arg)
-{
-    return strlen(arg) > 2 &&
-        arg[0] == '-' && arg[1] == '-';
-}
-
-static bool arg_equals(const char* arg, const char* value)
-{
-    return strcmp(arg, value) == 0;
-}
-
 static void print_help()
 {
     printf(
         "pesec-%d.%d.%d help\n"
-        "\t--file [FILE] - run file\n"
-        "\t--nacc [SIZE] - sets number fraction part accuracy\n",
+        "Usage: pesec [FILE]\n",
         PESEC_MAJOR_VERSION, PESEC_MINOR_VERSION, PESEC_PATCH_VERSION
         );
-}
-
-static void process_args(const int argc, const char** argv)
-{
-    unsigned int i = 1;
-
-    while (i < argc)
-    {
-        if (is_tag(argv[i]))
-        {
-            if (arg_equals(argv[i], "--help")) print_help();
-            else if (arg_equals(argv[i], "--file"))
-            {
-                if (++i >= argc) THROW("Missing argument for --file\n");
-                interpret_info_get()->filename = argv[i];
-            }
-            else if (arg_equals(argv[i], "--nacc"))
-            {
-                if (++i >= argc) THROW("Missing argument for --nacc\n");
-                interpret_info_get()->number_accuracy = strtoull(argv[i], nullptr, 10);
-            }
-        }
-        else THROW("Unknown tag: %s, use 'pesec --help'\n", argv[i]);
-        i++;
-    }
 }
 
 context_t* global_current_context = nullptr;
 
 int main(const int argc, const char** argv)
 {
+    interpret_info_get()->filename = argv[1];
     interpret_info_get()->number_accuracy = 8;
 
-    process_args(argc, argv);
+    vector_value_t* argv_vector = vector_value_new_size(0);
+
+    for (int i = 1; i < argc; i++)
+    {
+        vector_value_push(
+            argv_vector,
+            value_new_string(string_value_from_cstr(argv[i]))
+        );
+    }
+
+    interpret_info_get()->args = argv_vector;
 
     if (!interpret_info_get()->filename)
     {
@@ -78,6 +50,7 @@ int main(const int argc, const char** argv)
 
     global_current_context = context_new(nullptr);
     const value_t result = execute_file(filename, global_current_context);
+
     if (result.control_flow == CONTROL_FLOW_PANIC)
     {
         const value_t result_string = value_to_string(result);

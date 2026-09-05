@@ -1,3 +1,1 @@
-mutab a = 1;
-a += 4;
-panic 1 == 1 || 2 == 0;
+panic __system@fields;
