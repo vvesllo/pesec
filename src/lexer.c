@@ -220,9 +220,9 @@ token_t lexer_next_operator(lexer_t* lexer)
             if (lexer_get_current_char(lexer) == '=')
             {
                 lexer_advance(lexer);
-                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_EXCLAMATION_MARK);
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_NOT_EQUALS);
             }
-            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_NOT_EQUALS);
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_EXCLAMATION_MARK);
         case '=':
             lexer_advance(lexer);
             if (lexer_get_current_char(lexer) == '=')
