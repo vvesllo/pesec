@@ -39,6 +39,9 @@ value_t binary_op_node_evaluate(const binary_op_node_t* binary_op_node, context_
         case TOKEN_TYPE_ASTERISK: return value_operation_mul(left_value, right_value);
         case TOKEN_TYPE_ASTERISK_ASTERISK: return value_operation_pow(left_value, right_value);
 
+        case TOKEN_TYPE_AMPERSAND_AMPERSAND: return value_new_boolean(value_get_boolean(left_value) && value_get_boolean(right_value));
+        case TOKEN_TYPE_PIPE_PIPE: return value_new_boolean(value_get_boolean(left_value) || value_get_boolean(right_value));
+
 
         case TOKEN_TYPE_EQUALS_EQUALS: return value_operation_equals(left_value, right_value);
         case TOKEN_TYPE_LESS_EQUALS: return value_operation_less_or_equals(left_value, right_value);

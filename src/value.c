@@ -274,7 +274,7 @@ static void value_number_to_string(string_value_t *out, const number_value_t *da
             string_value_push_back(out, (char)('0' + number_value_mantissa_get_digit(mantissa, i)));
         return;
     }
-
+    
     const ull_t point = size - exponent;
 
     if (first < point)

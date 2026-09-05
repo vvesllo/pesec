@@ -31,6 +31,16 @@ void token_print(FILE* stream, const token_t token)
         case TOKEN_TYPE_SLASH_SLASH:
         case TOKEN_TYPE_ASTERISK:
         case TOKEN_TYPE_ASTERISK_ASTERISK:
+        case TOKEN_TYPE_PLUS_EQUALS:
+        case TOKEN_TYPE_MINUS_EQUALS:
+        case TOKEN_TYPE_SLASH_EQUALS:
+        case TOKEN_TYPE_SLASH_SLASH_EQUALS:
+        case TOKEN_TYPE_ASTERISK_EQUALS:
+        case TOKEN_TYPE_ASTERISK_ASTERISK_EQUALS:
+        case TOKEN_TYPE_AMPERSAND:
+        case TOKEN_TYPE_AMPERSAND_AMPERSAND:
+        case TOKEN_TYPE_PIPE:
+        case TOKEN_TYPE_PIPE_PIPE:
             fprintf(stream, "operator: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
         case TOKEN_TYPE_LPAREN:
         case TOKEN_TYPE_RPAREN:
@@ -96,7 +106,11 @@ const char* token_get_type(const token_t token)
         case TOKEN_TYPE_SLASH_EQUALS: return "/=";
         case TOKEN_TYPE_SLASH_SLASH_EQUALS: return "//=";
         case TOKEN_TYPE_ASTERISK_EQUALS: return "*=";
-        case TOKEN_TYPE_ASTERISK_ASTERISK_EQUALS:return "**=";
+        case TOKEN_TYPE_ASTERISK_ASTERISK_EQUALS: return "**=";
+        case TOKEN_TYPE_AMPERSAND: return "&";
+        case TOKEN_TYPE_AMPERSAND_AMPERSAND: return "&&";
+        case TOKEN_TYPE_PIPE: return "|";
+        case TOKEN_TYPE_PIPE_PIPE: return "||";
     }
 
     THROW("Unknown token type");

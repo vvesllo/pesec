@@ -454,7 +454,39 @@ ast_node_t *parser_parse_return(parser_t *parser)
 
 ast_node_t* parser_parse_statement(parser_t* parser)
 {
-    return parser_parse_comparison(parser);
+    return parser_parse_or(parser);
+}
+
+ast_node_t *parser_parse_or(parser_t *parser)
+{
+    ast_node_t *left = parser_parse_and(parser);
+    ast_node_t *right = nullptr;
+
+    while (parser_match(parser, TOKEN_TYPE_PIPE_PIPE))
+    {
+        const token_t operation = parser_eat(parser, parser->current_token.type);
+
+        right = parser_parse_and(parser);
+        left = binary_op_node_new(operation, left, right);
+    }
+
+    return left;
+}
+
+ast_node_t *parser_parse_and(parser_t *parser)
+{
+    ast_node_t *left = parser_parse_comparison(parser);
+    ast_node_t *right = nullptr;
+
+    while (parser_match(parser, TOKEN_TYPE_AMPERSAND_AMPERSAND))
+    {
+        const token_t operation = parser_eat(parser, parser->current_token.type);
+
+        right = parser_parse_comparison(parser);
+        left = binary_op_node_new(operation, left, right);
+    }
+
+    return left;
 }
 
 ast_node_t* parser_parse_comparison(parser_t* parser)

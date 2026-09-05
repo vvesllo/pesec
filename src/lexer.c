@@ -247,6 +247,22 @@ token_t lexer_next_operator(lexer_t* lexer)
                 return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_GREATER_EQUALS);
             }
             return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_GREATER);
+        case '&':
+            lexer_advance(lexer);
+            if (lexer_get_current_char(lexer) == '&')
+            {
+                lexer_advance(lexer);
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_AMPERSAND_AMPERSAND);
+            }
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_AMPERSAND);
+        case '|':
+            lexer_advance(lexer);
+            if (lexer_get_current_char(lexer) == '|')
+            {
+                lexer_advance(lexer);
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_PIPE_PIPE);
+            }
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_PIPE);
         case '+':
             lexer_advance(lexer);
             if (lexer_get_current_char(lexer) == '=')
