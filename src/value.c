@@ -201,23 +201,16 @@ bool value_get_boolean(const value_t value)
 
 char *value_get_type(const value_t value)
 {
-    switch (value.type) {
-    case VALUE_TYPE_NUMBER:
-        return "number";
-    case VALUE_TYPE_STRING:
-        return "string";
-    case VALUE_TYPE_BOOLEAN:
-        return "boolean";
-    case VALUE_TYPE_FUNCTION:
-        return "function";
-    case VALUE_TYPE_STRUCTURE:
-        return "structure";
-    case VALUE_TYPE_VECTOR:
-        return "vector";
-    case VALUE_TYPE_MODULE:
-        return "module";
-    case VALUE_TYPE_NULL:
-        return "null";
+    switch (value.type)
+    {
+        case VALUE_TYPE_NUMBER: return "number";
+        case VALUE_TYPE_STRING: return "string";
+        case VALUE_TYPE_BOOLEAN: return "boolean";
+        case VALUE_TYPE_FUNCTION: return "function";
+        case VALUE_TYPE_STRUCTURE: return "structure";
+        case VALUE_TYPE_VECTOR: return "vector";
+        case VALUE_TYPE_MODULE: return "module";
+        case VALUE_TYPE_NULL: return "null";
     }
 
     THROW("Value type '%d' is not a valid value type\n", value.type);
@@ -242,10 +235,66 @@ static void value_string_to_string(string_value_t *out, const string_value_t *da
 
 static void value_number_to_string(string_value_t *out, const number_value_t *data)
 {
-    const long double val = number_value_to_long_double(data);
-    char buffer[1024];
-    snprintf(buffer, sizeof(buffer), "%.*Lg", 16, val);
-    string_value_append_cstr(out, buffer);
+    const number_value_mantissa_t *mantissa = data->mantissa;
+    const ull_t size = mantissa->size;
+    const ull_t exponent = data->exponent;
+
+    ull_t first = 0;
+    while (first < size && number_value_mantissa_get_digit(mantissa, first) == 0)
+        ++first;
+
+    if (first == size)
+    {
+        string_value_append_cstr(out, "0");
+        return;
+    }
+
+    if (data->negative)
+        string_value_push_back(out, '-');
+
+    if (exponent == 0)
+    {
+        for (ull_t i = first; i < size; ++i)
+            string_value_push_back(out, (char)('0' + number_value_mantissa_get_digit(mantissa, i)));
+        return;
+    }
+
+    const ull_t fractional_start = size > exponent ? size - exponent : 0;
+
+    ull_t last = size;
+    while (last > first && last > fractional_start && number_value_mantissa_get_digit(mantissa, last - 1) == 0)
+        --last;
+
+    if (exponent >= size)
+    {
+        string_value_append_cstr(out, "0.");
+        for (ull_t i = 0; i < exponent - size + first; ++i)
+            string_value_push_back(out, '0');
+        for (ull_t i = first; i < last; ++i)
+            string_value_push_back(out, (char)('0' + number_value_mantissa_get_digit(mantissa, i)));
+        return;
+    }
+
+    const ull_t point = size - exponent;
+
+    if (first < point)
+    {
+        for (ull_t i = first; i < point; ++i)
+            string_value_push_back(out, (char)('0' + number_value_mantissa_get_digit(mantissa, i)));
+    }
+    else
+    {
+        string_value_push_back(out, '0');
+    }
+
+    if (last > point)
+    {
+        string_value_push_back(out, '.');
+        for (ull_t i = point; i < first; ++i)
+            string_value_push_back(out, '0');
+        for (ull_t i = first > point ? first : point; i < last; ++i)
+            string_value_push_back(out, (char)('0' + number_value_mantissa_get_digit(mantissa, i)));
+    }
 }
 
 static void value_boolean_to_string(string_value_t *out, bool data)

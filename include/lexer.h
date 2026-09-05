@@ -3,6 +3,9 @@
 
 #include "token.h"
 
+#define LEXER_NEW_TOKEN_FROM_CURRENT_POS(_offset, _length, _type) \
+    (token_t) { .line = lexer->line, .value.as_string_view = (string_view_t) { .data = lexer->source + _offset, .length = _length }, .type = _type }
+
 typedef struct
 {
     bool commenting;

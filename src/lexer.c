@@ -203,116 +203,68 @@ token_t lexer_next_operator(lexer_t* lexer)
     const char current_char = lexer_get_current_char(lexer);
     switch (current_char)
     {
-        case '.': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from("."), .type = TOKEN_TYPE_DOT };
-        case ',': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from(","), .type = TOKEN_TYPE_COMMA };
-        case ';': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from(";"), .type = TOKEN_TYPE_SEMICOLON };
-        case '(': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from("("), .type = TOKEN_TYPE_LPAREN };
-        case ')': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from(")"), .type = TOKEN_TYPE_RPAREN };
-        case '{': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from("{"), .type = TOKEN_TYPE_LBRACE };
-        case '}': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from("}"), .type = TOKEN_TYPE_RBRACE };
-        case '[': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from("["), .type = TOKEN_TYPE_LBRACKET };
-        case ']': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from("]"), .type = TOKEN_TYPE_RBRACKET };
+        case '@': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_AT_SIGN);
+        case '.': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_DOT);
+        case ',': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_COMMA);
+        case ';': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_SEMICOLON);
+        case '(': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_LPAREN);
+        case ')': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_RPAREN);
+        case '{': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_LBRACE);
+        case '}': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_RBRACE);
+        case '[': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_LBRACKET);
+        case ']': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_RBRACKET);
 
-        case '?': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from("?"), .type = TOKEN_TYPE_QUESTION_MARK };
+        case '?': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_QUESTION_MARK);
         case '!':
             lexer_advance(lexer);
             if (lexer_get_current_char(lexer) == '=')
             {
                 lexer_advance(lexer);
-                return (token_t) {
-                    .line = lexer->line,
-                    .value.as_string_view = string_view_from("!="),
-                    .type = TOKEN_TYPE_NOT_EQUALS
-                };
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_EXCLAMATION_MARK);
             }
-            return (token_t) {
-                .line = lexer->line,
-                .value.as_string_view = string_view_from("!"),
-                .type = TOKEN_TYPE_EXCLAMATION_MARK
-            };
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_NOT_EQUALS);
         case '=':
             lexer_advance(lexer);
             if (lexer_get_current_char(lexer) == '=')
             {
                 lexer_advance(lexer);
-                return (token_t) {
-                    .line = lexer->line,
-                    .value.as_string_view = string_view_from("=="),
-                    .type = TOKEN_TYPE_EQUALS_EQUALS
-                };
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_EQUALS_EQUALS);
             }
-            return (token_t) {
-                .line = lexer->line,
-                .value.as_string_view = string_view_from("="),
-                .type = TOKEN_TYPE_EQUALS
-            };
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_EQUALS);
         case '<':
             lexer_advance(lexer);
             if (lexer_get_current_char(lexer) == '=')
             {
                 lexer_advance(lexer);
-                return (token_t) {
-                    .line = lexer->line,
-                    .value.as_string_view = string_view_from("<="),
-                    .type = TOKEN_TYPE_LESS_EQUALS
-                };
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_LESS_EQUALS);
             }
-            return (token_t) {
-                .line = lexer->line,
-                .value.as_string_view = string_view_from("<"),
-                .type = TOKEN_TYPE_LESS
-            };
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_LESS);
         case '>':
             lexer_advance(lexer);
             if (lexer_get_current_char(lexer) == '=')
             {
                 lexer_advance(lexer);
-                return (token_t) {
-                    .line = lexer->line,
-                    .value.as_string_view = string_view_from(">="),
-                    .type = TOKEN_TYPE_GREATER_EQUALS
-                };
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_GREATER_EQUALS);
             }
-            return (token_t) {
-                .line = lexer->line,
-                .value.as_string_view = string_view_from(">"),
-                .type = TOKEN_TYPE_GREATER
-            };
-
-        case '+': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from("+"), .type = TOKEN_TYPE_PLUS };
-        case '-': lexer_advance(lexer); return (token_t) { .line = lexer->line, .value.as_string_view = string_view_from("-"), .type = TOKEN_TYPE_MINUS };
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_GREATER);
+        case '+': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_PLUS);
+        case '-': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_MINUS);
         case '*':
             lexer_advance(lexer);
             if (lexer_get_current_char(lexer) == '*')
             {
                 lexer_advance(lexer);
-                return (token_t) {
-                    .line = lexer->line,
-                    .value.as_string_view = string_view_from("**"),
-                    .type = TOKEN_TYPE_ASTERISK_ASTERISK
-                };
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_ASTERISK_ASTERISK);
             }
-            return (token_t) {
-                .line = lexer->line,
-                .value.as_string_view = string_view_from("*"),
-                .type = TOKEN_TYPE_ASTERISK
-            };
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_ASTERISK);
         case '/':
             lexer_advance(lexer);
             if (lexer_get_current_char(lexer) == '/')
             {
                 lexer_advance(lexer);
-                return (token_t) {
-                    .line = lexer->line,
-                    .value.as_string_view = string_view_from("//"),
-                    .type = TOKEN_TYPE_SLASH_SLASH
-                };
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_SLASH_SLASH);
             }
-            return (token_t) {
-                .line = lexer->line,
-                .value.as_string_view = string_view_from("/"),
-                .type = TOKEN_TYPE_SLASH
-            };
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_SLASH);
         default:
             THROW("Unknown character: '%c' at line %llu\n", current_char, lexer->line);
     }

@@ -24,15 +24,19 @@ ast_node_t* parser_check_and_parse_variable_assignment(parser_t *parser, ast_nod
 
 ast_node_t* parser_check_and_parse_vector_access(parser_t *parser, ast_node_t* vector);
 
+ast_node_t* parser_check_and_parse_meta_op(parser_t *parser, ast_node_t* vector);
+
 ast_node_t* parser_check_and_do_everything(parser_t *parser, ast_node_t* node);
+
+ast_node_t *parser_parse_value_meta_op(parser_t *parser, ast_node_t* node);
+
+ast_node_t *parser_parse_keyword(parser_t *parser);
 
 ast_node_t *parser_parse(parser_t *parser);
 
 ast_node_t *parser_parse_statement_sequence(parser_t *parser, bool between_braces);
 
 ast_node_t *parser_parse_identifier(parser_t *parser);
-
-ast_node_t *parser_parse_keyword(parser_t *parser);
 
 ast_node_t *parser_parse_variable(parser_t *parser, string_view_t name);
 

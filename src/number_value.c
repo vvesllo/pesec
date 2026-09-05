@@ -2,6 +2,7 @@
 
 #include <limits.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -51,6 +52,25 @@ unsigned char number_value_mantissa_get_digit(const number_value_mantissa_t* num
     if (index % 2 == 0)
         return number_value_mantissa->data[byte_index] & 0x0F;
     return (number_value_mantissa->data[byte_index] >> 4) & 0x0F;
+}
+
+static void number_value_mantissa_increment(number_value_mantissa_t* mantissa)
+{
+    for (ull_t i = mantissa->size; i-- > 0; )
+    {
+        const unsigned char digit = number_value_mantissa_get_digit(mantissa, i);
+        if (digit < 9)
+        {
+            number_value_mantissa_set_digit(mantissa, i, (unsigned char)(digit + 1));
+            return;
+        }
+        number_value_mantissa_set_digit(mantissa, i, 0);
+    }
+
+    number_value_mantissa_push_digit(mantissa, 0);
+    for (ull_t i = mantissa->size - 1; i > 0; --i)
+        number_value_mantissa_set_digit(mantissa, i, number_value_mantissa_get_digit(mantissa, i - 1));
+    number_value_mantissa_set_digit(mantissa, 0, 1);
 }
 
 static number_value_mantissa_t* number_value_mantissa_new(ull_t size)
@@ -300,37 +320,47 @@ static int number_value_mantissa_compare_shifted_abs(
 static void number_value_normalize(number_value_t* number_value)
 {
     const ull_t accuracy = interpret_info_get()->number_accuracy;
+    number_value_mantissa_t* mantissa = number_value->mantissa;
 
     if (number_value->exponent > accuracy)
     {
         const ull_t excess = number_value->exponent - accuracy;
 
-        if (excess >= number_value->mantissa->size)
+        bool round_up = false;
+        if (excess < mantissa->size)
+            round_up = number_value_mantissa_get_digit(mantissa, mantissa->size - excess) >= 5;
+        else if (excess == mantissa->size)
+            round_up = number_value_mantissa_get_digit(mantissa, 0) >= 5;
+
+        if (excess >= mantissa->size)
         {
-            number_value->mantissa->size = 1;
-            number_value_mantissa_set_digit(number_value->mantissa, 0, 0);
-            number_value->exponent = 0;
+            mantissa->size = 1;
+            number_value_mantissa_set_digit(mantissa, 0, 0);
         }
         else
         {
-            number_value->mantissa->size -= excess;
-            number_value->exponent = accuracy;
+            mantissa->size -= excess;
         }
+
+        number_value->exponent = accuracy;
+
+        if (round_up)
+            number_value_mantissa_increment(mantissa);
     }
 
-    number_value_mantissa_trim_leading_zeros(number_value->mantissa);
+    number_value_mantissa_trim_leading_zeros(mantissa);
 
-    while (number_value->exponent > 0 && number_value->mantissa->size > 1 &&
-           number_value_mantissa_get_digit(number_value->mantissa, number_value->mantissa->size - 1) == 0)
+    while (number_value->exponent > 0 && mantissa->size > 1 &&
+           number_value_mantissa_get_digit(mantissa, mantissa->size - 1) == 0)
     {
-        --number_value->mantissa->size;
+        --mantissa->size;
         --number_value->exponent;
     }
 
-    if (number_value_mantissa_significant_size(number_value->mantissa) == 0)
+    if (number_value_mantissa_significant_size(mantissa) == 0)
     {
-        number_value->mantissa->size = 1;
-        number_value_mantissa_set_digit(number_value->mantissa, 0, 0);
+        mantissa->size = 1;
+        number_value_mantissa_set_digit(mantissa, 0, 0);
         number_value->negative = false;
         number_value->exponent = 0;
     }
@@ -385,10 +415,12 @@ number_value_t* number_value_from_sv(const string_view_t string_view)
 
         number_value_mantissa_push_digit(mantissa, (unsigned char)(current_char - '0'));
         if (floating) ++exponent;
-        if (exponent >= accuracy) break;
+        if (exponent > accuracy) break;
     }
 
-    return number_value_new(mantissa, exponent);
+    number_value_t* value = number_value_new(mantissa, exponent);
+    number_value_normalize(value);
+    return value;
 }
 
 number_value_t* number_value_one()
@@ -419,6 +451,7 @@ number_value_t* number_value_new(number_value_mantissa_t* mantissa, const ull_t 
 
 void number_value_free(number_value_t* number_value)
 {
+    if (!number_value) return;
     number_value_mantissa_free(number_value->mantissa);
     free(number_value);
 }
@@ -440,48 +473,42 @@ number_value_t* number_value_from_long_double(long double value)
 {
     if (!isfinite(value)) THROW("Cannot convert a non-finite value");
 
+    const bool negative = value < 0.0L;
+    if (negative) value = -value;
+
+    const int fractional_digits = (int)interpret_info_get()->number_accuracy;
+    const size_t buffer_size = (size_t)fractional_digits + 5200;
+
+    char* buffer = (char*)malloc(buffer_size);
+    if (!buffer) THROW("Failed to alloc conversion buffer");
+    snprintf(buffer, buffer_size, "%.*Lf", fractional_digits, value);
+
     const auto mantissa = (number_value_mantissa_t*)malloc(sizeof(number_value_mantissa_t));
     if (!mantissa) THROW("Failed to alloc mantissa");
-
     mantissa->capacity = 16;
     mantissa->size = 0;
     mantissa->data = (unsigned char*)calloc(mantissa->capacity, sizeof(unsigned char));
     if (!mantissa->data) THROW("Failed to alloc mantissa data");
 
-    const bool negative = value < 0.0L;
-    if (negative) value = -value;
-
-    const ull_t accuracy = interpret_info_get()->number_accuracy;
     ull_t exponent = 0;
+    bool floating = false;
+    bool seen_digit = false;
 
-    long double integer_part = floorl(value);
-    long double fractional_part = value - integer_part;
-
-    if (integer_part > 0.0L)
+    for (const char* p = buffer; *p != '\0'; ++p)
     {
-        long double power = 1.0L;
-        while (integer_part / power >= 10.0L)
-            power *= 10.0L;
-
-        while (power >= 1.0L)
+        if (*p >= '0' && *p <= '9')
         {
-            unsigned char digit = (unsigned char)floorl(integer_part / power);
-            if (digit > 9) digit = 9;
-            number_value_mantissa_push_digit(mantissa, digit);
-            integer_part = fmodl(integer_part, power);
-            power /= 10.0L;
+            seen_digit = true;
+            number_value_mantissa_push_digit(mantissa, (unsigned char)(*p - '0'));
+            if (floating) ++exponent;
+        }
+        else if (seen_digit)
+        {
+            floating = true;
         }
     }
 
-    while (exponent < accuracy && fractional_part > 0.0L)
-    {
-        fractional_part *= 10.0L;
-        unsigned char digit = (unsigned char)fractional_part;
-        if (digit > 9) digit = 9;
-        number_value_mantissa_push_digit(mantissa, digit);
-        fractional_part -= (long double)digit;
-        ++exponent;
-    }
+    free(buffer);
 
     if (mantissa->size == 0)
         number_value_mantissa_push_digit(mantissa, 0);
@@ -645,7 +672,8 @@ number_value_t* number_value_mul(const number_value_t* left, const number_value_
     return result;
 }
 
-number_value_t* number_value_div(const number_value_t* left, const number_value_t* right)
+static number_value_t* number_value_div_internal(
+    const number_value_t* left, const number_value_t* right, const bool round)
 {
     if (number_value_mantissa_significant_size(right->mantissa) == 0)
         THROW("Division by zero");
@@ -683,6 +711,15 @@ number_value_t* number_value_div(const number_value_t* left, const number_value_
         ++exponent;
     }
 
+    if (round && exponent == accuracy && number_value_mantissa_significant_size(remainder) != 0)
+    {
+        number_value_mantissa_push_digit(remainder, 0);
+        unsigned char digit = 0;
+        number_value_mantissa_div_mod_digit(remainder, divisor, double_divisor, quadruple_divisor, octuple_divisor, &digit);
+        if (digit >= 5)
+            number_value_mantissa_increment(quotient);
+    }
+
     number_value_mantissa_free(dividend);
     number_value_mantissa_free(remainder);
     number_value_mantissa_free(double_divisor);
@@ -696,9 +733,14 @@ number_value_t* number_value_div(const number_value_t* left, const number_value_
     return result;
 }
 
+number_value_t* number_value_div(const number_value_t* left, const number_value_t* right)
+{
+    return number_value_div_internal(left, right, true);
+}
+
 number_value_t* number_value_floor_div(const number_value_t* left, const number_value_t* right)
 {
-    number_value_t* quotient = number_value_div(left, right);
+    number_value_t* quotient = number_value_div_internal(left, right, false);
 
     number_value_mantissa_t* mantissa = quotient->mantissa;
     bool has_fraction = false;
@@ -747,58 +789,314 @@ number_value_t* number_value_floor_div(const number_value_t* left, const number_
     return decremented;
 }
 
+static number_value_t* number_value_from_ull(ull_t value)
+{
+    if (value == 0) return number_value_zero();
+
+    char digits[24];
+    int count = 0;
+    while (value > 0) { digits[count++] = (char)('0' + value % 10); value /= 10; }
+
+    number_value_mantissa_t* mantissa = number_value_mantissa_new((ull_t)count);
+    for (int i = 0; i < count; ++i)
+        number_value_mantissa_set_digit(mantissa, (ull_t)i, (unsigned char)(digits[count - 1 - i] - '0'));
+    return number_value_new(mantissa, 0);
+}
+
+static bool number_value_negligible_vs(const number_value_t* term, const number_value_t* sum)
+{
+    const long long accuracy = (long long)interpret_info_get()->number_accuracy;
+
+    const ull_t term_sig = number_value_mantissa_significant_size(term->mantissa);
+    if (term_sig == 0) return true;
+
+    const ull_t sum_sig = number_value_mantissa_significant_size(sum->mantissa);
+    if (sum_sig == 0) return false;
+
+    const long long term_mag = (long long)term_sig - (long long)term->exponent;
+    const long long sum_mag = (long long)sum_sig - (long long)sum->exponent;
+
+    return term_mag + accuracy + 3 < sum_mag;
+}
+
+static number_value_t* number_value_halve(const number_value_t* value)
+{
+    number_value_mantissa_t* mantissa = number_value_mantissa_clone(value->mantissa);
+
+    ull_t carry = 0;
+    for (ull_t i = mantissa->size; i-- > 0; )
+    {
+        const ull_t current = number_value_mantissa_get_digit(mantissa, i) * 5 + carry;
+        number_value_mantissa_set_digit(mantissa, i, (unsigned char)(current % 10));
+        carry = current / 10;
+    }
+    if (carry)
+    {
+        number_value_mantissa_push_digit(mantissa, 0);
+        for (ull_t i = mantissa->size - 1; i > 0; --i)
+            number_value_mantissa_set_digit(mantissa, i, number_value_mantissa_get_digit(mantissa, i - 1));
+        number_value_mantissa_set_digit(mantissa, 0, (unsigned char)carry);
+    }
+
+    number_value_t* result = number_value_new(mantissa, value->exponent + 1);
+    result->negative = value->negative;
+    number_value_normalize(result);
+    return result;
+}
+
+static number_value_t* number_value_sqrt(const number_value_t* value)
+{
+    if (number_value_mantissa_significant_size(value->mantissa) == 0)
+        return number_value_zero();
+
+    const ull_t sig = number_value_mantissa_significant_size(value->mantissa);
+    const ull_t offset = value->mantissa->size - sig;
+    const ull_t take = sig < 18 ? sig : 18;
+
+    long double lead = 0.0L;
+    for (ull_t i = 0; i < take; ++i)
+        lead = lead * 10.0L + number_value_mantissa_get_digit(value->mantissa, offset + i);
+
+    long long shift = (long long)sig - (long long)value->exponent - (long long)take;
+    while (shift % 2 != 0) { lead *= 10.0L; --shift; }
+
+    number_value_t* x = number_value_from_long_double(sqrtl(lead));
+
+    const long long half = shift / 2;
+    if (half > 0)
+        number_value_mantissa_push_zeros(x->mantissa, (ull_t)half);
+    else if (half < 0)
+        x->exponent += (ull_t)(-half);
+    number_value_normalize(x);
+
+    number_value_t* prev = nullptr;
+    for (ull_t iteration = 0; iteration < 400; ++iteration)
+    {
+        number_value_t* quotient = number_value_div(value, x);
+        number_value_t* sum = number_value_add(x, quotient);
+        number_value_free(quotient);
+
+        number_value_t* next = number_value_halve(sum);
+        number_value_free(sum);
+
+        const int diff_current = number_value_compare(next, x);
+        const int diff_prev = prev ? number_value_compare(next, prev) : 1;
+
+        number_value_free(prev);
+        prev = x;
+        x = next;
+
+        if (diff_current == 0) break;
+        if (diff_prev == 0) break;
+    }
+    number_value_free(prev);
+    return x;
+}
+
+static number_value_t* number_value_exp(const number_value_t* value)
+{
+    if (number_value_mantissa_significant_size(value->mantissa) == 0)
+        return number_value_one();
+
+    if (value->negative)
+    {
+        number_value_t* positive = number_value_negate(value);
+        number_value_t* result = number_value_exp(positive);
+        number_value_free(positive);
+
+        number_value_t* one = number_value_one();
+        number_value_t* reciprocal = number_value_div(one, result);
+        number_value_free(one);
+        number_value_free(result);
+        return reciprocal;
+    }
+
+    number_value_t* x = number_value_clone(value);
+    ull_t squarings = 0;
+
+    number_value_t* half = number_value_from_long_double(0.5L);
+    while (number_value_compare(x, half) > 0)
+    {
+        number_value_t* reduced = number_value_halve(x);
+        number_value_free(x);
+        x = reduced;
+        ++squarings;
+    }
+    number_value_free(half);
+
+    number_value_t* term = number_value_one();
+    number_value_t* sum = number_value_one();
+
+    for (ull_t coef = 1; coef < 100000; ++coef)
+    {
+        number_value_t* scaled = number_value_mul(term, x);
+        number_value_free(term);
+
+        number_value_t* coef_value = number_value_from_ull(coef);
+        term = number_value_div(scaled, coef_value);
+        number_value_free(scaled);
+        number_value_free(coef_value);
+
+        number_value_t* new_sum = number_value_add(sum, term);
+        number_value_free(sum);
+        sum = new_sum;
+
+        if (number_value_negligible_vs(term, sum)) break;
+    }
+    number_value_free(term);
+    number_value_free(x);
+
+    for (ull_t i = 0; i < squarings; ++i)
+    {
+        number_value_t* squared = number_value_mul(sum, sum);
+        number_value_free(sum);
+        sum = squared;
+    }
+    return sum;
+}
+
+static number_value_t* number_value_ln(const number_value_t* value)
+{
+    if (number_value_mantissa_significant_size(value->mantissa) == 0)
+        THROW("Logarithm of zero");
+
+    number_value_t* x = number_value_clone(value);
+    ull_t squarings = 0;
+
+    number_value_t* lower = number_value_from_long_double(0.9L);
+    number_value_t* upper = number_value_from_long_double(1.1L);
+
+    while (squarings < 1000 &&
+           (number_value_compare(x, lower) < 0 || number_value_compare(x, upper) > 0))
+    {
+        number_value_t* root = number_value_sqrt(x);
+        number_value_free(x);
+        x = root;
+        ++squarings;
+    }
+    number_value_free(lower);
+    number_value_free(upper);
+
+    number_value_t* one = number_value_one();
+    number_value_t* numerator = number_value_sub(x, one);
+    number_value_t* denominator = number_value_add(x, one);
+    number_value_free(x);
+
+    number_value_t* y = number_value_div(numerator, denominator);
+    number_value_free(numerator);
+    number_value_free(denominator);
+
+    number_value_t* y2 = number_value_mul(y, y);
+    number_value_t* power = number_value_clone(y);
+    number_value_t* sum = number_value_clone(y);
+
+    for (ull_t coef = 3; coef < 100000; coef += 2)
+    {
+        number_value_t* next_power = number_value_mul(power, y2);
+        number_value_free(power);
+        power = next_power;
+
+        number_value_t* coef_value = number_value_from_ull(coef);
+        number_value_t* term = number_value_div(power, coef_value);
+        number_value_free(coef_value);
+
+        number_value_t* new_sum = number_value_add(sum, term);
+        number_value_free(sum);
+        sum = new_sum;
+
+        const bool done = number_value_negligible_vs(term, sum);
+        number_value_free(term);
+        if (done) break;
+    }
+
+    number_value_free(power);
+    number_value_free(y2);
+    number_value_free(y);
+    number_value_free(one);
+
+    number_value_t* doubled = number_value_add(sum, sum);
+    number_value_free(sum);
+    sum = doubled;
+
+    for (ull_t i = 0; i < squarings; ++i)
+    {
+        number_value_t* doubled_again = number_value_add(sum, sum);
+        number_value_free(sum);
+        sum = doubled_again;
+    }
+    return sum;
+}
+
 number_value_t* number_value_pow(const number_value_t* left, const number_value_t* right)
 {
     if (right->negative && number_value_mantissa_significant_size(left->mantissa) == 0)
         THROW("Zero raised to a negative power");
 
-    if (!number_value_is_integer(right))
-        return number_value_from_long_double(
-            powl(number_value_to_long_double(left), number_value_to_long_double(right))
-        );
-
-    const ull_t integer_digits = right->mantissa->size > right->exponent
-        ? right->mantissa->size - right->exponent
-        : 0;
-
-    ull_t exponent = 0;
-    for (ull_t i = 0; i < integer_digits; ++i)
+    if (number_value_is_integer(right))
     {
-        const unsigned char digit = number_value_mantissa_get_digit(right->mantissa, i);
-        if (exponent > (ULLONG_MAX - digit) / 10)
-            THROW("Exponent is too large");
-        exponent = exponent * 10 + digit;
-    }
+        const ull_t integer_digits = right->mantissa->size > right->exponent
+            ? right->mantissa->size - right->exponent
+            : 0;
 
-    number_value_t* result = number_value_one();
-    number_value_t* base = number_value_clone(left);
-
-    while (exponent > 0)
-    {
-        if (exponent & 1)
+        ull_t exponent = 0;
+        for (ull_t i = 0; i < integer_digits; ++i)
         {
-            number_value_t* temp = number_value_mul(result, base);
+            const unsigned char digit = number_value_mantissa_get_digit(right->mantissa, i);
+            if (exponent > (ULLONG_MAX - digit) / 10)
+                THROW("Exponent is too large");
+            exponent = exponent * 10 + digit;
+        }
+
+        number_value_t* result = number_value_one();
+        number_value_t* base = number_value_clone(left);
+
+        while (exponent > 0)
+        {
+            if (exponent & 1)
+            {
+                number_value_t* temp = number_value_mul(result, base);
+                number_value_free(result);
+                result = temp;
+            }
+            exponent >>= 1;
+            if (exponent > 0)
+            {
+                number_value_t* temp = number_value_mul(base, base);
+                number_value_free(base);
+                base = temp;
+            }
+        }
+        number_value_free(base);
+
+        if (right->negative)
+        {
+            number_value_t* one = number_value_one();
+            number_value_t* reciprocal = number_value_div(one, result);
+            number_value_free(one);
             number_value_free(result);
-            result = temp;
+            result = reciprocal;
         }
-        exponent >>= 1;
-        if (exponent > 0)
-        {
-            number_value_t* temp = number_value_mul(base, base);
-            number_value_free(base);
-            base = temp;
-        }
-    }
-    number_value_free(base);
 
-    if (right->negative)
-    {
-        number_value_t* one = number_value_one();
-        number_value_t* reciprocal = number_value_div(one, result);
-        number_value_free(one);
-        number_value_free(result);
-        result = reciprocal;
+        return result;
     }
 
+    if (number_value_mantissa_significant_size(left->mantissa) == 0)
+        return number_value_zero();
+
+    if (left->negative)
+        THROW("Negative number raised to a non-integer power");
+
+    const ull_t accuracy = interpret_info_get()->number_accuracy;
+    interpret_info_get()->number_accuracy = accuracy + 8;
+
+    number_value_t* log_value = number_value_ln(left);
+    number_value_t* scaled = number_value_mul(right, log_value);
+    number_value_free(log_value);
+
+    number_value_t* result = number_value_exp(scaled);
+    number_value_free(scaled);
+
+    interpret_info_get()->number_accuracy = accuracy;
+    number_value_normalize(result);
     return result;
 }

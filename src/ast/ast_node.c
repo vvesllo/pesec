@@ -29,6 +29,7 @@ value_t ast_node_evaluate(const ast_node_t* node, context_t* context)
         case AST_NODE_BREAK: return break_node_evaluate(node->node._break, context);
         case AST_NODE_IMPORT: return import_node_evaluate(node->node._import, context);
         case AST_NODE_RETURN: return return_node_evaluate(node->node._return, context);
+        case AST_NODE_VALUE_META_OP: return value_meta_op_node_evaluate(node->node.value_meta_op, context);
     }
 
     THROW("Unknown node type: %d\n", node->type);
@@ -58,6 +59,7 @@ void ast_node_free(ast_node_t* node)
         case AST_NODE_BREAK: break_node_free(node->node._break); break;
         case AST_NODE_IMPORT: import_node_free(node->node._import); break;
         case AST_NODE_RETURN: return_node_free(node->node._return); break;
+        case AST_NODE_VALUE_META_OP: value_meta_op_node_free(node->node.value_meta_op); break;
     }
 
     free(node);

@@ -21,6 +21,7 @@
 #include "panic_node.h"
 #include "unary_op_node.h"
 #include "return_node.h"
+#include "value_meta_op_node.h"
 
 #include "include/context.h"
 
@@ -46,6 +47,7 @@ typedef enum
     AST_NODE_IMPORT,
     AST_NODE_PANIC,
     AST_NODE_RETURN,
+    AST_NODE_VALUE_META_OP,
 } ast_node_type_t;
 
 typedef struct AST_NODE_STRUCT
@@ -73,6 +75,7 @@ typedef struct AST_NODE_STRUCT
         break_node_t* _break;
         import_node_t* _import;
         return_node_t* _return;
+        value_meta_op_node_t* value_meta_op;
     } node;
 } ast_node_t;
 

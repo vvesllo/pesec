@@ -43,6 +43,8 @@ void token_print(FILE* stream, const token_t token)
             fprintf(stream, "comma: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
         case TOKEN_TYPE_DOT:
             fprintf(stream, "dot: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
+        case TOKEN_TYPE_AT_SIGN:
+            fprintf(stream, "at: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
         case TOKEN_TYPE_SEMICOLON:
             fprintf(stream, "semicolon: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
         case TOKEN_TYPE_QUESTION_MARK:

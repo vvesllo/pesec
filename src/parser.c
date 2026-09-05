@@ -68,14 +68,32 @@ ast_node_t* parser_check_and_parse_vector_access(parser_t *parser, ast_node_t* v
     return vector;
 }
 
+ast_node_t* parser_check_and_parse_meta_op(parser_t *parser, ast_node_t* vector)
+{
+    if (parser_match(parser, TOKEN_TYPE_AT_SIGN))
+        return parser_parse_value_meta_op(parser, vector);
+
+    return vector;
+}
+
 ast_node_t* parser_check_and_do_everything(parser_t *parser, ast_node_t* node)
 {
     node = parser_check_and_parse_function_call(parser, node);
     node = parser_check_and_parse_variable_field_access(parser, node);
     node = parser_check_and_parse_variable_assignment(parser, node);
     node = parser_check_and_parse_vector_access(parser, node);
+    node = parser_check_and_parse_meta_op(parser, node);
 
     return node;
+}
+
+ast_node_t *parser_parse_value_meta_op(parser_t *parser, ast_node_t* node)
+{
+    parser_eat(parser, TOKEN_TYPE_AT_SIGN);
+
+    token_t meta_operator = parser_eat(parser, TOKEN_TYPE_IDENTIFIER);
+
+    return value_meta_op_node(node, meta_operator);
 }
 
 ast_node_t *parser_parse(parser_t *parser)
@@ -536,9 +554,7 @@ ast_node_t *parser_parse_factor(parser_t *parser)
     node = parser_check_and_do_everything(parser, node);
 
     if (!node)
-    {
         THROW("unexpected token type '%d' at line %llu", parser->current_token.type, parser->current_token.line);
-    }
 
     return node;
 }
