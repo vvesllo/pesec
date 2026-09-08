@@ -1,6 +1,8 @@
 #include "include/utils/execute_file.h"
 
 #include <stdio.h>
+#include <limits.h>
+#include <string.h>
 
 #include "include/function_value.h"
 #include "include/lexer.h"
@@ -52,10 +54,20 @@ static void push_constant(context_t* context, const char* name, const value_t va
 
 static void create_default_values(context_t* context, const char* filepath)
 {
+    const char *filename = filepath + strlen(filepath);
+    while (filename > filepath)
+    {
+        const char c = filename[-1];
+        if (c == '\\' || c == '/')
+            break;
+        filename--;
+    }
+
     context_t* system_context = context_new(nullptr);
     push_constant(system_context, "platform", value_new_string(string_value_from_cstr(get_platform())));
     push_constant(system_context, "arch", value_new_string(string_value_from_cstr(get_architecture())));
-    push_constant(system_context, "name", value_new_string(string_value_from_cstr(filepath)));
+    push_constant(system_context, "filepath", value_new_string(string_value_from_cstr(filepath)));
+    push_constant(system_context, "filename", value_new_string(string_value_from_cstr(filename)));
     push_constant(system_context, "args", value_new_vector(interpret_info_get()->args));
 
     push_constant(context, "__system", value_new_structure(structure_value_new(system_context)));
@@ -67,6 +79,8 @@ value_t execute_file(const char* filepath, context_t* context)
 
     if (!file) THROW("Could not open file %s\n", filepath);
 
+    char filepath_full[PATH_MAX];
+    realpath(filepath, filepath_full);
 
     fseek(file, 0, SEEK_END);
     const ull_t source_size = ftell(file);
@@ -80,11 +94,14 @@ value_t execute_file(const char* filepath, context_t* context)
     fread(source->value.as_char, 1, source_size, file);
     fclose(file);
 
+    free(context->current_file);
+    context->current_file = strdup(filepath);
+
     lexer_t* lexer = lexer_new(source->value.as_char, source_size);
     parser_t* parser = parser_new(lexer);
     ast_node_t* ast = parser_parse(parser);
 
-    create_default_values(context, filepath);
+    create_default_values(context, filepath_full);
 
     const value_t result = ast ? ast_node_evaluate(ast, context) : value_new_number(NUM_VAL_0);
 

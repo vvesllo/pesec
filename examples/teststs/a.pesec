@@ -1,0 +1,5 @@
+const b_import = import "b.pesec";
+
+const f = fn() {
+    return b_import.value;
+};

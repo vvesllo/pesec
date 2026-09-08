@@ -3,6 +3,7 @@
 #include "include/ast/ast_node.h"
 #include <stdlib.h>
 #include <dlfcn.h>
+#include <errno.h>
 
 #include "include/utils/throw.h"
 
@@ -12,6 +13,7 @@
 
 
 #include <string.h>
+#include <limits.h>
 
 static string_view_t get_file_extension(const char *path)
 {
@@ -59,11 +61,35 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
         THROW("Import path should be a string");
 
     const string_value_t* path = source_value.data.as_string;
+
+    char candidate[PATH_MAX];
+
+    if (path->data[0] == '/') snprintf(candidate, sizeof(candidate), "%s", path->data);
+    else if (context->current_file)
+    {
+        char dir[PATH_MAX];
+        snprintf(dir, sizeof dir, "%s", context->current_file);
+
+        const char *slash = strrchr(dir, '/');
+        if (slash)
+            *(char *)slash = '\0';
+        else
+            snprintf(dir, sizeof dir, ".");
+
+        snprintf(candidate, sizeof(candidate), "%s/%s", dir, path->data);
+    }
+    else
+        snprintf(candidate, sizeof(candidate), "%s", path->data);
+
+    char filepath[PATH_MAX];
+    if (!realpath(candidate, filepath))
+        THROW("Import path `%s` could not be resolved: %s", candidate, strerror(errno));
+
     context_t* module_context = context_new(nullptr);
 
-    if (string_view_equals_cstr(get_file_extension(path->data), "pesec"))
+    if (string_view_equals_cstr(get_file_extension(filepath), "pesec"))
     {
-        const value_t result = execute_file(path->data, module_context);
+        const value_t result = execute_file(filepath, module_context);
 
         switch (result.control_flow)
         {
@@ -73,9 +99,9 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
             default: break;
         }
     }
-    else if (string_view_equals_cstr(get_file_extension(path->data), "so"))
+    else if (string_view_equals_cstr(get_file_extension(filepath), "so"))
     {
-        void *handle = dlopen(path->data, RTLD_LAZY);
+        void *handle = dlopen(filepath, RTLD_LAZY);
         char *error;
 
         if (!handle) THROW("%s\n", dlerror());
@@ -89,8 +115,6 @@ value_t import_node_evaluate(const import_node_t* import_node, context_t* contex
         }
 
         pesec_module_init(module_context);
-
-        // dlclose(handle);
     }
 
     return value_new_module(module_value_new(module_context));

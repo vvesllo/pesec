@@ -9,8 +9,8 @@
 #include "include/utils/memory.h"
 
 #define PESEC_MAJOR_VERSION 1
-#define PESEC_MINOR_VERSION 1
-#define PESEC_PATCH_VERSION 1
+#define PESEC_MINOR_VERSION 2
+#define PESEC_PATCH_VERSION 0
 
 static void print_help()
 {

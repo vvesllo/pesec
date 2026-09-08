@@ -34,6 +34,7 @@ typedef struct CONTEXT_STRUCT
     ull_t capacity;
     context_t* parent;
     context_keys_t* keys;
+    char* current_file;
 } context_t;
 
 context_t* context_new(context_t* parent);

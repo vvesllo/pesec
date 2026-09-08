@@ -1,1 +1,3 @@
-panic !1;
+const test = import "teststs/a.pesec";
+
+panic test.f();
