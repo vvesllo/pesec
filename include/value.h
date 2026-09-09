@@ -122,6 +122,8 @@ value_t value_operation_greater_or_equals(value_t left, value_t right);
 
 value_t value_operation_greater(value_t left, value_t right);
 
+value_t value_operation_compare(value_t left, value_t right);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus

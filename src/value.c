@@ -498,3 +498,13 @@ value_t value_operation_greater(const value_t left, const value_t right)
         return value_new_boolean(number_value_compare(left.data.as_number, right.data.as_number) > 0);
     return value_new_boolean(false);
 }
+
+value_t value_operation_compare(const value_t left, const value_t right)
+{
+    if (left.type == VALUE_TYPE_NUMBER && right.type == VALUE_TYPE_NUMBER)
+        return value_new_number(number_value_from_long_double(
+            number_value_compare(left.data.as_number, right.data.as_number)
+        ));
+
+    THROW("Unsupported operator '<=>' for '%s' and '%s'\n", value_get_type(left), value_get_type(right));
+}

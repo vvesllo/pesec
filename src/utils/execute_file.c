@@ -6,6 +6,7 @@
 
 #include "include/function_value.h"
 #include "include/lexer.h"
+#include "include/number_value.h"
 #include "include/parser.h"
 #include "include/structure_value.h"
 #include "include/vector_value.h"

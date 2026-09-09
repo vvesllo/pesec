@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "include/utils/throw.h"
+#include "include/number_value.h"
 
 void token_print(FILE* stream, const token_t token)
 {
@@ -24,6 +25,7 @@ void token_print(FILE* stream, const token_t token)
         case TOKEN_TYPE_GREATER:
         case TOKEN_TYPE_GREATER_EQUALS:
         case TOKEN_TYPE_NOT_EQUALS:
+        case TOKEN_TYPE_SPACESHIP:
             fprintf(stream, "comparison: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
         case TOKEN_TYPE_PLUS:
         case TOKEN_TYPE_MINUS:
@@ -59,6 +61,9 @@ void token_print(FILE* stream, const token_t token)
             fprintf(stream, "at: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
         case TOKEN_TYPE_SEMICOLON:
             fprintf(stream, "semicolon: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
+        case TOKEN_TYPE_COLON:
+        case TOKEN_TYPE_COLON_COLON:
+            fprintf(stream, "colon: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
         case TOKEN_TYPE_QUESTION_MARK:
         case TOKEN_TYPE_EXCLAMATION_MARK:
             fprintf(stream, "mark: %.*s", (unsigned int)token.value.as_string_view.length, token.value.as_string_view.data); break;
@@ -82,6 +87,7 @@ const char* token_get_type(const token_t token)
         case TOKEN_TYPE_GREATER: return ">";
         case TOKEN_TYPE_GREATER_EQUALS: return ">=";
         case TOKEN_TYPE_NOT_EQUALS: return "!=";
+        case TOKEN_TYPE_SPACESHIP: return "<=>";
         case TOKEN_TYPE_PLUS: return "+";
         case TOKEN_TYPE_MINUS: return "-";
         case TOKEN_TYPE_SLASH: return "/";
@@ -98,6 +104,8 @@ const char* token_get_type(const token_t token)
         case TOKEN_TYPE_DOT: return ".";
         case TOKEN_TYPE_AT_SIGN: return "@";
         case TOKEN_TYPE_SEMICOLON: return ";";
+        case TOKEN_TYPE_COLON: return ":";
+        case TOKEN_TYPE_COLON_COLON: return "::";
         case TOKEN_TYPE_QUESTION_MARK: return "?";
         case TOKEN_TYPE_EXCLAMATION_MARK: return "!";
         case TOKEN_TYPE_EOF: return "eof";

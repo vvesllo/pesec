@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "include/number_value.h"
 #include "include/utils/throw.h"
 
 
@@ -84,7 +85,7 @@ ast_node_t* parser_check_and_parse_vector_access(parser_t *parser, ast_node_t* v
 
 ast_node_t* parser_check_and_parse_meta_op(parser_t *parser, ast_node_t* vector)
 {
-    if (parser_match(parser, TOKEN_TYPE_AT_SIGN))
+    if (parser_match(parser, TOKEN_TYPE_COLON_COLON))
         return parser_parse_value_meta_op(parser, vector);
 
     return vector;
@@ -104,7 +105,7 @@ ast_node_t* parser_check_and_do_everything(parser_t *parser, ast_node_t* node)
 
 ast_node_t *parser_parse_value_meta_op(parser_t *parser, ast_node_t* node)
 {
-    parser_eat(parser, TOKEN_TYPE_AT_SIGN);
+    parser_eat(parser, TOKEN_TYPE_COLON_COLON);
 
     const token_t meta_operator = parser_eat(parser, TOKEN_TYPE_IDENTIFIER);
 
@@ -418,12 +419,9 @@ ast_node_t *parser_parse_for(parser_t *parser)
 
 ast_node_t *parser_parse_break(parser_t *parser)
 {
-    ast_node_t* break_body = nullptr;
-
+    ast_node_t *break_body = nullptr;
     if (!parser_match(parser, TOKEN_TYPE_SEMICOLON))
-    {
         break_body = parser_parse_statement(parser);
-    }
 
     return break_node_new(break_body);
 }
@@ -491,7 +489,7 @@ ast_node_t *parser_parse_and(parser_t *parser)
 
 ast_node_t* parser_parse_comparison(parser_t* parser)
 {
-    ast_node_t *left = parser_parse_expression(parser);
+    ast_node_t *left = parser_parse_spaceship(parser);
     ast_node_t *right = nullptr;
 
     while (parser_match(parser, TOKEN_TYPE_EQUALS_EQUALS) ||
@@ -499,6 +497,22 @@ ast_node_t* parser_parse_comparison(parser_t* parser)
         parser_match(parser, TOKEN_TYPE_LESS) ||
         parser_match(parser, TOKEN_TYPE_GREATER_EQUALS) ||
         parser_match(parser, TOKEN_TYPE_GREATER))
+    {
+        const token_t operation = parser_eat(parser, parser->current_token.type);
+
+        right = parser_parse_spaceship(parser);
+        left = binary_op_node_new(operation, left, right);
+    }
+
+    return left;
+}
+
+ast_node_t *parser_parse_spaceship(parser_t *parser)
+{
+    ast_node_t *left = parser_parse_expression(parser);
+    ast_node_t *right = nullptr;
+
+    while (parser_match(parser, TOKEN_TYPE_SPACESHIP))
     {
         const token_t operation = parser_eat(parser, parser->current_token.type);
 

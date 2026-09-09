@@ -3,6 +3,8 @@
 #include "include/ast/ast_node.h"
 #include <stdlib.h>
 
+#include "include/number_value.h"
+
 ast_node_t *statement_sequence_node_new(const bool local)
 {
     const auto node = (ast_node_t *) malloc(sizeof(ast_node_t));

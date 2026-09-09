@@ -5,7 +5,8 @@
 #include <stdlib.h>
 
 #include "include/utils/throw.h"
-#include "../include/string_value.h"
+#include "include/number_value.h"
+#include "include/string_value.h"
 
 
 lexer_t* lexer_new(char* source, const ull_t length)
@@ -85,6 +86,7 @@ token_t lexer_next_token(lexer_t* lexer)
     const char current = lexer_get_current_char(lexer);
 
     if (isdigit(current)) return lexer_next_number(lexer);
+    if (isalpha(current) || current == '_' || current == '@') return lexer_next_identifier(lexer);
     if (isalpha(current) || current == '_') return lexer_next_identifier(lexer);
     if (current == '"' || current == '\'' || current == '`') return lexer_next_string(lexer, current);
     return lexer_next_operator(lexer);
@@ -131,7 +133,6 @@ token_t lexer_next_identifier(lexer_t* lexer)
         .data = lexer->source + begin,
         .length = lexer->i - begin,
     };
-    token_type_t type = TOKEN_TYPE_IDENTIFIER;
 
     if (string_view_equals_cstr(value, "mutab") ||
         string_view_equals_cstr(value, "const") ||
@@ -149,12 +150,16 @@ token_t lexer_next_identifier(lexer_t* lexer)
         string_view_equals_cstr(value, "true") ||
         string_view_equals_cstr(value, "false") ||
         string_view_equals_cstr(value, "null")
-        ) type = TOKEN_TYPE_KEYWORD;
+        ) return (token_t) {
+            .line = lexer->line,
+            .value.as_string_view = value,
+            .type = TOKEN_TYPE_KEYWORD,
+        };
 
     return (token_t) {
         .line = lexer->line,
         .value.as_string_view = value,
-        .type = type,
+        .type = TOKEN_TYPE_IDENTIFIER,
     };
 }
 
@@ -172,9 +177,9 @@ token_t lexer_next_string(lexer_t* lexer, const char quote)
             lexer_advance(lexer);
             switch (lexer_get_current_char(lexer))
             {
+                case '\'': string_value_push_back(string, '\''); break;
                 case '"': string_value_push_back(string, '"'); break;
                 case '`': string_value_push_back(string, '`'); break;
-                case '\'': string_value_push_back(string, '\''); break;
                 case 'n': string_value_push_back(string, '\n'); break;
                 case 't': string_value_push_back(string, '\t'); break;
                 case 'r': string_value_push_back(string, '\r'); break;
@@ -206,13 +211,21 @@ token_t lexer_next_operator(lexer_t* lexer)
         case '@': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_AT_SIGN);
         case '.': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_DOT);
         case ',': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_COMMA);
-        case ';': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_SEMICOLON);
         case '(': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_LPAREN);
         case ')': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_RPAREN);
         case '{': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_LBRACE);
         case '}': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_RBRACE);
         case '[': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_LBRACKET);
         case ']': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_RBRACKET);
+        case ';': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_SEMICOLON);
+        case ':':
+            lexer_advance(lexer);
+            if (lexer_get_current_char(lexer) == ':')
+            {
+                lexer_advance(lexer);
+                return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_COLON_COLON);
+            }
+            return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_COLON);
 
         case '?': lexer_advance(lexer); return LEXER_NEW_TOKEN_FROM_CURRENT_POS(0, 1, TOKEN_TYPE_QUESTION_MARK);
         case '!':
@@ -236,6 +249,11 @@ token_t lexer_next_operator(lexer_t* lexer)
             if (lexer_get_current_char(lexer) == '=')
             {
                 lexer_advance(lexer);
+                if (lexer_get_current_char(lexer) == '>')
+                {
+                    lexer_advance(lexer);
+                    return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 3, TOKEN_TYPE_SPACESHIP);
+                }
                 return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 2, TOKEN_TYPE_LESS_EQUALS);
             }
             return LEXER_NEW_TOKEN_FROM_CURRENT_POS(-1, 1, TOKEN_TYPE_LESS);

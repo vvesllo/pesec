@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "include/number_value.h"
 #include "include/ast/ast_node.h"
 #include "include/utils/throw.h"
 

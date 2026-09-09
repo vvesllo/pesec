@@ -82,6 +82,8 @@ ast_node_t *parser_parse_and(parser_t *parser);
 
 ast_node_t *parser_parse_comparison(parser_t *parser);
 
+ast_node_t *parser_parse_spaceship(parser_t *parser);
+
 ast_node_t *parser_parse_expression(parser_t *parser);
 
 ast_node_t *parser_parse_term(parser_t *parser);

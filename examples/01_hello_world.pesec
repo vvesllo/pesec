@@ -1,3 +1,7 @@
 const test = import "teststs/a.pesec";
 
-panic test.f();
+for i in [1, 2, 3] {
+    if i == 2 break;
+};
+
+panic true::type;

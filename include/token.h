@@ -5,8 +5,6 @@
 #include "string_value.h"
 #include <stdio.h>
 
-#include "number_value.h"
-
 typedef enum
 {
     TOKEN_TYPE_NUMBER,
@@ -25,6 +23,8 @@ typedef enum
 
     TOKEN_TYPE_GREATER,
     TOKEN_TYPE_GREATER_EQUALS,
+
+    TOKEN_TYPE_SPACESHIP,
 
     TOKEN_TYPE_AMPERSAND,
     TOKEN_TYPE_AMPERSAND_AMPERSAND,
@@ -57,7 +57,10 @@ typedef enum
 
     TOKEN_TYPE_DOT,
     TOKEN_TYPE_COMMA,
+
     TOKEN_TYPE_SEMICOLON,
+    TOKEN_TYPE_COLON,
+    TOKEN_TYPE_COLON_COLON,
 
     TOKEN_TYPE_AT_SIGN,
 

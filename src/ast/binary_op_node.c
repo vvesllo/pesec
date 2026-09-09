@@ -48,6 +48,8 @@ value_t binary_op_node_evaluate(const binary_op_node_t* binary_op_node, context_
         case TOKEN_TYPE_LESS: return value_operation_less(left_value, right_value);
         case TOKEN_TYPE_GREATER_EQUALS: return value_operation_greater_or_equals(left_value, right_value);
         case TOKEN_TYPE_GREATER: return value_operation_greater(left_value, right_value);
+
+        case TOKEN_TYPE_SPACESHIP: return value_operation_compare(left_value, right_value);
         default:
             THROW("Unknown binary operator type %d\n", binary_op_node->operation.type);
     }
