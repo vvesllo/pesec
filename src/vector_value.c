@@ -8,14 +8,14 @@
 #include "include/ast/ast_node.h"
 #include "include/utils/throw.h"
 
-static ull_t vector_value_get_index(const vector_value_t* vector_value, long long index)
+static u64_t vector_value_get_index(const vector_value_t* vector_value, i64_t index)
 {
     if (index < 0)
         return vector_value->size + index;
     return index;
 }
 
-vector_value_t* vector_value_new(value_t* values, const ull_t size)
+vector_value_t* vector_value_new(value_t* values, const u64_t size)
 {
     const auto vector_value = (vector_value_t*)malloc(sizeof(vector_value_t));
 
@@ -26,7 +26,7 @@ vector_value_t* vector_value_new(value_t* values, const ull_t size)
     return vector_value;
 }
 
-vector_value_t* vector_value_new_size(const ull_t size)
+vector_value_t* vector_value_new_size(const u64_t size)
 {
     const auto vector_value = (vector_value_t*)malloc(sizeof(vector_value_t));
 
@@ -50,12 +50,12 @@ void vector_value_free(vector_value_t* vector_value)
     free(vector_value);
 }
 
-void vector_value_set(const vector_value_t* vector_value, const long long index, const value_t value)
+void vector_value_set(const vector_value_t* vector_value, const i64_t index, const value_t value)
 {
     vector_value->values[vector_value_get_index(vector_value, index)] = value;
 }
 
-value_t vector_value_get(const vector_value_t* vector_value, const long long index)
+value_t vector_value_get(const vector_value_t* vector_value, const i64_t index)
 {
     return vector_value->values[vector_value_get_index(vector_value, index)];
 }
@@ -116,12 +116,12 @@ value_t vector_value_resolve_field(const value_t vector_value, const string_view
     THROW("Vector '%s' does not have a field", name.data);
 }
 
-long long vector_value_index_of(const vector_value_t* vector_value, const value_t value)
+i64_t vector_value_index_of(const vector_value_t* vector_value, const value_t value)
 {
-    for (ull_t i = 0; i < vector_value->size; ++i)
+    for (u64_t i = 0; i < vector_value->size; ++i)
     {
         if (value_operation_equals(vector_value->values[i], value).data.as_bool)
-            return (long long)i;
+            return (i64_t)i;
     }
 
     return -1;
@@ -139,7 +139,7 @@ void vector_value_clear(vector_value_t* vector_value)
 
 vector_value_t* vector_value_concat(const vector_value_t* left, const vector_value_t* right)
 {
-    const ull_t size = left->size + right->size;
+    const u64_t size = left->size + right->size;
     const auto values = (value_t*)calloc(size, sizeof(value_t));
 
     for (int i = 0; i < left->size; i++) values[i] = left->values[i];
@@ -153,7 +153,7 @@ vector_value_t* vector_value_reverse(const vector_value_t* source)
     vector_value_t* vector_value = vector_value_copy(source);
     if (vector_value->size < 2) return vector_value;
 
-    for (ull_t i = 0, j = vector_value->size - 1; i < j; ++i, --j)
+    for (u64_t i = 0, j = vector_value->size - 1; i < j; ++i, --j)
     {
         const value_t tmp = vector_value->values[i];
         vector_value->values[i] = vector_value->values[j];
@@ -237,7 +237,7 @@ value_t vector_value_method_map(const value_t vector_value, context_t* context)
     context_t* local_context = context_new(function.data.as_function->parent_context);
     context_push(local_context, param_name, value_new_null(), false);
 
-    for (long long i = 0; i < source->size; ++i)
+    for (i64_t i = 0; i < source->size; ++i)
     {
         const value_t current_element = vector_value_get(source, i);
         context_set(local_context, param_name, current_element);
@@ -274,7 +274,7 @@ value_t vector_value_method_filter(const value_t vector_value, context_t* contex
     context_t* local_context = context_new(function.data.as_function->parent_context);
     context_push(local_context, param_name, value_new_null(), false);
 
-    for (long long i = 0; i < source->size; ++i)
+    for (i64_t i = 0; i < source->size; ++i)
     {
         const value_t current_element = vector_value_get(source, i);
         context_set(local_context, param_name, current_element);

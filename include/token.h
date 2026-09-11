@@ -81,7 +81,7 @@ typedef struct
 {
     token_value_t value;
     token_type_t type;
-    ull_t line;
+    u64_t line;
 } token_t;
 
 void token_print(FILE* stream, token_t token);

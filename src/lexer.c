@@ -9,7 +9,7 @@
 #include "include/string_value.h"
 
 
-lexer_t* lexer_new(char* source, const ull_t length)
+lexer_t* lexer_new(char* source, const u64_t length)
 {
     const auto lexer = (lexer_t*)malloc(sizeof(lexer_t));
 
@@ -94,7 +94,7 @@ token_t lexer_next_token(lexer_t* lexer)
 
 token_t lexer_next_number(lexer_t* lexer)
 {
-    const unsigned long long begin = lexer->i;
+    const u64_t begin = lexer->i;
     bool has_dot = false;
 
     while (lexer_can_advance(lexer) && (isdigit(lexer_get_current_char(lexer)) || lexer_get_current_char(lexer) == '.'))
@@ -122,7 +122,7 @@ token_t lexer_next_number(lexer_t* lexer)
 
 token_t lexer_next_identifier(lexer_t* lexer)
 {
-    const ull_t begin = lexer->i;
+    const u64_t begin = lexer->i;
 
     while (lexer_can_advance(lexer) && (
             isalnum(lexer_get_current_char(lexer)) ||

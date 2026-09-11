@@ -44,7 +44,7 @@ typedef union
 
 typedef struct VALUE_STRUCT
 {
-    ull_t reference_count;
+    u64_t reference_count;
     value_type_t type;
     value_value_t data;
     control_flow_t control_flow;
@@ -90,7 +90,7 @@ void value_decrease_reference(value_t* value);
 
 bool value_get_boolean(value_t value);
 
-char* value_get_type(value_t value);
+const char* value_get_type(value_t value);
 
 value_t value_to_string(value_t value);
 

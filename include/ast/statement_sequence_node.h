@@ -16,7 +16,7 @@ typedef struct STATEMENT_SEQUENCE_NODE_QUEUE_STRUCT
 typedef struct STATEMENT_SEQUENCE_NODE_STRUCT
 {
     bool local;
-    ull_t count;
+    u64_t count;
     statement_sequence_node_queue_t* statements;
 } statement_sequence_node_t;
 

@@ -90,7 +90,7 @@ value_t variable_complex_assignment_node_evaluate(const variable_complex_assignm
             if (index_value.type != VALUE_TYPE_NUMBER)
                 THROW("Index should be a number\n");
 
-            const long long index = number_value_to_long_double(index_value.data.as_number);
+            const i64_t index = number_value_to_long_double(index_value.data.as_number);
 
             vector_value_set(
                 vector_value.data.as_vector,

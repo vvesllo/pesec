@@ -21,7 +21,7 @@ string_value_t* string_value_new()
     return string;
 }
 
-string_value_t* string_value_from(char* data, const ull_t size)
+string_value_t* string_value_from(char* data, const u64_t size)
 {
     const auto string = (string_value_t*)malloc(sizeof(string_value_t));
 
@@ -35,7 +35,7 @@ string_value_t* string_value_from(char* data, const ull_t size)
 string_value_t* string_value_from_cstr(const char* data)
 {
     string_value_t* string = string_value_new();
-    for (ull_t i = 0; i < strlen(data); i++)
+    for (u64_t i = 0; i < strlen(data); i++)
         string_value_push_back(string, data[i]);
     return string;
 }
@@ -43,7 +43,7 @@ string_value_t* string_value_from_cstr(const char* data)
 string_value_t* string_value_from_string_view(string_view_t string_view)
 {
     string_value_t* string = string_value_new();
-    for (ull_t i = 0; i < string_view.length; i++)
+    for (u64_t i = 0; i < string_view.length; i++)
         string_value_push_back(string, string_view.data[i]);
     return string;
 }
@@ -75,8 +75,8 @@ string_value_t* string_value_concat(const string_value_t* left, const string_val
 {
     string_value_t* string = string_value_new();
 
-    for (ull_t i = 0; i < left->size; i++) string_value_push_back(string, left->data[i]);
-    for (ull_t i = 0; i < right->size; i++) string_value_push_back(string, right->data[i]);
+    for (u64_t i = 0; i < left->size; i++) string_value_push_back(string, left->data[i]);
+    for (u64_t i = 0; i < right->size; i++) string_value_push_back(string, right->data[i]);
 
     return string;
 }
@@ -120,7 +120,7 @@ value_t string_value_method_to_vector(const value_t string_value, context_t* con
     vector_vector->values = (value_t*)malloc(sizeof(value_t) * vector_vector->capacity);
     vector_vector->size = 0;
 
-    for (ull_t i = 0; i < source->size; ++i)
+    for (u64_t i = 0; i < source->size; ++i)
     {
         const char char_str[2] = { source->data[i], '\0' };
         string_value_t* char_string = string_value_from_cstr(char_str);
@@ -143,7 +143,7 @@ value_t string_value_method_join(const value_t string_value, context_t* context)
 
     string_value_t* result = string_value_new();
 
-    for (ull_t i = 0; i < vector->size; ++i)
+    for (u64_t i = 0; i < vector->size; ++i)
     {
         const value_t element = vector->values[i];
 
@@ -152,12 +152,12 @@ value_t string_value_method_join(const value_t string_value, context_t* context)
 
         const string_value_t* str_element = element.data.as_string;
 
-        for (ull_t j = 0; j < str_element->size; ++j)
+        for (u64_t j = 0; j < str_element->size; ++j)
             string_value_push_back(result, str_element->data[j]);
 
         if (i < vector->size - 1)
         {
-            for (ull_t j = 0; j < separator->size; ++j)
+            for (u64_t j = 0; j < separator->size; ++j)
                 string_value_push_back(result, separator->data[j]);
         }
     }

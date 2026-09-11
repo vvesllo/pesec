@@ -216,7 +216,7 @@ ast_node_t *parser_parse_function_call(parser_t *parser, ast_node_t* callee)
     parser_eat(parser, TOKEN_TYPE_LPAREN);
 
     function_call_argument_node_t* arguments_head = nullptr;
-    ull_t count = 0;
+    u64_t count = 0;
 
     if (!parser_match(parser, TOKEN_TYPE_RPAREN))
     {

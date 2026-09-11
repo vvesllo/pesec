@@ -35,7 +35,7 @@ value_t module_value_get_fields(const module_value_t* module_value)
     const context_keys_t* keys = module_value->context->keys;
 
     vector_value_t* fields_vector = vector_value_new_size(0);
-    for (ull_t i = 0; i < keys->size; i++)
+    for (u64_t i = 0; i < keys->size; i++)
         vector_value_push(fields_vector, value_new_string(string_value_from_string_view(keys->keys[i])));
 
     return value_new_vector(fields_vector);

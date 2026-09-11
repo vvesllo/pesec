@@ -8,7 +8,7 @@
 #include "include/module_value.h"
 #include "include/utils/throw.h"
 
-ast_node_t *function_call_node_new(ast_node_t *callee, function_call_argument_node_t *arguments, const ull_t count)
+ast_node_t *function_call_node_new(ast_node_t *callee, function_call_argument_node_t *arguments, const u64_t count)
 {
     const auto node = (ast_node_t *) malloc(sizeof(ast_node_t));
 
@@ -47,14 +47,14 @@ value_t function_call_node_evaluate(const function_call_node_t *function_call_no
     if (callee_value.type != VALUE_TYPE_FUNCTION) THROW("Value typed %s is not callable\n", value_get_type(callee_value));
 
     const function_value_t* function = callee_value.data.as_function;
-    const ull_t total_arguments = function_call_node->arguments_count;
+    const u64_t total_arguments = function_call_node->arguments_count;
 
     value_t* eval_values = nullptr;
     if (total_arguments > 0)
     {
         eval_values = (value_t*)calloc(total_arguments, sizeof(value_t));
         const function_call_argument_node_t* current_arg = function_call_node->arguments;
-        for (ull_t i = 0; i < total_arguments && current_arg; i++, current_arg = current_arg->next)
+        for (u64_t i = 0; i < total_arguments && current_arg; i++, current_arg = current_arg->next)
         {
             eval_values[i] = ast_node_evaluate(current_arg->value_expr, context);
         }
@@ -78,7 +78,7 @@ value_t function_call_node_evaluate(const function_call_node_t *function_call_no
         local_context = context_new(function->parent_context);
 
     const parameter_node_t *parameter = function->parameter->parameters;
-    ull_t position_index = 0;
+    u64_t position_index = 0;
 
     while (parameter)
     {
@@ -93,13 +93,13 @@ value_t function_call_node_evaluate(const function_call_node_t *function_call_no
         }
         else if (parameter->type == PARAMETER_NODE_TYPE_ARGS)
         {
-            const ull_t remaining = total_arguments - position_index;
+            const u64_t remaining = total_arguments - position_index;
 
             value_t* arguments_array = nullptr;
             if (remaining > 0)
             {
                 arguments_array = (value_t*)calloc(remaining, sizeof(value_t));
-                for (ull_t i = 0; i < remaining; i++)
+                for (u64_t i = 0; i < remaining; i++)
                 {
                     arguments_array[i] = eval_values[position_index + i];
                 }

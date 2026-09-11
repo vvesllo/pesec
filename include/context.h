@@ -15,8 +15,8 @@ typedef struct CONTEXT_ITEM_STRUCT context_item_t;
 typedef struct CONTEXT_KEYS_STRUCT
 {
     string_view_t* keys;
-    ull_t size;
-    ull_t capacity;
+    u64_t size;
+    u64_t capacity;
 } context_keys_t;
 
 typedef struct CONTEXT_ITEM_STRUCT
@@ -30,8 +30,8 @@ typedef struct CONTEXT_ITEM_STRUCT
 typedef struct CONTEXT_STRUCT
 {
     context_item_t** items;
-    ull_t size;
-    ull_t capacity;
+    u64_t size;
+    u64_t capacity;
     context_t* parent;
     context_keys_t* keys;
     char* current_file;
@@ -39,7 +39,7 @@ typedef struct CONTEXT_STRUCT
 
 context_t* context_new(context_t* parent);
 
-ull_t context_hash(const context_t* context, string_view_t key);
+u64_t context_hash(const context_t* context, string_view_t key);
 
 void context_push(context_t* context, string_view_t key, value_t value, bool constant);
 

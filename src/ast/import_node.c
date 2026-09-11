@@ -30,7 +30,7 @@ static string_view_t get_file_extension(const char *path)
         return (string_view_t){.data = "", .length = 0};
 
     const char *ext_start = dot + 1;
-    const ull_t ext_len = strlen(ext_start);
+    const u64_t ext_len = strlen(ext_start);
 
     return (string_view_t){ .data = ext_start, .length = ext_len };
 }

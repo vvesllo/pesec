@@ -4,4 +4,4 @@ for i in [1, 2, 3] {
     if i == 2 break;
 };
 
-panic true::type;
+panic (2**10000000);

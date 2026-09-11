@@ -1,5 +1,6 @@
 #ifndef PESEC_STRING_VIEW_H
 #define PESEC_STRING_VIEW_H
+#include "typedefs.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -9,7 +10,7 @@ extern "C"
 typedef struct
 {
     const char* data;
-    unsigned long long length;
+    u64_t length;
 } string_view_t;
 
 string_view_t string_view_from(const char* string);

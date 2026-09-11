@@ -17,10 +17,10 @@ typedef struct FUNCTION_CALL_ARGUMENT_NODE_STRUCT {
 typedef struct {
     ast_node_t* callee;
     function_call_argument_node_t* arguments;
-    ull_t arguments_count;
+    u64_t arguments_count;
 } function_call_node_t;
 
-ast_node_t* function_call_node_new(ast_node_t* callee, function_call_argument_node_t* arguments, ull_t count);
+ast_node_t* function_call_node_new(ast_node_t* callee, function_call_argument_node_t* arguments, u64_t count);
 
 void function_call_node_free(function_call_node_t* function_call_node);
 

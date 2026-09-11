@@ -5,7 +5,7 @@
 
 typedef struct INTERPRET_INFO_STRUCT
 {
-    ull_t number_accuracy;
+    u64_t number_accuracy;
     const char* filename;
     vector_value_t* args;
 } interpret_info_t;

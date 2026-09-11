@@ -43,13 +43,13 @@ typedef struct VALUE_STRUCT value_t;
 typedef struct STRING_VALUE_STRUCT
 {
     char* data;
-    ull_t size;
-    ull_t capacity;
+    u64_t size;
+    u64_t capacity;
 } string_value_t;
 
 string_value_t* string_value_new();
 
-string_value_t* string_value_from(char* data, ull_t size);
+string_value_t* string_value_from(char* data, u64_t size);
 
 string_value_t* string_value_from_cstr(const char* data);
 

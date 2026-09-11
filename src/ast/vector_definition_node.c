@@ -24,12 +24,12 @@ void vector_definition_node_free(vector_definition_node_t* vector_definition_nod
 
 value_t vector_definition_node_evaluate(const vector_definition_node_t* vector_definition_node, context_t* context)
 {
-    const ull_t count = vector_definition_node->values->node.statement_sequence->count;
+    const u64_t count = vector_definition_node->values->node.statement_sequence->count;
     const auto values = (value_t*)calloc(count, sizeof(value_t));
 
     const statement_sequence_node_queue_t* current = vector_definition_node->values->node.statement_sequence->statements;
 
-    for (ull_t i = 0; i < count; ++i)
+    for (u64_t i = 0; i < count; ++i)
     {
         values[i] = ast_node_evaluate(current->statement, context);
         current = current->next;

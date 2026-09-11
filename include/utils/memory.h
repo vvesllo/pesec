@@ -23,8 +23,8 @@ typedef struct MEMORY_VALUE_STRUCT
 
 typedef struct MEMORY_STRUCT
 {
-    ull_t capacity;
-    ull_t size;
+    u64_t capacity;
+    u64_t size;
     memory_value_t* values;
 } memory_t;
 

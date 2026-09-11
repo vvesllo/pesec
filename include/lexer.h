@@ -10,12 +10,12 @@ typedef struct
 {
     bool commenting;
     char* source;
-    ull_t i;
-    ull_t length;
-    ull_t line;
+    u64_t i;
+    u64_t length;
+    u64_t line;
 } lexer_t;
 
-lexer_t* lexer_new(char* source, ull_t length);
+lexer_t* lexer_new(char* source, u64_t length);
 
 void lexer_advance(lexer_t* lexer);
 

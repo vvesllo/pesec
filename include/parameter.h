@@ -26,7 +26,7 @@ typedef struct PARAMETER_NODE_STRUCT
 
 typedef struct
 {
-    ull_t count;
+    u64_t count;
     parameter_node_t* parameters;
 } parameter_t;
 

@@ -71,7 +71,7 @@ value_t variable_assignment_node_evaluate(const variable_assignment_node_t* vari
 
             vector_value_set(
                 vector_value.data.as_vector,
-                (long long)number_value_to_long_double(index_value.data.as_number),
+                (i64_t)number_value_to_long_double(index_value.data.as_number),
                 value
             );
 

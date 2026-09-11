@@ -49,7 +49,7 @@ value_t for_loop_node_evaluate(const for_loop_node_t* for_loop_node, context_t* 
 
     if (iterable_vector->size > 0)
     {
-        for (ull_t i = 0; i < iterable_vector->size; i++)
+        for (u64_t i = 0; i < iterable_vector->size; i++)
         {
             context_set(local_context, for_loop_node->iterator, iterable_vector->values[i]);
 

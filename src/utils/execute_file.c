@@ -84,8 +84,14 @@ value_t execute_file(const char* filepath, context_t* context)
     realpath(filepath, filepath_full);
 
     fseek(file, 0, SEEK_END);
-    const ull_t source_size = ftell(file);
+    const u64_t source_size = ftell(file);
     fseek (file, 0, SEEK_SET);
+    if (source_size < 0)
+    {
+        fclose(file);
+        THROW("Cannot determine size of %s\n", filepath);
+    }
+
 
     const auto source = memory_push(memory_get(), (memory_value_t) {
         .value.as_char = (char*)malloc(source_size),
@@ -95,7 +101,11 @@ value_t execute_file(const char* filepath, context_t* context)
     fread(source->value.as_char, 1, source_size, file);
     fclose(file);
 
-    free(context->current_file);
+    if (context->current_file != nullptr)
+    {
+        fprintf(stderr, "freeing current_file = %p\n", (void*)context->current_file);
+        free(context->current_file);
+    }
     context->current_file = strdup(filepath);
 
     lexer_t* lexer = lexer_new(source->value.as_char, source_size);

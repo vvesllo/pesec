@@ -43,14 +43,14 @@ typedef struct STATEMENT_SEQUENCE_NODE_STRUCT statement_sequence_node_t;
 
 typedef struct VECTOR_VALUE_STRUCT
 {
-    ull_t size;
-    ull_t capacity;
+    u64_t size;
+    u64_t capacity;
     value_t* values;
 } vector_value_t;
 
-vector_value_t* vector_value_new(value_t* values, ull_t size);
+vector_value_t* vector_value_new(value_t* values, u64_t size);
 
-vector_value_t* vector_value_new_size(ull_t size);
+vector_value_t* vector_value_new_size(u64_t size);
 
 vector_value_t* vector_value_copy(const vector_value_t* source);
 
@@ -58,9 +58,9 @@ void vector_value_free(vector_value_t* vector_value);
 
 value_t vector_value_resolve_field(value_t vector_value, string_view_t name, context_t* context);
 
-void vector_value_set(const vector_value_t* vector_value, long long index, value_t value);
+void vector_value_set(const vector_value_t* vector_value, i64_t index, value_t value);
 
-value_t vector_value_get(const vector_value_t* vector_value, long long index);
+value_t vector_value_get(const vector_value_t* vector_value, i64_t index);
 
 void vector_value_push(vector_value_t* vector_value, value_t value);
 
@@ -68,7 +68,7 @@ value_t vector_value_pop(vector_value_t* vector_value);
 
 value_t vector_value_get_fields(const vector_value_t* vector_value);
 
-long long vector_value_index_of(const vector_value_t* vector_value, value_t value);
+i64_t vector_value_index_of(const vector_value_t* vector_value, value_t value);
 
 bool vector_value_contains(const vector_value_t* vector_value, value_t value);
 

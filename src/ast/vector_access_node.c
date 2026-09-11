@@ -40,5 +40,5 @@ value_t vector_access_node_evaluate(const vector_access_node_t* vector_access_no
     const vector_value_t* vector_value = vector.data.as_vector;
 
 
-    return vector_value_get(vector_value, (long long)number_value_to_long_double(index.data.as_number));
+    return vector_value_get(vector_value, (i64_t)number_value_to_long_double(index.data.as_number));
 }

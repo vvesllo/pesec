@@ -9,12 +9,13 @@
 
 context_t* context_new(context_t* parent)
 {
-    const auto context = (context_t*)malloc(sizeof(context_t));
+    const auto context = (context_t*)calloc(1, sizeof(context_t));
 
     context->capacity = 1024;
     context->size = 0;
     context->items = (context_item_t**)calloc(context->capacity,sizeof(context_item_t*));
     context->parent = parent;
+    context->current_file = nullptr;
 
     context->keys = (context_keys_t*)malloc(sizeof(context_keys_t));
     context->keys->capacity = 16;
@@ -24,17 +25,17 @@ context_t* context_new(context_t* parent)
     return context;
 }
 
-ull_t context_hash(const context_t* context, const string_view_t key)
+u64_t context_hash(const context_t* context, const string_view_t key)
 {
-    constexpr ull_t FNV_OFFSET = 14695981039346656037ULL;
+    constexpr u64_t FNV_OFFSET = 14695981039346656037ULL;
 
-    ull_t hash = FNV_OFFSET;
+    u64_t hash = FNV_OFFSET;
     const auto data = (const unsigned char*)key.data;
 
-    for (ull_t i = 0; i < key.length; i++)
+    for (u64_t i = 0; i < key.length; i++)
     {
-        constexpr ull_t FNV_PRIME = 1099511628211ULL;
-        hash ^= (ull_t)data[i];
+        constexpr u64_t FNV_PRIME = 1099511628211ULL;
+        hash ^= (u64_t)data[i];
         hash *= FNV_PRIME;
     }
 
@@ -43,7 +44,7 @@ ull_t context_hash(const context_t* context, const string_view_t key)
 
 void context_push(context_t* context, const string_view_t key, value_t value, const bool constant)
 {
-    const ull_t hash_index = context_hash(context, key);
+    const u64_t hash_index = context_hash(context, key);
 
     const auto item = (context_item_t*)malloc(sizeof(context_item_t));
     item->key = key;
@@ -69,7 +70,11 @@ void context_push(context_t* context, const string_view_t key, value_t value, co
     if (context->keys->size >= context->keys->capacity)
     {
         context->keys->capacity *= 2;
-        context->keys->keys = (string_view_t*)realloc(context->keys, sizeof(string_view_t) * context->keys->capacity);
+        const auto new_keys = (string_view_t*)realloc(
+            context->keys->keys,
+            sizeof(string_view_t) * context->keys->capacity);
+        if (!new_keys) THROW("Out of memory\n");
+        context->keys->keys = new_keys;
     }
 
     context->keys->keys[context->keys->size] = key;
@@ -90,7 +95,7 @@ void context_set(const context_t* context, const string_view_t key, value_t valu
 
 context_item_t* context_get(const context_t* context, const string_view_t key)
 {
-    const ull_t hash_index = context_hash(context, key);
+    const u64_t hash_index = context_hash(context, key);
 
     context_item_t* node = context->items[hash_index];
 
@@ -112,7 +117,7 @@ context_item_t* context_get(const context_t* context, const string_view_t key)
 
 context_item_t* context_get_local(const context_t* context, string_view_t key)
 {
-    const ull_t hash_index = context_hash(context, key);
+    const u64_t hash_index = context_hash(context, key);
 
     context_item_t* node = context->items[hash_index];
 
@@ -129,7 +134,7 @@ context_item_t* context_get_local(const context_t* context, string_view_t key)
 
 void context_free(context_t* context)
 {
-    for (ull_t i = 0; i < context->capacity; ++i)
+    for (u64_t i = 0; i < context->capacity; ++i)
     {
         context_item_t* node = context->items[i];
 
@@ -141,6 +146,11 @@ void context_free(context_t* context)
             node = next;
         }
     }
+
+    free(context->keys->keys);
+    free(context->keys);
+
+    if (context->current_file) free(context->current_file);
 
     free(context->items);
     free(context);

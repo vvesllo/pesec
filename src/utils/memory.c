@@ -35,7 +35,7 @@ memory_value_t* memory_push(memory_t* memory, const memory_value_t value)
 
 void memory_free(memory_t* memory)
 {
-    for (ull_t i = 0; i < memory->size; i++)
+    for (u64_t i = 0; i < memory->size; i++)
     {
         switch (memory->values[i].type)
         {
