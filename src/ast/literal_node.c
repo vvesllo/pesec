@@ -1,0 +1,22 @@
+#include "include/ast/node.h"
+
+pesec_node_t* pesec_literal_node_new(int64_t value)
+{
+    const auto literal_node = (pesec_literal_node_t){.value = value};
+    return pesec_node_new(
+        PESEC_NODE_TYPE_LITERAL,
+        (pesec_node_data_t){
+            .literal_node = literal_node
+        }
+    );
+}
+
+int64_t pesec_literal_node_evaluate(const pesec_literal_node_t* literal_node)
+{
+    return literal_node->value;
+}
+
+void pesec_literal_node_destroy(const pesec_literal_node_t* literal_node)
+{
+    // nothing to do
+}

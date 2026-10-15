@@ -1,0 +1,44 @@
+#ifndef PESEC_TOKEN_H
+#define PESEC_TOKEN_H
+
+#include <inttypes.h>
+
+#include "include/common/string_view.h"
+
+typedef enum
+{
+    PESEC_TOKEN_EOF=0,
+
+    PESEC_TOKEN_INTEGER,
+    PESEC_TOKEN_FLOAT,
+    PESEC_TOKEN_IDENTIFIER,
+
+    PESEC_TOKEN_PLUS,
+    PESEC_TOKEN_MINUS,
+    PESEC_TOKEN_ASTERISK,
+    PESEC_TOKEN_SLASH,
+
+    PESEC_TOKEN_LPAREN,
+    PESEC_TOKEN_RPAREN,
+} pesec_token_type_t;
+
+typedef union
+{
+    int64_t integer;
+    double floating;
+    pesec_string_view_t string_view;
+} pesec_token_data_t;
+
+typedef struct
+{
+    pesec_token_type_t type;
+    pesec_token_data_t data;
+} pesec_token_t;
+
+pesec_token_t pesec_token_new(pesec_token_type_t type, pesec_token_data_t data);
+
+pesec_token_t pesec_token_blank(pesec_token_type_t type);
+
+const char* pesec_token_type_to_cstr(pesec_token_type_t type);
+
+#endif // PESEC_TOKEN_H
