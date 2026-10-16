@@ -62,6 +62,9 @@ static pesec_node_t* pesec_parser_parse_expression(
         case PESEC_TOKEN_INTEGER:
             left = pesec_literal_node_new(pesec_parser_eat(parser, PESEC_TOKEN_INTEGER).data.integer);
             break;
+        case PESEC_TOKEN_IDENTIFIER:
+            left = pesec_variable_node_new(pesec_parser_eat(parser, PESEC_TOKEN_IDENTIFIER).data.string_view);
+            break;
         case PESEC_TOKEN_LPAREN:
             pesec_parser_eat(parser, PESEC_TOKEN_LPAREN);
             left = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_ADDITIVE);

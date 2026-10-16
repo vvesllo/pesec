@@ -15,10 +15,10 @@ pesec_node_t* pesec_binary_node_new(pesec_binary_node_operation_t operation, pes
     );
 }
 
-pesec_value_t pesec_binary_node_evaluate(const pesec_binary_node_t* binary_node)
+pesec_value_t pesec_binary_node_evaluate(const pesec_binary_node_t* binary_node, pesec_environment_t* environment)
 {
-    const pesec_value_t left_value = pesec_node_evaluate(binary_node->left);
-    const pesec_value_t right_value = pesec_node_evaluate(binary_node->right);
+    const pesec_value_t left_value = pesec_node_evaluate(binary_node->left, environment);
+    const pesec_value_t right_value = pesec_node_evaluate(binary_node->right, environment);
 
     switch (binary_node->operation)
     {

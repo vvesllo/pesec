@@ -9,6 +9,7 @@ add_executable(pesec
         src/ast/node.c
         src/ast/literal_node.c
         src/ast/binary_node.c
+        src/ast/variable_node.c
 
         src/frontend/token.c
         src/frontend/lexer.c
@@ -17,8 +18,10 @@ add_executable(pesec
         src/common/string_view.c
         src/common/panic.c
         src/common/alloc.c
+
+        src/runtime/environment.c
         src/runtime/variable_table.c
-        include/runtime/variable_table.h
+        src/runtime/value.c
 )
 
 target_include_directories(pesec PRIVATE ${CMAKE_SOURCE_DIR})

@@ -40,11 +40,10 @@ static pesec_token_t pesec_lexer_next_numeric(pesec_lexer_t* lexer)
 static pesec_token_t pesec_lexer_next_identifier(pesec_lexer_t* lexer)
 {
     const size_t begin = lexer->i;
-    while (pesec_lexer_can_advance(lexer) && isdigit(pesec_lexer_peek(lexer)))
+    while (pesec_lexer_can_advance(lexer) && (isalnum(pesec_lexer_peek(lexer)) || pesec_lexer_peek(lexer) == '_'))
     {
         pesec_lexer_advance(lexer);
     }
-
 
     const auto value = (pesec_string_view_t){
         .data = lexer->source.data + begin,
@@ -64,12 +63,18 @@ static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
     char current = pesec_lexer_peek(lexer);
     switch (current)
     {
-        case '+': pesec_lexer_advance(lexer); return pesec_token_blank(PESEC_TOKEN_PLUS);
-        case '-': pesec_lexer_advance(lexer); return pesec_token_blank(PESEC_TOKEN_MINUS);
-        case '*': pesec_lexer_advance(lexer); return pesec_token_blank(PESEC_TOKEN_ASTERISK);
-        case '/': pesec_lexer_advance(lexer); return pesec_token_blank(PESEC_TOKEN_SLASH);
-        case '(': pesec_lexer_advance(lexer); return pesec_token_blank(PESEC_TOKEN_LPAREN);
-        case ')': pesec_lexer_advance(lexer); return pesec_token_blank(PESEC_TOKEN_RPAREN);
+        case '+': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_PLUS);
+        case '-': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_MINUS);
+        case '*': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_ASTERISK);
+        case '/': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_SLASH);
+        case '(': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_LPAREN);
+        case ')': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_RPAREN);
         default: pesec_panic("lexer::next_operator: unknown character `%c`", current);
     }
 }

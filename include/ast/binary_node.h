@@ -22,7 +22,7 @@ typedef struct
 
 pesec_node_t* pesec_binary_node_new(pesec_binary_node_operation_t operation, pesec_node_t* left, pesec_node_t* right);
 
-pesec_value_t pesec_binary_node_evaluate(const pesec_binary_node_t* binary_node);
+pesec_value_t pesec_binary_node_evaluate(const pesec_binary_node_t* binary_node, pesec_environment_t* environment);
 
 void pesec_binary_node_destroy(const pesec_binary_node_t* binary_node);
 

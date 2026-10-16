@@ -12,7 +12,7 @@ typedef struct
 
 pesec_node_t* pesec_literal_node_new(pesec_value_t value);
 
-pesec_value_t pesec_literal_node_evaluate(const pesec_literal_node_t* literal_node);
+pesec_value_t pesec_literal_node_evaluate(const pesec_literal_node_t* literal_node, pesec_environment_t* environment);
 
 void pesec_literal_node_destroy(const pesec_literal_node_t* literal_node);
 

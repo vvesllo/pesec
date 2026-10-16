@@ -7,28 +7,19 @@
 
 int main()
 {
-    pesec_variable_table_t variable_table = pesec_variable_table_new();
-    pesec_variable_table_push(&variable_table, (pesec_variable_t){
+    const pesec_string_view_t source = pesec_string_view_from("(2 + 2) * 2 + test");
+    pesec_lexer_t lexer = pesec_lexer_new(source);
+    pesec_parser_t parser = pesec_parser_new(&lexer);
+    const pesec_node_t* node = pesec_parser_parse(&parser);
+
+    pesec_environment_t environment = pesec_environment_new(nullptr);
+    pesec_variable_table_push(&environment.variable_table, (pesec_variable_t){
         .name = pesec_string_view_from("test"),
         .value = 69'420,
         .immutable = true
     });
 
-
-    const pesec_variable_t* var = pesec_variable_table_get(&variable_table, pesec_string_view_from("test"));
-
-    printf("test{value=%" PRIi64 ", immutable=%s}\n", var->value, var->immutable ? "true" : "false");
-
-    pesec_variable_table_destroy(&variable_table);
-
-    return 0;
-
-    const pesec_string_view_t source = pesec_string_view_from("(2 + 2) * 2");
-    pesec_lexer_t lexer = pesec_lexer_new(source);
-    pesec_parser_t parser = pesec_parser_new(&lexer);
-    const pesec_node_t* node = pesec_parser_parse(&parser);
-
-    const pesec_value_t result = pesec_node_evaluate(node);
+    const pesec_value_t result = pesec_node_evaluate(node, &environment);
 
     printf("main::node: %" PRIi64, result);
 

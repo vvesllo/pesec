@@ -11,7 +11,7 @@ pesec_node_t* pesec_literal_node_new(int64_t value)
     );
 }
 
-pesec_value_t pesec_literal_node_evaluate(const pesec_literal_node_t* literal_node)
+pesec_value_t pesec_literal_node_evaluate(const pesec_literal_node_t* literal_node, pesec_environment_t* environment)
 {
     return literal_node->value;
 }
