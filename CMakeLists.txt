@@ -17,6 +17,8 @@ add_executable(pesec
         src/common/string_view.c
         src/common/panic.c
         src/common/alloc.c
+        src/runtime/variable_table.c
+        include/runtime/variable_table.h
 )
 
 target_include_directories(pesec PRIVATE ${CMAKE_SOURCE_DIR})

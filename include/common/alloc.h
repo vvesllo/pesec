@@ -11,4 +11,6 @@ void* pesec_realloc(void* ptr, size_t size);
 
 void pesec_free(void* ptr);
 
+void pesec_alloc_cleanup_all();
+
 #endif // PESEC_ALLOC_H

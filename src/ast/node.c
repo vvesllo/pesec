@@ -10,7 +10,7 @@ pesec_node_t* pesec_node_new(const pesec_node_type_t type, const pesec_node_data
     return node;
 }
 
-int64_t pesec_node_evaluate(const pesec_node_t* node)
+pesec_value_t pesec_node_evaluate(const pesec_node_t* node)
 {
     switch (node->type)
     {
