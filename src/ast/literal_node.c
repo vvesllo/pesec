@@ -1,6 +1,6 @@
 #include "include/ast/node.h"
 
-pesec_node_t* pesec_literal_node_new(int64_t value)
+pesec_node_t* pesec_literal_node_new(const pesec_value_t value)
 {
     const auto literal_node = (pesec_literal_node_t){.value = value};
     return pesec_node_new(

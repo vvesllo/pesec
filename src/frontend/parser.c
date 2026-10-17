@@ -1,6 +1,8 @@
 #include "include/frontend/parser.h"
 
+#include "include/common/node_vector.h"
 #include "include/common/panic.h"
+#include "include/common/parameter_vector.h"
 
 
 typedef enum
@@ -59,12 +61,34 @@ static pesec_node_t* pesec_parser_parse_expression(
 
     switch (parser->token.type)
     {
-        case PESEC_TOKEN_INTEGER:
-            left = pesec_literal_node_new(pesec_parser_eat(parser, PESEC_TOKEN_INTEGER).data.integer);
+        case PESEC_TOKEN_INTEGER: {
+            left = pesec_literal_node_new(
+                pesec_value_i64(pesec_parser_eat(parser, PESEC_TOKEN_INTEGER).data.integer)
+            );
             break;
-        case PESEC_TOKEN_IDENTIFIER:
-            left = pesec_variable_node_new(pesec_parser_eat(parser, PESEC_TOKEN_IDENTIFIER).data.string_view);
+        }
+        case PESEC_TOKEN_IDENTIFIER: {
+            const pesec_string_view_t identifier = pesec_parser_eat(parser, PESEC_TOKEN_IDENTIFIER).data.string_view;
+            if (pesec_parser_match(parser, PESEC_TOKEN_LPAREN))
+            {
+                pesec_parser_eat(parser, PESEC_TOKEN_LPAREN);
+                pesec_node_vector_t node_vector = pesec_node_vector_new();
+                while (!pesec_parser_match(parser, PESEC_TOKEN_RPAREN))
+                {
+                    pesec_node_t* node = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+                    pesec_node_vector_push(&node_vector, node);
+                    if (!pesec_parser_match(parser, PESEC_TOKEN_COMMA))
+                        break;
+                    pesec_parser_eat(parser, PESEC_TOKEN_COMMA);
+                }
+                pesec_parser_eat(parser, PESEC_TOKEN_RPAREN);
+                left = pesec_function_call_node_new(identifier, node_vector);
+                break;
+            }
+
+            left = pesec_variable_node_new(identifier);
             break;
+        }
         case PESEC_TOKEN_LPAREN:
             pesec_parser_eat(parser, PESEC_TOKEN_LPAREN);
             left = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_ADDITIVE);
@@ -117,5 +141,5 @@ pesec_parser_t pesec_parser_new(pesec_lexer_t* lexer)
 
 pesec_node_t* pesec_parser_parse(pesec_parser_t* parser)
 {
-    return pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_ADDITIVE);
+    return pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
 }

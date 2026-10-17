@@ -10,6 +10,7 @@ add_executable(pesec
         src/ast/literal_node.c
         src/ast/binary_node.c
         src/ast/variable_node.c
+        src/ast/function_call_node.c
 
         src/frontend/token.c
         src/frontend/lexer.c
@@ -18,6 +19,8 @@ add_executable(pesec
         src/common/string_view.c
         src/common/panic.c
         src/common/alloc.c
+        src/common/parameter_vector.c
+        src/common/node_vector.c
 
         src/runtime/environment.c
         src/runtime/variable_table.c

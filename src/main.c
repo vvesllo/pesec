@@ -7,7 +7,7 @@
 
 int main()
 {
-    const pesec_string_view_t source = pesec_string_view_from("(2 + 2) * 2 + test");
+    const pesec_string_view_t source = pesec_string_view_from("add(69 * 1000, add(210, 210))");
     pesec_lexer_t lexer = pesec_lexer_new(source);
     pesec_parser_t parser = pesec_parser_new(&lexer);
     const pesec_node_t* node = pesec_parser_parse(&parser);
@@ -21,7 +21,7 @@ int main()
 
     const pesec_value_t result = pesec_node_evaluate(node, &environment);
 
-    printf("main::node: %" PRIi64, result);
+    printf("main::node: %" PRIi64, result.data.integer);
 
     pesec_node_destroy(node);
 

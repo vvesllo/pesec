@@ -1,4 +1,5 @@
 #include "include/ast/node.h"
+#include "include/common/panic.h"
 
 pesec_node_t* pesec_binary_node_new(pesec_binary_node_operation_t operation, pesec_node_t* left, pesec_node_t* right)
 {
@@ -22,13 +23,13 @@ pesec_value_t pesec_binary_node_evaluate(const pesec_binary_node_t* binary_node,
 
     switch (binary_node->operation)
     {
-        case PESEC_BINARY_NODE_OPERATION_ADD: return left_value + right_value;
-        case PESEC_BINARY_NODE_OPERATION_SUB: return left_value - right_value;
-        case PESEC_BINARY_NODE_OPERATION_MUL: return left_value * right_value;
-        case PESEC_BINARY_NODE_OPERATION_DIV: return left_value / right_value;
+        case PESEC_BINARY_NODE_OPERATION_ADD: return pesec_value_add(left_value, right_value);
+        case PESEC_BINARY_NODE_OPERATION_SUB: return pesec_value_sub(left_value, right_value);
+        case PESEC_BINARY_NODE_OPERATION_MUL: return pesec_value_mul(left_value, right_value);
+        case PESEC_BINARY_NODE_OPERATION_DIV: return pesec_value_div(left_value, right_value);
     }
 
-    return 0;
+    pesec_panic("binary_node::evaluate: fuck");
 }
 
 void pesec_binary_node_destroy(const pesec_binary_node_t* binary_node)

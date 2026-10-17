@@ -34,6 +34,8 @@ const char* pesec_token_type_to_cstr(const pesec_token_type_t type)
         case PESEC_TOKEN_SLASH: return "<token:slash>";
         case PESEC_TOKEN_LPAREN: return "<token:left-paren>";
         case PESEC_TOKEN_RPAREN: return "<token:right-paren>";
+        case PESEC_TOKEN_EQUAL: return "<token:equal>";
+        case PESEC_TOKEN_COMMA: return "<token:comma>";
     }
 
     pesec_panic("token::to_cstr: unknown token type %d", type);

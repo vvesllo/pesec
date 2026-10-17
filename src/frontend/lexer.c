@@ -71,6 +71,10 @@ static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
             return pesec_token_blank(PESEC_TOKEN_ASTERISK);
         case '/': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_SLASH);
+        case '=': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_EQUAL);
+        case ',': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_COMMA);
         case '(': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_LPAREN);
         case ')': pesec_lexer_advance(lexer);
