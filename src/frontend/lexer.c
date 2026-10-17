@@ -23,7 +23,7 @@ static char pesec_lexer_peek(const pesec_lexer_t* lexer)
 static pesec_token_t pesec_lexer_next_numeric(pesec_lexer_t* lexer)
 {
     double value = 0;
-    while (pesec_lexer_can_advance(lexer) && isalnum(pesec_lexer_peek(lexer)))
+    while (pesec_lexer_can_advance(lexer) && isdigit(pesec_lexer_peek(lexer)))
     {
         value = value * 10 + pesec_lexer_peek(lexer) - '0';
         pesec_lexer_advance(lexer);

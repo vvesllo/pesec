@@ -44,12 +44,18 @@ pesec_value_t pesec_call_node_evaluate(
     const size_t argc = call_node->args.size;
     const auto argv = (pesec_value_t*)pesec_calloc(argc, sizeof(pesec_value_t));
 
+    pesec_environment_t local_environment = pesec_environment_new(environment);
+
     for (size_t i = 0; i < call_node->args.size; i++)
     {
-        argv[i] = pesec_node_evaluate(call_node->args.items[i], environment);
+        argv[i] = pesec_node_evaluate(call_node->args.items[i], &local_environment);
     }
 
-    return function->value.data.function(argc, argv, environment);
+    const pesec_value_t result_value = function->value.data.function(argc, argv, &local_environment);
+
+    pesec_environment_destroy(&local_environment);
+
+    return result_value;
 }
 
 void pesec_call_node_destroy(const pesec_call_node_t* call_node)

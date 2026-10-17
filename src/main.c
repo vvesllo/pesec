@@ -6,12 +6,12 @@
 #include "include/runtime/variable_table.h"
 
 
-pesec_value_t print_function(size_t argc, pesec_value_t* argv, pesec_environment_t* environment)
+pesec_value_t print_function(const size_t argc, pesec_value_t* argv, pesec_environment_t* environment)
 {
     for (size_t i = 0; i < argc; i++)
     {
         if (i > 0) printf(", ");
-        printf("%" PRIi64, argv->data.integer);
+        printf("%" PRIi64, argv[i].data.integer);
     }
     printf("\n");
     return pesec_value_i64(0);
@@ -19,7 +19,7 @@ pesec_value_t print_function(size_t argc, pesec_value_t* argv, pesec_environment
 
 int main()
 {
-    const pesec_string_view_t source = pesec_string_view_from("mut test = 23; immut a = 3; print(420); test * a;");
+    const pesec_string_view_t source = pesec_string_view_from("mut test = 23; immut a = 3; print(420, 1, 2, 3); test * a;");
     pesec_lexer_t lexer = pesec_lexer_new(source);
     pesec_parser_t parser = pesec_parser_new(&lexer);
     const pesec_node_t* node = pesec_parser_parse(&parser);

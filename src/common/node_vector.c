@@ -18,7 +18,7 @@ void pesec_node_vector_push(pesec_node_vector_t* node_vector, pesec_node_t* node
     if (node_vector->size >= node_vector->capacity)
     {
         node_vector->capacity <<= 1;
-        node_vector->items = (pesec_node_t**)pesec_calloc(node_vector->capacity, sizeof(pesec_node_t*));
+        node_vector->items = (pesec_node_t**)pesec_realloc(node_vector->items, node_vector->capacity * sizeof(pesec_node_t*));
     }
 
     node_vector->items[node_vector->size] = node;
