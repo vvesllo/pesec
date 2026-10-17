@@ -24,6 +24,7 @@ add_executable(pesec
         src/common/alloc.c
         src/common/parameter_vector.c
         src/common/node_vector.c
+        src/common/file_read.c
 
         src/runtime/environment.c
         src/runtime/variable_table.c

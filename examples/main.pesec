@@ -1,0 +1,5 @@
+mut test = 23;
+immut a = 3;
+
+print(420, 1, 2, 3, a);
+test * a;
