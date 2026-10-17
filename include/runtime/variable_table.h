@@ -23,9 +23,7 @@ pesec_variable_table_t pesec_variable_table_new();
 
 void pesec_variable_table_push(pesec_variable_table_t* variable_table, pesec_variable_t variable);
 
-void pesec_variable_table_set(const pesec_variable_table_t* variable_table, pesec_string_view_t name, pesec_value_t value);
-
-pesec_variable_t* pesec_variable_table_get(const pesec_variable_table_t* variable_table, pesec_string_view_t name);
+pesec_variable_t* pesec_variable_table_find(const pesec_variable_table_t* variable_table, pesec_string_view_t name);
 
 void pesec_variable_table_destroy(const pesec_variable_table_t* variable_table);
 

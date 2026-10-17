@@ -50,8 +50,14 @@ static pesec_token_t pesec_lexer_next_identifier(pesec_lexer_t* lexer)
         .size = lexer->i - begin
     };
 
+    pesec_token_type_t type = PESEC_TOKEN_IDENTIFIER;
+
+    if (pesec_string_view_equals_cstr(value, "immut")) type = PESEC_TOKEN_KEYWORD_IMMUT;
+    else if (pesec_string_view_equals_cstr(value, "mut")) type = PESEC_TOKEN_KEYWORD_MUT;
+    else if (pesec_string_view_equals_cstr(value, "fn")) type = PESEC_TOKEN_KEYWORD_FN;
+
     return pesec_token_new(
-        PESEC_TOKEN_IDENTIFIER,
+        type,
         (pesec_token_data_t){
             .string_view = value
         }
@@ -60,7 +66,7 @@ static pesec_token_t pesec_lexer_next_identifier(pesec_lexer_t* lexer)
 
 static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
 {
-    char current = pesec_lexer_peek(lexer);
+    const char current = pesec_lexer_peek(lexer);
     switch (current)
     {
         case '+': pesec_lexer_advance(lexer);
@@ -75,6 +81,8 @@ static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
             return pesec_token_blank(PESEC_TOKEN_EQUAL);
         case ',': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_COMMA);
+        case ';': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_SEMICOLON);
         case '(': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_LPAREN);
         case ')': pesec_lexer_advance(lexer);

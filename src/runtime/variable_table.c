@@ -51,37 +51,7 @@ void pesec_variable_table_push(pesec_variable_table_t* variable_table, const pes
     }
 }
 
-void pesec_variable_table_set(const pesec_variable_table_t* variable_table, const pesec_string_view_t name, const pesec_value_t value)
-{
-    const size_t hash = pesec_variable_table_hash(variable_table, name);
-
-    for (size_t probe = 0; probe < variable_table->capacity; probe++)
-    {
-        const size_t index = (hash + probe) % variable_table->capacity;
-
-        if (!variable_table->occupied[index])
-            continue;
-
-        pesec_variable_t* variable = &variable_table->items[index];
-
-        if (pesec_string_view_equals(variable->name, name))
-        {
-            if (variable->immutable)
-                pesec_panic("variable_table::set: variable `%.*s` is immutable",
-                            name.size, name.data
-                );
-
-            variable->value = value;
-            return;
-        }
-    }
-
-    pesec_panic("variable_table::set: variable `%.*s` doesn't exists",
-                name.size, name.data
-    );
-}
-
-pesec_variable_t* pesec_variable_table_get(const pesec_variable_table_t* variable_table, const pesec_string_view_t name)
+pesec_variable_t* pesec_variable_table_find(const pesec_variable_table_t* variable_table, const pesec_string_view_t name)
 {
     const size_t hash = pesec_variable_table_hash(variable_table, name);
 
@@ -98,9 +68,7 @@ pesec_variable_t* pesec_variable_table_get(const pesec_variable_table_t* variabl
             return variable;
     }
 
-    pesec_panic("variable_table::get: variable `%.*s` doesn't exists",
-                name.size, name.data
-    );
+    return nullptr;
 }
 
 void pesec_variable_table_destroy(const pesec_variable_table_t* variable_table)

@@ -25,7 +25,7 @@ static bool pesec_parser_match(const pesec_parser_t* parser, const pesec_token_t
 static pesec_token_t pesec_parser_eat(pesec_parser_t* parser, const pesec_token_type_t type)
 {
     if (!pesec_parser_match(parser, type))
-        pesec_panic("parser::eat: unexpected token(%s but %s given)",
+        pesec_panic("parser::eat: unexpected token (%s but %s given)",
                     pesec_token_type_to_cstr(parser->token.type),
                     pesec_token_type_to_cstr(type)
         );
@@ -57,7 +57,7 @@ static pesec_node_t* pesec_parser_parse_expression(
     const pesec_parser_binding_power_t left_binding_power
 )
 {
-    pesec_node_t* left;
+    pesec_node_t* left = nullptr;
 
     switch (parser->token.type)
     {
@@ -82,18 +82,39 @@ static pesec_node_t* pesec_parser_parse_expression(
                     pesec_parser_eat(parser, PESEC_TOKEN_COMMA);
                 }
                 pesec_parser_eat(parser, PESEC_TOKEN_RPAREN);
-                left = pesec_function_call_node_new(identifier, node_vector);
+                left = pesec_call_node_new(identifier, node_vector);
                 break;
             }
-
+            if (pesec_parser_match(parser, PESEC_TOKEN_EQUAL))
+            {
+                pesec_parser_eat(parser, PESEC_TOKEN_EQUAL);
+                pesec_node_t* node_value = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+                left = pesec_assignment_node_new(identifier, node_value);
+                break;
+            }
             left = pesec_variable_node_new(identifier);
             break;
         }
-        case PESEC_TOKEN_LPAREN:
+        case PESEC_TOKEN_KEYWORD_IMMUT:
+        case PESEC_TOKEN_KEYWORD_MUT: {
+            const pesec_token_type_t token_type = parser->token.type;
+            pesec_parser_eat(parser, token_type);
+            const pesec_string_view_t name = pesec_parser_eat(parser, PESEC_TOKEN_IDENTIFIER).data.string_view;
+            pesec_parser_eat(parser, PESEC_TOKEN_EQUAL);
+            pesec_node_t* value = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+            left = pesec_definition_node_new(
+                name,
+                value,
+                (bool)(token_type == PESEC_TOKEN_KEYWORD_IMMUT)
+            );
+            break;
+        }
+        case PESEC_TOKEN_LPAREN: {
             pesec_parser_eat(parser, PESEC_TOKEN_LPAREN);
             left = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_ADDITIVE);
             pesec_parser_eat(parser, PESEC_TOKEN_RPAREN);
             break;
+        }
         default:
             pesec_panic("parser::parse_primary: unexpected token %s",
                         pesec_token_type_to_cstr(parser->token.type)
@@ -141,5 +162,14 @@ pesec_parser_t pesec_parser_new(pesec_lexer_t* lexer)
 
 pesec_node_t* pesec_parser_parse(pesec_parser_t* parser)
 {
-    return pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+    pesec_node_vector_t node_vector = pesec_node_vector_new();
+    while (parser->token.type != PESEC_TOKEN_EOF)
+    {
+        pesec_node_vector_push(
+            &node_vector,
+            pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE)
+        );
+        pesec_parser_eat(parser, PESEC_TOKEN_SEMICOLON);
+    }
+    return pesec_sequence_node_new(node_vector);
 }

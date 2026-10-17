@@ -10,7 +10,10 @@ add_executable(pesec
         src/ast/literal_node.c
         src/ast/binary_node.c
         src/ast/variable_node.c
-        src/ast/function_call_node.c
+        src/ast/call_node.c
+        src/ast/assignment_node.c
+        src/ast/sequence_node.c
+        src/ast/definition_node.c
 
         src/frontend/token.c
         src/frontend/lexer.c
