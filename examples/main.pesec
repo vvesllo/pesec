@@ -1,7 +1,7 @@
 immut f = fn(a) {
-    print(a * a);
+    a * a;
 };
 
-f(2);
-f(3);
-f(4);
+print(f(2));
+print(f(3));
+print(f(4));

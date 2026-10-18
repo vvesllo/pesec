@@ -41,7 +41,7 @@ pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec
 
     for (size_t i = 0; i < call_node->args.size; i++)
     {
-        const pesec_value_t arg_value = pesec_node_evaluate(call_node->args.items[i], &local_environment);
+        const pesec_value_t arg_value = pesec_node_evaluate(call_node->args.items[i], environment);
         pesec_environment_push_variable(
             &local_environment,
             function.parameter_vector.items[i].name,
@@ -50,7 +50,7 @@ pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec
         );
     }
 
-    const pesec_value_t result_value = pesec_function_value_call(&function);
+    const pesec_value_t result_value = pesec_function_value_call(&function, &local_environment);
 
     pesec_environment_destroy(&local_environment);
 

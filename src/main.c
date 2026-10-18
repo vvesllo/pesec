@@ -11,7 +11,10 @@
 
 static pesec_value_t print_function(pesec_environment_t* environment)
 {
-    const pesec_variable_t* printable = pesec_environment_get_variable(environment, pesec_string_view_from("printable"));
+    const pesec_variable_t* printable = pesec_environment_get_variable(
+        environment,
+        pesec_string_view_from("value")
+    );
     printf("%" PRIi64 "\n", printable->value.data.integer);
     return pesec_value_i64(0);
 }

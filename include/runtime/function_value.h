@@ -31,6 +31,6 @@ typedef struct
     pesec_environment_t* parent_environment;
 } pesec_function_value_t;
 
-pesec_value_t pesec_function_value_call(const pesec_function_value_t* function_value);
+pesec_value_t pesec_function_value_call(const pesec_function_value_t* function_value, pesec_environment_t* environment);
 
 #endif // PESEC_FUNCTION_VALUE_H
