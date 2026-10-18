@@ -2,7 +2,8 @@
 #define PESEC_VALUE_H
 
 #include <inttypes.h>
-#include <stddef.h>
+
+#include "function_value.h"
 
 typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
 typedef struct PESEC_VALUE_STRUCT pesec_value_t;
@@ -12,9 +13,6 @@ typedef enum
     PESEC_VALUE_TYPE_I64,
     PESEC_VALUE_TYPE_FUNCTION,
 } pesec_value_type_t;
-
-// argc, argv, env
-typedef pesec_value_t (*pesec_function_value_t)(size_t, pesec_value_t*, pesec_environment_t*);
 
 typedef union
 {
@@ -31,6 +29,8 @@ typedef struct PESEC_VALUE_STRUCT
 pesec_value_t pesec_value_i64(int64_t data);
 
 pesec_value_t pesec_value_function(pesec_function_value_t data);
+
+bool pesec_value_is_truthy(pesec_value_t value);
 
 pesec_value_t pesec_value_add(pesec_value_t left, pesec_value_t right);
 

@@ -1,4 +1,5 @@
 #include "include/ast/node.h"
+#include "include/runtime/environment.h"
 
 pesec_node_t* pesec_assignment_node_new(const pesec_string_view_t name, pesec_node_t* node_value)
 {

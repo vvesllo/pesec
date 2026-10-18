@@ -31,6 +31,17 @@ pesec_value_t pesec_value_function(const pesec_function_value_t data)
     );
 }
 
+bool pesec_value_is_truthy(const pesec_value_t value)
+{
+    switch (value.type)
+    {
+        case PESEC_VALUE_TYPE_I64: return value.data.integer != 0;
+        case PESEC_VALUE_TYPE_FUNCTION: return true;
+    }
+
+    pesec_panic("value::is_truthy: unknown value type (%d)", value.type);
+}
+
 pesec_value_t pesec_value_add(const pesec_value_t left, const pesec_value_t right)
 {
     if (left.type != right.type)

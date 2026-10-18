@@ -2,7 +2,6 @@
 #define PESEC_NODE_H
 
 #include "include/runtime/value.h"
-#include "include/runtime/environment.h"
 #include "literal_node.h"
 #include "binary_node.h"
 #include "variable_node.h"
@@ -10,6 +9,10 @@
 #include "assignment_node.h"
 #include "sequence_node.h"
 #include "definition_node.h"
+#include "conditional_node.h"
+#include "function_node.h"
+
+typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
 
 typedef enum
 {
@@ -20,6 +23,8 @@ typedef enum
     PESEC_NODE_TYPE_ASSIGNMENT,
     PESEC_NODE_TYPE_SEQUENCE,
     PESEC_NODE_TYPE_DEFINITION,
+    PESEC_NODE_TYPE_CONDITIONAL,
+    PESEC_NODE_TYPE_FUNCTION,
 } pesec_node_type_t;
 
 typedef union
@@ -31,6 +36,8 @@ typedef union
     pesec_assignment_node_t assignment_node;
     pesec_sequence_node_t sequence_node;
     pesec_definition_node_t definition_node;
+    pesec_conditional_node_t conditional_node;
+    pesec_function_node_t function_node;
 } pesec_node_data_t;
 
 typedef struct PESEC_NODE_STRUCT

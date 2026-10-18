@@ -17,6 +17,8 @@ typedef struct
 
 pesec_parameter_vector_t pesec_parameter_vector_new();
 
+pesec_parameter_vector_t pesec_parameter_vector_from(const pesec_parameter_t* items, size_t size);
+
 void pesec_parameter_vector_push(pesec_parameter_vector_t* parameter_vector, pesec_parameter_t parameter);
 
 void pesec_parameter_vector_destroy(const pesec_parameter_vector_t* parameter_vector);

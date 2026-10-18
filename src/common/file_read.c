@@ -28,8 +28,6 @@ pesec_string_view_t pesec_file_read(const char* filename)
 
     fclose(file);
 
-    return (pesec_string_view_t){
-        .data = buffer,
-        .size = file_size
-    };
+    return pesec_string_view_new(buffer,file_size
+    );
 }

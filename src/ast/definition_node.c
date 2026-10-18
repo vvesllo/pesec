@@ -1,4 +1,5 @@
 #include "include/ast/node.h"
+#include "include/runtime/environment.h"
 
 pesec_node_t* pesec_definition_node_new(
     pesec_string_view_t name,

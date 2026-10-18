@@ -20,6 +20,8 @@ pesec_value_t pesec_node_evaluate(const pesec_node_t* node, pesec_environment_t*
         case PESEC_NODE_TYPE_ASSIGNMENT: return pesec_assignment_node_evaluate(&node->data.assignment_node, environment);
         case PESEC_NODE_TYPE_SEQUENCE: return pesec_sequence_node_evaluate(&node->data.sequence_node, environment);
         case PESEC_NODE_TYPE_DEFINITION: return pesec_definition_node_evaluate(&node->data.definition_node, environment);
+        case PESEC_NODE_TYPE_CONDITIONAL: return pesec_conditional_node_evaluate(&node->data.conditional_node, environment);
+        case PESEC_NODE_TYPE_FUNCTION: return pesec_function_node_evaluate(&node->data.function_node, environment);
     }
 
     return pesec_value_i64(0);
@@ -36,5 +38,7 @@ void pesec_node_destroy(const pesec_node_t* node)
         case PESEC_NODE_TYPE_ASSIGNMENT: pesec_assignment_node_destroy(&node->data.assignment_node); break;
         case PESEC_NODE_TYPE_SEQUENCE: pesec_sequence_node_destroy(&node->data.sequence_node); break;
         case PESEC_NODE_TYPE_DEFINITION: pesec_definition_node_destroy(&node->data.definition_node); break;
+        case PESEC_NODE_TYPE_CONDITIONAL: pesec_conditional_node_destroy(&node->data.conditional_node); break;
+        case PESEC_NODE_TYPE_FUNCTION: pesec_function_node_destroy(&node->data.function_node); break;
     }
 }

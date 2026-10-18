@@ -1,5 +1,7 @@
-mut test = 23;
-immut a = 3;
+immut f = fn() {
+    print(69420);
+};
 
-print(420, 1, 2, 3, a);
-test * a;
+f();
+f();
+f();

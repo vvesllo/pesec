@@ -5,17 +5,13 @@
 #include "include/common/string_view.h"
 #include "include/frontend/lexer.h"
 #include "include/frontend/parser.h"
-#include "include/runtime/variable_table.h"
+
+#include "include/runtime/environment.h"
 
 
 static pesec_value_t print_function(const size_t argc, pesec_value_t* argv, pesec_environment_t* environment)
 {
-    for (size_t i = 0; i < argc; i++)
-    {
-        if (i > 0) printf(", ");
-        printf("%" PRIi64, argv[i].data.integer);
-    }
-    printf("\n");
+    printf("%" PRIi64 "\n", argv[0].data.integer);
     return pesec_value_i64(0);
 }
 
@@ -31,7 +27,17 @@ int main(int argc, char** argv)
     pesec_environment_push_variable(
         &global_environment,
         pesec_string_view_from("print"),
-        pesec_value_function(print_function),
+        pesec_value_function((pesec_function_value_t){
+            .type = PESEC_FUNCTION_VALUE_TYPE_NATIVE,
+            .data.native = print_function,
+            .parameter_vector = pesec_parameter_vector_from(
+                (const pesec_parameter_t[]){
+                    (pesec_parameter_t){.name = pesec_string_view_from("value")}
+                },
+                1
+            ),
+            .parent_environment = &global_environment
+        }),
         true
     );
 
