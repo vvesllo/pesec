@@ -27,9 +27,15 @@ pesec_value_t pesec_binary_node_evaluate(const pesec_binary_node_t* binary_node,
         case PESEC_BINARY_NODE_OPERATION_SUB: return pesec_value_sub(left_value, right_value);
         case PESEC_BINARY_NODE_OPERATION_MUL: return pesec_value_mul(left_value, right_value);
         case PESEC_BINARY_NODE_OPERATION_DIV: return pesec_value_div(left_value, right_value);
+
+        case PESEC_BINARY_NODE_OPERATION_EQUAL: return pesec_value_equal(left_value, right_value);
+        case PESEC_BINARY_NODE_OPERATION_LESS: return pesec_value_less(left_value, right_value);
+        case PESEC_BINARY_NODE_OPERATION_LESS_EQUAL: return pesec_value_less_equal(left_value, right_value);
+        case PESEC_BINARY_NODE_OPERATION_GREATER: return pesec_value_greater(left_value, right_value);
+        case PESEC_BINARY_NODE_OPERATION_GREATER_EQUAL: return pesec_value_greater_equal(left_value, right_value);
     }
 
-    pesec_panic("binary_node::evaluate: fuck");
+    pesec_panic("binary_node::evaluate: unknown operation (%d)", binary_node->operation);
 }
 
 void pesec_binary_node_destroy(const pesec_binary_node_t* binary_node)

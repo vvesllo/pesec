@@ -32,6 +32,11 @@ const char* pesec_token_type_to_cstr(const pesec_token_type_t type)
         case PESEC_TOKEN_MINUS: return "<token:minus>";
         case PESEC_TOKEN_ASTERISK: return "<token:asterisk>";
         case PESEC_TOKEN_SLASH: return "<token:slash>";
+        case PESEC_TOKEN_EQUAL_EQUAL: return "<token:equal-equal>";
+        case PESEC_TOKEN_LESS_THAN: return "<token:less-than>";
+        case PESEC_TOKEN_LESS_EQUAL: return "<token:less-equal>";
+        case PESEC_TOKEN_GREATER_THAN: return "<token:greater-than>";
+        case PESEC_TOKEN_GREATER_EQUAL: return "<token:greater-equal>";
         case PESEC_TOKEN_LPAREN: return "<token:left-paren>";
         case PESEC_TOKEN_RPAREN: return "<token:right-paren>";
         case PESEC_TOKEN_LBRACE: return "<token:left-brace>";

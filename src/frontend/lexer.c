@@ -66,8 +66,7 @@ static pesec_token_t pesec_lexer_next_identifier(pesec_lexer_t* lexer)
 
 static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
 {
-    const char current = pesec_lexer_peek(lexer);
-    switch (current)
+    switch (pesec_lexer_peek(lexer))
     {
         case '+': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_PLUS);
@@ -77,8 +76,33 @@ static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
             return pesec_token_blank(PESEC_TOKEN_ASTERISK);
         case '/': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_SLASH);
-        case '=': pesec_lexer_advance(lexer);
+        case '=': {
+            pesec_lexer_advance(lexer);
+            if (pesec_lexer_peek(lexer) == '=')
+            {
+                pesec_lexer_advance(lexer);
+                return pesec_token_blank(PESEC_TOKEN_EQUAL_EQUAL);
+            }
             return pesec_token_blank(PESEC_TOKEN_EQUAL);
+        }
+        case '<': {
+            pesec_lexer_advance(lexer);
+            if (pesec_lexer_peek(lexer) == '=')
+            {
+                pesec_lexer_advance(lexer);
+                return pesec_token_blank(PESEC_TOKEN_LESS_EQUAL);
+            }
+            return pesec_token_blank(PESEC_TOKEN_LESS_THAN);
+        }
+        case '>': {
+            pesec_lexer_advance(lexer);
+            if (pesec_lexer_peek(lexer) == '=')
+            {
+                pesec_lexer_advance(lexer);
+                return pesec_token_blank(PESEC_TOKEN_GREATER_EQUAL);
+            }
+            return pesec_token_blank(PESEC_TOKEN_GREATER_THAN);
+        }
         case ',': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_COMMA);
         case ';': pesec_lexer_advance(lexer);
@@ -99,7 +123,7 @@ static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
             return pesec_token_blank(PESEC_TOKEN_LBRACKET);
         case ']': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_RBRACKET);
-        default: pesec_panic("lexer::next_operator: unknown character `%c`", current);
+        default: pesec_panic("lexer::next_operator: unknown character `%c`", pesec_lexer_peek(lexer));
     }
 }
 

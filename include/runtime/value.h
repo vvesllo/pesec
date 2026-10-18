@@ -40,4 +40,14 @@ pesec_value_t pesec_value_mul(pesec_value_t left, pesec_value_t right);
 
 pesec_value_t pesec_value_div(pesec_value_t left, pesec_value_t right);
 
+pesec_value_t pesec_value_equal(pesec_value_t left, pesec_value_t right);
+
+pesec_value_t pesec_value_less(pesec_value_t left, pesec_value_t right);
+
+pesec_value_t pesec_value_less_equal(pesec_value_t left, pesec_value_t right);
+
+pesec_value_t pesec_value_greater(pesec_value_t left, pesec_value_t right);
+
+pesec_value_t pesec_value_greater_equal(pesec_value_t left, pesec_value_t right);
+
 #endif // PESEC_VALUE_H

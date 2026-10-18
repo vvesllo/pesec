@@ -101,3 +101,78 @@ pesec_value_t pesec_value_div(const pesec_value_t left, const pesec_value_t righ
     }
     pesec_panic("value::div: fuck");
 }
+
+pesec_value_t pesec_value_equal(const pesec_value_t left, const pesec_value_t right)
+{
+    if (left.type != right.type)
+        pesec_panic("value::equal: both values should be same type");
+
+    switch (left.type)
+    {
+        case PESEC_VALUE_TYPE_I64:
+            return pesec_value_i64(left.data.integer == right.data.integer);
+        case PESEC_VALUE_TYPE_FUNCTION:
+            return pesec_value_i64(0);
+    }
+    pesec_panic("value::equal: fuck");
+}
+
+pesec_value_t pesec_value_less(const pesec_value_t left, const pesec_value_t right)
+{
+    if (left.type != right.type)
+        pesec_panic("value::less: both values should be same type");
+
+    switch (left.type)
+    {
+        case PESEC_VALUE_TYPE_I64:
+            return pesec_value_i64(left.data.integer < right.data.integer);
+        case PESEC_VALUE_TYPE_FUNCTION:
+            return pesec_value_i64(0);
+    }
+    pesec_panic("value::less: fuck");
+}
+
+pesec_value_t pesec_value_less_equal(const pesec_value_t left, const pesec_value_t right)
+{
+    if (left.type != right.type)
+        pesec_panic("value::less_equal: both values should be same type");
+
+    switch (left.type)
+    {
+        case PESEC_VALUE_TYPE_I64:
+            return pesec_value_i64(left.data.integer <= right.data.integer);
+        case PESEC_VALUE_TYPE_FUNCTION:
+            return pesec_value_i64(0);
+    }
+    pesec_panic("value::less_equal: fuck");
+}
+
+pesec_value_t pesec_value_greater(const pesec_value_t left, const pesec_value_t right)
+{
+    if (left.type != right.type)
+        pesec_panic("value::greater: both values should be same type");
+
+    switch (left.type)
+    {
+        case PESEC_VALUE_TYPE_I64:
+            return pesec_value_i64(left.data.integer > right.data.integer);
+        case PESEC_VALUE_TYPE_FUNCTION:
+            return pesec_value_i64(0);
+    }
+    pesec_panic("value::greater: fuck");
+}
+
+pesec_value_t pesec_value_greater_equal(const pesec_value_t left, const pesec_value_t right)
+{
+    if (left.type != right.type)
+        pesec_panic("value::greater_equal: both values should be same type");
+
+    switch (left.type)
+    {
+        case PESEC_VALUE_TYPE_I64:
+            return pesec_value_i64(left.data.integer >= right.data.integer);
+        case PESEC_VALUE_TYPE_FUNCTION:
+            return pesec_value_i64(0);
+    }
+    pesec_panic("value::greater_equal: fuck");
+}
