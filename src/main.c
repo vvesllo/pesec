@@ -9,9 +9,10 @@
 #include "include/runtime/environment.h"
 
 
-static pesec_value_t print_function(const size_t argc, pesec_value_t* argv, pesec_environment_t* environment)
+static pesec_value_t print_function(pesec_environment_t* environment)
 {
-    printf("%" PRIi64 "\n", argv[0].data.integer);
+    const pesec_variable_t* printable = pesec_environment_get_variable(environment, pesec_string_view_from("printable"));
+    printf("%" PRIi64 "\n", printable->value.data.integer);
     return pesec_value_i64(0);
 }
 

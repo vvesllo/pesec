@@ -3,7 +3,7 @@
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
 
-pesec_node_t* pesec_call_node_new(pesec_node_t* callee, pesec_node_vector_t args)
+pesec_node_t* pesec_call_node_new(pesec_node_t* callee, const pesec_node_vector_t args)
 {
     const auto call_node = (pesec_call_node_t){
         .callee = callee,
@@ -17,14 +17,11 @@ pesec_node_t* pesec_call_node_new(pesec_node_t* callee, pesec_node_vector_t args
     );
 }
 
-pesec_value_t pesec_call_node_evaluate(
-    const pesec_call_node_t* call_node,
-    pesec_environment_t* environment
-)
+pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec_environment_t* environment)
 {
-    const pesec_value_t function = pesec_node_evaluate(call_node->callee, environment);
+    const pesec_value_t value = pesec_node_evaluate(call_node->callee, environment);
 
-    if (function.type != PESEC_VALUE_TYPE_FUNCTION)
+    if (value.type != PESEC_VALUE_TYPE_FUNCTION)
     {
         if (call_node->callee->type == PESEC_NODE_TYPE_VARIABLE)
             pesec_panic("call_node::evaluate: variable `%.*s` is not a function",
@@ -34,17 +31,26 @@ pesec_value_t pesec_call_node_evaluate(
         pesec_panic("call_node::evaluate: can call function");
     }
 
-    const size_t argc = call_node->args.size;
-    const auto argv = (pesec_value_t*)pesec_calloc(argc, sizeof(pesec_value_t));
+    const pesec_function_value_t function = value.data.function;
 
-    pesec_environment_t local_environment = pesec_environment_new(environment);
+    if (function.parameter_vector.size != call_node->args.size)
+        pesec_panic("function::call: invalid function argument count (%d but %d given)",
+                    function.parameter_vector.size, call_node->args.size);
+
+    pesec_environment_t local_environment = pesec_environment_new(function.parent_environment);
 
     for (size_t i = 0; i < call_node->args.size; i++)
     {
-        argv[i] = pesec_node_evaluate(call_node->args.items[i], &local_environment);
+        const pesec_value_t arg_value = pesec_node_evaluate(call_node->args.items[i], &local_environment);
+        pesec_environment_push_variable(
+            &local_environment,
+            function.parameter_vector.items[i].name,
+            arg_value,
+            false
+        );
     }
 
-    const pesec_value_t result_value = pesec_function_value_call(&function.data.function, argc, argv);
+    const pesec_value_t result_value = pesec_function_value_call(&function);
 
     pesec_environment_destroy(&local_environment);
 

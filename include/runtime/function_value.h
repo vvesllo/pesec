@@ -7,7 +7,7 @@ typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
 typedef struct PESEC_VALUE_STRUCT pesec_value_t;
 typedef struct PESEC_NODE_STRUCT pesec_node_t;
 
-typedef pesec_value_t (*pesec_function_value_native_t)(size_t, pesec_value_t*, pesec_environment_t*);
+typedef pesec_value_t (*pesec_function_value_native_t)(pesec_environment_t*);
 typedef pesec_node_t* pesec_function_value_node_t;
 
 
@@ -31,10 +31,6 @@ typedef struct
     pesec_environment_t* parent_environment;
 } pesec_function_value_t;
 
-pesec_value_t pesec_function_value_call(
-    const pesec_function_value_t* function_value,
-    size_t argc,
-    pesec_value_t* argv
-);
+pesec_value_t pesec_function_value_call(const pesec_function_value_t* function_value);
 
 #endif // PESEC_FUNCTION_VALUE_H
