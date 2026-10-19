@@ -8,6 +8,7 @@
 typedef enum
 {
     PESEC_PARSER_BINDING_POWER_NONE,
+    PESEC_PARSER_BINDING_POWER_RANGE,
     PESEC_PARSER_BINDING_POWER_CONDITIONAL,
     PESEC_PARSER_BINDING_POWER_COMPARISON,
     PESEC_PARSER_BINDING_POWER_ADDITIVE,
@@ -19,6 +20,9 @@ static pesec_parser_binding_power_t pesec_parser_infix_binding_power(const pesec
 {
     switch (type)
     {
+        case PESEC_TOKEN_DOT_DOT:
+        case PESEC_TOKEN_DOT_DOT_DOT:
+            return PESEC_PARSER_BINDING_POWER_RANGE;
         case PESEC_TOKEN_EQUAL_EQUAL:
         case PESEC_TOKEN_LESS_THAN:
         case PESEC_TOKEN_LESS_EQUAL:
@@ -142,6 +146,10 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
         case PESEC_TOKEN_INTEGER:
             return pesec_literal_node_new(
                 pesec_value_i64(pesec_parser_advance(parser).data.integer)
+            );
+        case PESEC_TOKEN_FLOAT:
+            return pesec_literal_node_new(
+                pesec_value_f64(pesec_parser_advance(parser).data.floating)
             );
         case PESEC_TOKEN_IDENTIFIER: {
             const pesec_string_view_t identifier = pesec_parser_advance(parser).data.string_view;
@@ -280,6 +288,15 @@ static pesec_node_t* pesec_parser_parse_expression(
             left = pesec_conditional_node_new(left, then_body, else_body);
             continue;
         }
+        if (operator_token_type == PESEC_TOKEN_DOT_DOT || operator_token_type == PESEC_TOKEN_DOT_DOT_DOT)
+        {
+            const bool contains = parser->token.type == PESEC_TOKEN_DOT_DOT_DOT;
+            pesec_parser_advance(parser);
+            pesec_node_t* end_node = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+            left = pesec_range_node_new(left, end_node, contains);
+            continue;
+        }
+
 
         const pesec_token_t operator_token = pesec_parser_advance(parser);
 

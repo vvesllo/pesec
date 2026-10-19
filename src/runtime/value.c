@@ -7,7 +7,7 @@ void pesec_value_print(FILE* stream, const pesec_value_t value)
     switch (value.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            fprintf(stream, "%" PRIi64, value.data.integer);
+            fprintf(stream, "%" PRIi64, value.data.i64);
             break;
         case PESEC_VALUE_TYPE_FUNCTION:
             fprintf(stream, "<function>");
@@ -42,7 +42,17 @@ pesec_value_t pesec_value_i64(const int64_t data)
     return pesec_value_new(
         PESEC_VALUE_TYPE_I64,
         (pesec_value_data_t){
-            .integer = data
+            .i64 = data
+        }
+    );
+}
+
+pesec_value_t pesec_value_f64(const double data)
+{
+    return pesec_value_new(
+        PESEC_VALUE_TYPE_F64,
+        (pesec_value_data_t){
+            .f64 = data
         }
     );
 }
@@ -81,7 +91,7 @@ bool pesec_value_is_truthy(const pesec_value_t value)
 {
     switch (value.type)
     {
-        case PESEC_VALUE_TYPE_I64: return value.data.integer != 0;
+        case PESEC_VALUE_TYPE_I64: return value.data.i64 != 0;
         case PESEC_VALUE_TYPE_VECTOR: return value.data.vector.size != 0;
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT: return true;
@@ -95,7 +105,7 @@ pesec_value_t pesec_value_negative(const pesec_value_t value)
     switch (value.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            return pesec_value_i64(-value.data.integer);
+            return pesec_value_i64(-value.data.i64);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
@@ -112,7 +122,7 @@ pesec_value_t pesec_value_add(const pesec_value_t left, const pesec_value_t righ
     switch (left.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            return pesec_value_i64(left.data.integer + right.data.integer);
+            return pesec_value_i64(left.data.i64 + right.data.i64);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
@@ -129,7 +139,7 @@ pesec_value_t pesec_value_sub(const pesec_value_t left, const pesec_value_t righ
     switch (left.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            return pesec_value_i64(left.data.integer - right.data.integer);
+            return pesec_value_i64(left.data.i64 - right.data.i64);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
@@ -146,7 +156,7 @@ pesec_value_t pesec_value_mul(const pesec_value_t left, const pesec_value_t righ
     switch (left.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            return pesec_value_i64(left.data.integer * right.data.integer);
+            return pesec_value_i64(left.data.i64 * right.data.i64);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
@@ -163,7 +173,7 @@ pesec_value_t pesec_value_div(const pesec_value_t left, const pesec_value_t righ
     switch (left.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            return pesec_value_i64(left.data.integer / right.data.integer);
+            return pesec_value_i64(left.data.i64 / right.data.i64);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
@@ -180,7 +190,7 @@ pesec_value_t pesec_value_equal(const pesec_value_t left, const pesec_value_t ri
     switch (left.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            return pesec_value_i64(left.data.integer == right.data.integer);
+            return pesec_value_i64(left.data.i64 == right.data.i64);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
@@ -197,7 +207,7 @@ pesec_value_t pesec_value_less(const pesec_value_t left, const pesec_value_t rig
     switch (left.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            return pesec_value_i64(left.data.integer < right.data.integer);
+            return pesec_value_i64(left.data.i64 < right.data.i64);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
@@ -214,7 +224,7 @@ pesec_value_t pesec_value_less_equal(const pesec_value_t left, const pesec_value
     switch (left.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            return pesec_value_i64(left.data.integer <= right.data.integer);
+            return pesec_value_i64(left.data.i64 <= right.data.i64);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
@@ -231,7 +241,7 @@ pesec_value_t pesec_value_greater(const pesec_value_t left, const pesec_value_t 
     switch (left.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            return pesec_value_i64(left.data.integer > right.data.integer);
+            return pesec_value_i64(left.data.i64 > right.data.i64);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
@@ -248,7 +258,7 @@ pesec_value_t pesec_value_greater_equal(const pesec_value_t left, const pesec_va
     switch (left.type)
     {
         case PESEC_VALUE_TYPE_I64:
-            return pesec_value_i64(left.data.integer >= right.data.integer);
+            return pesec_value_i64(left.data.i64 >= right.data.i64);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:

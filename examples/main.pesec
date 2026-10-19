@@ -1,19 +1,2 @@
-immut vec = vector {
-    vector {1, 2, 3}, 4, 5, 3 + 3, vector {vector {0}}
-};
-
-print(vec);
-print(vec[0]);
-print(vec[1]);
-print(vec[0][1]);
-print(vec[-1]);
-
-immut obj = object {
-    immut x = object {
-        immut f = fn() {
-            420;
-        }
-    };
-};
-
-print(obj.x.f());
+immut a = -10...10;
+print(a);

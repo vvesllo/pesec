@@ -31,7 +31,7 @@ pesec_value_t pesec_index_access_node_evaluate(const pesec_index_access_node_t* 
     }
 
     const pesec_vector_value_t* vector = &vector_value.data.vector;
-    const int64_t index = index_value.data.integer;
+    const int64_t index = index_value.data.i64;
 
     if (index > vector->size && index < -vector->size)
     {

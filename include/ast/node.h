@@ -15,6 +15,7 @@
 #include "object_node.h"
 #include "index_access_node.h"
 #include "field_access_node.h"
+#include "range_node.h"
 
 typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
 
@@ -34,6 +35,7 @@ typedef enum
     PESEC_NODE_TYPE_OBJECT,
     PESEC_NODE_TYPE_INDEX_ACCESS,
     PESEC_NODE_TYPE_FIELD_ACCESS,
+    PESEC_NODE_TYPE_RANGE,
 } pesec_node_type_t;
 
 typedef union
@@ -52,6 +54,7 @@ typedef union
     pesec_object_node_t object_node;
     pesec_index_access_node_t index_access_node;
     pesec_field_access_node_t field_access_node;
+    pesec_range_node_t range_node;
 } pesec_node_data_t;
 
 typedef struct PESEC_NODE_STRUCT

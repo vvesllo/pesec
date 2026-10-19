@@ -14,6 +14,7 @@ typedef struct PESEC_VALUE_STRUCT pesec_value_t;
 typedef enum
 {
     PESEC_VALUE_TYPE_I64,
+    PESEC_VALUE_TYPE_F64,
     PESEC_VALUE_TYPE_FUNCTION,
     PESEC_VALUE_TYPE_VECTOR,
     PESEC_VALUE_TYPE_OBJECT,
@@ -21,7 +22,8 @@ typedef enum
 
 typedef union
 {
-    int64_t integer;
+    int64_t i64;
+    double f64;
     pesec_function_value_t function;
     pesec_vector_value_t vector;
     pesec_object_value_t object;
@@ -36,6 +38,8 @@ typedef struct PESEC_VALUE_STRUCT
 void pesec_value_print(FILE* stream, pesec_value_t value);
 
 pesec_value_t pesec_value_i64(int64_t data);
+
+pesec_value_t pesec_value_f64(double data);
 
 pesec_value_t pesec_value_function(pesec_function_value_t data);
 

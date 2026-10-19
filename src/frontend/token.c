@@ -46,6 +46,8 @@ const char* pesec_token_type_to_cstr(const pesec_token_type_t type)
         case PESEC_TOKEN_EQUAL: return "<token:equal>";
         case PESEC_TOKEN_COMMA: return "<token:comma>";
         case PESEC_TOKEN_DOT: return "<token:dot>";
+        case PESEC_TOKEN_DOT_DOT: return "<token:dot-dot>";
+        case PESEC_TOKEN_DOT_DOT_DOT: return "<token:dot-dot-dot>";
         case PESEC_TOKEN_SEMICOLON: return "<token:semi-colon>";
         case PESEC_TOKEN_COLON: return "<token:colon>";
         case PESEC_TOKEN_QUESTION_MARK: return "<token:question-mark>";
@@ -54,6 +56,9 @@ const char* pesec_token_type_to_cstr(const pesec_token_type_t type)
         case PESEC_TOKEN_KEYWORD_FN: return "<token:keyword:fn>";
         case PESEC_TOKEN_KEYWORD_OBJECT: return "<token:keyword:object>";
         case PESEC_TOKEN_KEYWORD_VECTOR: return "<token:keyword:vector>";
+        case PESEC_TOKEN_KEYWORD_WHILE: return "<token:keyword:while>";
+        case PESEC_TOKEN_KEYWORD_FOR: return "<token:keyword:for>";
+        case PESEC_TOKEN_KEYWORD_IN: return "<token:keyword:in>";
     }
 
     pesec_panic("token::to_cstr: unknown token type %d", type);
