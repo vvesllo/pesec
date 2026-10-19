@@ -2,6 +2,7 @@
 #define PESEC_VALUE_H
 
 #include <inttypes.h>
+#include <stdio.h>
 
 #include "function_value.h"
 #include "vector_value.h"
@@ -28,6 +29,8 @@ typedef struct PESEC_VALUE_STRUCT
     pesec_value_type_t type;
     pesec_value_data_t data;
 } pesec_value_t;
+
+void pesec_value_print(FILE* stream, pesec_value_t value);
 
 pesec_value_t pesec_value_i64(int64_t data);
 

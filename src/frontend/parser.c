@@ -88,6 +88,13 @@ static pesec_node_t* pesec_parser_parse_postfix(pesec_parser_t* parser, pesec_no
                 node = pesec_call_node_new(node, node_vector);
                 break;
             }
+            case PESEC_TOKEN_LBRACKET: {
+                pesec_parser_eat(parser, PESEC_TOKEN_LBRACKET);
+                pesec_node_t* index_node = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+                pesec_parser_eat(parser, PESEC_TOKEN_RBRACKET);
+                node = pesec_index_access_node_new(node, index_node);
+                break;
+            }
             default: return node;
         }
     }

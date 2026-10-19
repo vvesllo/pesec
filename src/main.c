@@ -15,25 +15,8 @@ static pesec_value_t print_function(pesec_environment_t* environment)
         environment,
         pesec_string_view_from("value")
     );
-    switch (printable->value.type)
-    {
-        case PESEC_VALUE_TYPE_I64:
-            printf("%" PRIi64 "\n", printable->value.data.integer);
-            break;
-        case PESEC_VALUE_TYPE_FUNCTION:
-            printf("function\n");
-            break;
-        case PESEC_VALUE_TYPE_VECTOR: {
-            const pesec_vector_value_t* vector_value = &printable->value.data.vector;
-            for (size_t i = 0; i < vector_value->size; i++)
-            {
-                if (i > 0) printf(", ");
-                printf("%" PRIi64, vector_value->items[i].data.integer);
-            }
-            printf("\n");
-            break;
-        }
-    }
+    pesec_value_print(stdout, printable->value);
+    printf("\n");
     return pesec_value_i64(0);
 }
 

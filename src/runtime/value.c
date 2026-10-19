@@ -2,6 +2,29 @@
 
 #include "include/common/panic.h"
 
+void pesec_value_print(FILE* stream, const pesec_value_t value)
+{
+    switch (value.type)
+    {
+        case PESEC_VALUE_TYPE_I64:
+            fprintf(stream, "%" PRIi64, value.data.integer);
+            break;
+        case PESEC_VALUE_TYPE_FUNCTION:
+            fprintf(stream, "function");
+            break;
+        case PESEC_VALUE_TYPE_VECTOR: {
+            const pesec_vector_value_t* vector_value = &value.data.vector;
+            fprintf(stream, "{");
+            for (size_t i = 0; i < vector_value->size; i++)
+            {
+                if (i > 0) fprintf(stream, ", ");
+                pesec_value_print(stream, vector_value->items[i]);
+            }
+            fprintf(stream, "}");
+            break;
+        }
+    }
+}
 
 static pesec_value_t pesec_value_new(const pesec_value_type_t type, const pesec_value_data_t data)
 {

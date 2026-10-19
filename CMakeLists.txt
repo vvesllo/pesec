@@ -17,6 +17,7 @@ add_executable(pesec
         src/ast/conditional_node.c
         src/ast/function_node.c
         src/ast/vector_node.c
+        src/ast/index_access_node.c
 
         src/frontend/token.c
         src/frontend/lexer.c

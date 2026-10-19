@@ -12,6 +12,7 @@
 #include "conditional_node.h"
 #include "function_node.h"
 #include "vector_node.h"
+#include "index_access_node.h"
 
 typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
 
@@ -27,6 +28,7 @@ typedef enum
     PESEC_NODE_TYPE_CONDITIONAL,
     PESEC_NODE_TYPE_FUNCTION,
     PESEC_NODE_TYPE_VECTOR,
+    PESEC_NODE_TYPE_INDEX_ACCESS,
 } pesec_node_type_t;
 
 typedef union
@@ -41,6 +43,7 @@ typedef union
     pesec_conditional_node_t conditional_node;
     pesec_function_node_t function_node;
     pesec_vector_node_t vector_node;
+    pesec_index_access_node_t index_access_node;
 } pesec_node_data_t;
 
 typedef struct PESEC_NODE_STRUCT
