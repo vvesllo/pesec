@@ -55,6 +55,8 @@ static pesec_token_t pesec_lexer_next_identifier(pesec_lexer_t* lexer)
     if (pesec_string_view_equals_cstr(value, "immut")) type = PESEC_TOKEN_KEYWORD_IMMUT;
     else if (pesec_string_view_equals_cstr(value, "mut")) type = PESEC_TOKEN_KEYWORD_MUT;
     else if (pesec_string_view_equals_cstr(value, "fn")) type = PESEC_TOKEN_KEYWORD_FN;
+    else if (pesec_string_view_equals_cstr(value, "object")) type = PESEC_TOKEN_KEYWORD_OBJECT;
+    else if (pesec_string_view_equals_cstr(value, "vector")) type = PESEC_TOKEN_KEYWORD_VECTOR;
 
     return pesec_token_new(
         type,

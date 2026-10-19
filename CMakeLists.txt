@@ -16,6 +16,7 @@ add_executable(pesec
         src/ast/definition_node.c
         src/ast/conditional_node.c
         src/ast/function_node.c
+        src/ast/vector_node.c
 
         src/frontend/token.c
         src/frontend/lexer.c
@@ -32,6 +33,7 @@ add_executable(pesec
         src/runtime/variable_table.c
         src/runtime/value.c
         src/runtime/function_value.c
+        src/runtime/vector_value.c
 )
 
 target_include_directories(pesec PRIVATE ${CMAKE_SOURCE_DIR})

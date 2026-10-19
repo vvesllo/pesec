@@ -31,12 +31,23 @@ pesec_value_t pesec_value_function(const pesec_function_value_t data)
     );
 }
 
+pesec_value_t pesec_value_vector(const pesec_vector_value_t data)
+{
+    return pesec_value_new(
+        PESEC_VALUE_TYPE_VECTOR,
+        (pesec_value_data_t){
+            .vector = data
+        }
+    );
+}
+
 bool pesec_value_is_truthy(const pesec_value_t value)
 {
     switch (value.type)
     {
         case PESEC_VALUE_TYPE_I64: return value.data.integer != 0;
         case PESEC_VALUE_TYPE_FUNCTION: return true;
+        case PESEC_VALUE_TYPE_VECTOR: return value.data.vector.size != 0;
     }
 
     pesec_panic("value::is_truthy: unknown value type (%d)", value.type);
@@ -52,6 +63,7 @@ pesec_value_t pesec_value_add(const pesec_value_t left, const pesec_value_t righ
         case PESEC_VALUE_TYPE_I64:
             return pesec_value_i64(left.data.integer + right.data.integer);
         case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_i64(0);
     }
     pesec_panic("value::add: fuck");
@@ -67,6 +79,7 @@ pesec_value_t pesec_value_sub(const pesec_value_t left, const pesec_value_t righ
         case PESEC_VALUE_TYPE_I64:
             return pesec_value_i64(left.data.integer - right.data.integer);
         case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_i64(0);
     }
     pesec_panic("value::sub: fuck");
@@ -82,6 +95,7 @@ pesec_value_t pesec_value_mul(const pesec_value_t left, const pesec_value_t righ
         case PESEC_VALUE_TYPE_I64:
             return pesec_value_i64(left.data.integer * right.data.integer);
         case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_i64(0);
     }
     pesec_panic("value::mul: fuck");
@@ -97,6 +111,7 @@ pesec_value_t pesec_value_div(const pesec_value_t left, const pesec_value_t righ
         case PESEC_VALUE_TYPE_I64:
             return pesec_value_i64(left.data.integer / right.data.integer);
         case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_i64(0);
     }
     pesec_panic("value::div: fuck");
@@ -112,6 +127,7 @@ pesec_value_t pesec_value_equal(const pesec_value_t left, const pesec_value_t ri
         case PESEC_VALUE_TYPE_I64:
             return pesec_value_i64(left.data.integer == right.data.integer);
         case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_i64(0);
     }
     pesec_panic("value::equal: fuck");
@@ -127,6 +143,7 @@ pesec_value_t pesec_value_less(const pesec_value_t left, const pesec_value_t rig
         case PESEC_VALUE_TYPE_I64:
             return pesec_value_i64(left.data.integer < right.data.integer);
         case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_i64(0);
     }
     pesec_panic("value::less: fuck");
@@ -142,6 +159,7 @@ pesec_value_t pesec_value_less_equal(const pesec_value_t left, const pesec_value
         case PESEC_VALUE_TYPE_I64:
             return pesec_value_i64(left.data.integer <= right.data.integer);
         case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_i64(0);
     }
     pesec_panic("value::less_equal: fuck");
@@ -157,6 +175,7 @@ pesec_value_t pesec_value_greater(const pesec_value_t left, const pesec_value_t 
         case PESEC_VALUE_TYPE_I64:
             return pesec_value_i64(left.data.integer > right.data.integer);
         case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_i64(0);
     }
     pesec_panic("value::greater: fuck");
@@ -172,6 +191,7 @@ pesec_value_t pesec_value_greater_equal(const pesec_value_t left, const pesec_va
         case PESEC_VALUE_TYPE_I64:
             return pesec_value_i64(left.data.integer >= right.data.integer);
         case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_i64(0);
     }
     pesec_panic("value::greater_equal: fuck");

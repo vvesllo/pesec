@@ -1,15 +1,5 @@
-immut f = fn(a) {
-    a > 1 ? f(a - 1) + f(a - 2) : 1;
+immut v = vector {
+    1, 2, 3
 };
 
-print(f(0));
-print(f(1));
-print(f(2));
-print(f(3));
-print(f(4));
-print(f(5));
-print(f(6));
-print(f(7));
-print(f(8));
-print(f(9));
-print(f(10));
+print(v);

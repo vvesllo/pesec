@@ -14,6 +14,29 @@ typedef enum
     PESEC_PARSER_BINDING_POWER_MULTIPLICATIVE,
 } pesec_parser_binding_power_t;
 
+static pesec_parser_binding_power_t pesec_parser_infix_binding_power(const pesec_token_type_t type)
+{
+    switch (type)
+    {
+        case PESEC_TOKEN_EQUAL_EQUAL:
+        case PESEC_TOKEN_LESS_THAN:
+        case PESEC_TOKEN_LESS_EQUAL:
+        case PESEC_TOKEN_GREATER_THAN:
+        case PESEC_TOKEN_GREATER_EQUAL:
+            return PESEC_PARSER_BINDING_POWER_COMPARISON;
+        case PESEC_TOKEN_QUESTION_MARK:
+            return PESEC_PARSER_BINDING_POWER_CONDITIONAL;
+        case PESEC_TOKEN_PLUS:
+        case PESEC_TOKEN_MINUS:
+            return PESEC_PARSER_BINDING_POWER_ADDITIVE;
+        case PESEC_TOKEN_ASTERISK:
+        case PESEC_TOKEN_SLASH:
+            return PESEC_PARSER_BINDING_POWER_MULTIPLICATIVE;
+        default:
+            return PESEC_PARSER_BINDING_POWER_NONE;
+    }
+}
+
 static pesec_node_t* pesec_parser_parse_expression(
     pesec_parser_t* parser,
     pesec_parser_binding_power_t left_binding_power
@@ -40,29 +63,6 @@ static pesec_token_t pesec_parser_eat(pesec_parser_t* parser, const pesec_token_
         );
 
     return pesec_parser_advance(parser);
-}
-
-static pesec_parser_binding_power_t pesec_parser_infix_binding_power(const pesec_token_type_t type)
-{
-    switch (type)
-    {
-        case PESEC_TOKEN_EQUAL_EQUAL:
-        case PESEC_TOKEN_LESS_THAN:
-        case PESEC_TOKEN_LESS_EQUAL:
-        case PESEC_TOKEN_GREATER_THAN:
-        case PESEC_TOKEN_GREATER_EQUAL:
-            return PESEC_PARSER_BINDING_POWER_COMPARISON;
-        case PESEC_TOKEN_QUESTION_MARK:
-            return PESEC_PARSER_BINDING_POWER_CONDITIONAL;
-        case PESEC_TOKEN_PLUS:
-        case PESEC_TOKEN_MINUS:
-            return PESEC_PARSER_BINDING_POWER_ADDITIVE;
-        case PESEC_TOKEN_ASTERISK:
-        case PESEC_TOKEN_SLASH:
-            return PESEC_PARSER_BINDING_POWER_MULTIPLICATIVE;
-        default:
-            return PESEC_PARSER_BINDING_POWER_NONE;
-    }
 }
 
 static pesec_node_t* pesec_parser_parse_postfix(pesec_parser_t* parser, pesec_node_t* node)
@@ -166,6 +166,22 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
             pesec_parser_eat(parser, PESEC_TOKEN_RPAREN);
             pesec_node_t* body = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
             return pesec_function_node_new(body, parameter_vector);
+        }
+        case PESEC_TOKEN_KEYWORD_VECTOR: {
+            pesec_parser_advance(parser);
+            pesec_parser_eat(parser, PESEC_TOKEN_LBRACE);
+            pesec_node_vector_t node_vector = pesec_node_vector_new();
+            while (!pesec_parser_match(parser, PESEC_TOKEN_RBRACE))
+            {
+                pesec_node_t* node_item = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+                pesec_node_vector_push(&node_vector, node_item);
+
+                if (!pesec_parser_match(parser, PESEC_TOKEN_COMMA)) break;
+
+                pesec_parser_eat(parser, PESEC_TOKEN_COMMA);
+            }
+            pesec_parser_eat(parser, PESEC_TOKEN_RBRACE);
+            return pesec_vector_node_new(node_vector);
         }
         case PESEC_TOKEN_LPAREN: {
             pesec_parser_eat(parser, PESEC_TOKEN_LPAREN);

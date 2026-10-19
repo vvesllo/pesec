@@ -47,6 +47,8 @@ typedef enum
     PESEC_TOKEN_KEYWORD_IMMUT,
     PESEC_TOKEN_KEYWORD_MUT,
     PESEC_TOKEN_KEYWORD_FN,
+    PESEC_TOKEN_KEYWORD_OBJECT,
+    PESEC_TOKEN_KEYWORD_VECTOR,
 } pesec_token_type_t;
 
 typedef union

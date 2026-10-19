@@ -51,6 +51,8 @@ const char* pesec_token_type_to_cstr(const pesec_token_type_t type)
         case PESEC_TOKEN_KEYWORD_IMMUT: return "<token:keyword:immut>";
         case PESEC_TOKEN_KEYWORD_MUT: return "<token:keyword:mut>";
         case PESEC_TOKEN_KEYWORD_FN: return "<token:keyword:fn>";
+        case PESEC_TOKEN_KEYWORD_OBJECT: return "<token:keyword:object>";
+        case PESEC_TOKEN_KEYWORD_VECTOR: return "<token:keyword:vector>";
     }
 
     pesec_panic("token::to_cstr: unknown token type %d", type);
