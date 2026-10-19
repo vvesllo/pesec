@@ -12,6 +12,7 @@ typedef enum
     PESEC_PARSER_BINDING_POWER_COMPARISON,
     PESEC_PARSER_BINDING_POWER_ADDITIVE,
     PESEC_PARSER_BINDING_POWER_MULTIPLICATIVE,
+    PESEC_PARSER_BINDING_POWER_UNARY,
 } pesec_parser_binding_power_t;
 
 static pesec_parser_binding_power_t pesec_parser_infix_binding_power(const pesec_token_type_t type)
@@ -65,6 +66,29 @@ static pesec_token_t pesec_parser_eat(pesec_parser_t* parser, const pesec_token_
     return pesec_parser_advance(parser);
 }
 
+static pesec_node_t* pesec_parser_parse_block(pesec_parser_t* parser, const bool consider_braces)
+{
+    pesec_node_vector_t node_vector = pesec_node_vector_new();
+
+    if (consider_braces)
+        pesec_parser_eat(parser, PESEC_TOKEN_LBRACE);
+
+    while (parser->token.type != PESEC_TOKEN_EOF &&
+           parser->token.type != PESEC_TOKEN_RBRACE)
+    {
+        pesec_node_vector_push(
+            &node_vector,
+            pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE)
+        );
+        pesec_parser_eat(parser, PESEC_TOKEN_SEMICOLON);
+    }
+
+    if (consider_braces)
+        pesec_parser_eat(parser, PESEC_TOKEN_RBRACE);
+
+    return pesec_sequence_node_new(node_vector);
+}
+
 static pesec_node_t* pesec_parser_parse_postfix(pesec_parser_t* parser, pesec_node_t* node)
 {
     for (;;)
@@ -100,42 +124,24 @@ static pesec_node_t* pesec_parser_parse_postfix(pesec_parser_t* parser, pesec_no
     }
 }
 
-static pesec_node_t* pesec_parser_parse_block(pesec_parser_t* parser, const bool consider_braces)
-{
-    pesec_node_vector_t node_vector = pesec_node_vector_new();
-
-    if (consider_braces)
-        pesec_parser_eat(parser, PESEC_TOKEN_LBRACE);
-
-    while (parser->token.type != PESEC_TOKEN_EOF &&
-           parser->token.type != PESEC_TOKEN_RBRACE)
-    {
-        pesec_node_vector_push(
-            &node_vector,
-            pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE)
-        );
-        pesec_parser_eat(parser, PESEC_TOKEN_SEMICOLON);
-    }
-
-    if (consider_braces)
-        pesec_parser_eat(parser, PESEC_TOKEN_RBRACE);
-
-    return pesec_sequence_node_new(node_vector);
-}
-
 static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
 {
     switch (parser->token.type)
     {
+        case PESEC_TOKEN_MINUS: {
+            pesec_parser_advance(parser);
+            pesec_node_t* operand = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_UNARY);
+            return pesec_unary_node_new(PESEC_UNARY_NODE_OPERATION_NEGATIVE, operand);
+        }
         case PESEC_TOKEN_INTEGER:
             return pesec_literal_node_new(
-                pesec_value_i64(pesec_parser_eat(parser, PESEC_TOKEN_INTEGER).data.integer)
+                pesec_value_i64(pesec_parser_advance(parser).data.integer)
             );
         case PESEC_TOKEN_IDENTIFIER: {
-            const pesec_string_view_t identifier = pesec_parser_eat(parser, PESEC_TOKEN_IDENTIFIER).data.string_view;
+            const pesec_string_view_t identifier = pesec_parser_advance(parser).data.string_view;
             if (pesec_parser_match(parser, PESEC_TOKEN_EQUAL))
             {
-                pesec_parser_eat(parser, PESEC_TOKEN_EQUAL);
+                pesec_parser_advance(parser);
                 pesec_node_t* node_value = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
                 return pesec_assignment_node_new(identifier, node_value);
             }
@@ -155,7 +161,7 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
             );
         }
         case PESEC_TOKEN_KEYWORD_FN: {
-            pesec_parser_eat(parser, PESEC_TOKEN_KEYWORD_FN);
+            pesec_parser_advance(parser);
             pesec_parser_eat(parser, PESEC_TOKEN_LPAREN);
             pesec_parameter_vector_t parameter_vector = pesec_parameter_vector_new();
             while (!pesec_parser_match(parser, PESEC_TOKEN_RPAREN))

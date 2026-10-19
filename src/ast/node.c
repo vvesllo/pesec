@@ -15,6 +15,7 @@ pesec_value_t pesec_node_evaluate(const pesec_node_t* node, pesec_environment_t*
     {
         case PESEC_NODE_TYPE_LITERAL: return pesec_literal_node_evaluate(&node->data.literal_node, environment);
         case PESEC_NODE_TYPE_BINARY: return pesec_binary_node_evaluate(&node->data.binary_node, environment);
+        case PESEC_NODE_TYPE_UNARY: return pesec_unary_node_evaluate(&node->data.unary_node, environment);
         case PESEC_NODE_TYPE_VARIABLE: return pesec_variable_node_evaluate(&node->data.variable_node, environment);
         case PESEC_NODE_TYPE_CALL: return pesec_call_node_evaluate(&node->data.call_node, environment);
         case PESEC_NODE_TYPE_ASSIGNMENT: return pesec_assignment_node_evaluate(&node->data.assignment_node, environment);
@@ -35,6 +36,7 @@ void pesec_node_destroy(const pesec_node_t* node)
     {
         case PESEC_NODE_TYPE_LITERAL: pesec_literal_node_destroy(&node->data.literal_node); break;
         case PESEC_NODE_TYPE_BINARY: pesec_binary_node_destroy(&node->data.binary_node); break;
+        case PESEC_NODE_TYPE_UNARY: pesec_unary_node_destroy(&node->data.unary_node); break;
         case PESEC_NODE_TYPE_VARIABLE: pesec_variable_node_destroy(&node->data.variable_node); break;
         case PESEC_NODE_TYPE_CALL: pesec_call_node_destroy(&node->data.call_node); break;
         case PESEC_NODE_TYPE_ASSIGNMENT: pesec_assignment_node_destroy(&node->data.assignment_node); break;

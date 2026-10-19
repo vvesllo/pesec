@@ -76,6 +76,19 @@ bool pesec_value_is_truthy(const pesec_value_t value)
     pesec_panic("value::is_truthy: unknown value type (%d)", value.type);
 }
 
+pesec_value_t pesec_value_negative(pesec_value_t value)
+{
+    switch (value.type)
+    {
+        case PESEC_VALUE_TYPE_I64:
+            return pesec_value_i64(-value.data.integer);
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_value_i64(0);
+    }
+    pesec_panic("value::negative: fuck");
+}
+
 pesec_value_t pesec_value_add(const pesec_value_t left, const pesec_value_t right)
 {
     if (left.type != right.type)

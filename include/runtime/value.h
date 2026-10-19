@@ -40,6 +40,8 @@ pesec_value_t pesec_value_vector(pesec_vector_value_t data);
 
 bool pesec_value_is_truthy(pesec_value_t value);
 
+pesec_value_t pesec_value_negative(pesec_value_t value);
+
 pesec_value_t pesec_value_add(pesec_value_t left, pesec_value_t right);
 
 pesec_value_t pesec_value_sub(pesec_value_t left, pesec_value_t right);

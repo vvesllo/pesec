@@ -6,4 +6,4 @@ print(v);
 print(v[0]);
 print(v[1]);
 print(v[0][1]);
-print(v[0-1]);
+print(v[-1]);

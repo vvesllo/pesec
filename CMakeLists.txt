@@ -9,6 +9,7 @@ add_executable(pesec
         src/ast/node.c
         src/ast/literal_node.c
         src/ast/binary_node.c
+        src/ast/unary_node.c
         src/ast/variable_node.c
         src/ast/call_node.c
         src/ast/assignment_node.c
