@@ -1,2 +1,5 @@
-immut a = -10...10;
+immut a = for i in 0...10 {
+    i * i;
+};
+
 print(a);

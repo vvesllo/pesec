@@ -226,6 +226,14 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
             pesec_parser_eat(parser, PESEC_TOKEN_RBRACE);
             return pesec_object_node_new(node_vector);
         }
+        case PESEC_TOKEN_KEYWORD_FOR: {
+            pesec_parser_advance(parser);
+            pesec_string_view_t iterator = pesec_parser_eat(parser, PESEC_TOKEN_IDENTIFIER).data.string_view;
+            pesec_parser_eat(parser, PESEC_TOKEN_KEYWORD_IN);
+            pesec_node_t* iterable = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+            pesec_node_t* body = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+            return pesec_for_node_new(iterator, iterable, body);
+        }
         case PESEC_TOKEN_LPAREN: {
             pesec_parser_eat(parser, PESEC_TOKEN_LPAREN);
             pesec_node_t* node = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
