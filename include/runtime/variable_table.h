@@ -4,7 +4,9 @@
 #include "value.h"
 #include "include/common/string_view.h"
 
-typedef struct
+typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
+
+typedef struct PESEC_VARIABLE_STRUCT
 {
     pesec_string_view_t name;
     pesec_value_t value;

@@ -107,6 +107,8 @@ static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
         }
         case ',': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_COMMA);
+        case '.': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_DOT);
         case ';': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_SEMICOLON);
         case ':': pesec_lexer_advance(lexer);

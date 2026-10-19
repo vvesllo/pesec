@@ -27,10 +27,10 @@ int main(int argc, char** argv)
     pesec_parser_t parser = pesec_parser_new(&lexer);
     const pesec_node_t* node = pesec_parser_parse(&parser);
 
-    pesec_environment_t global_environment = pesec_environment_new(nullptr);
+    pesec_environment_t* global_environment = pesec_environment_new(nullptr);
 
     pesec_environment_push_variable(
-        &global_environment,
+        global_environment,
         pesec_string_view_from("print"),
         pesec_value_function((pesec_function_value_t){
             .type = PESEC_FUNCTION_VALUE_TYPE_NATIVE,
@@ -41,12 +41,12 @@ int main(int argc, char** argv)
                 },
                 1
             ),
-            .parent_environment = &global_environment
+            .parent_environment = global_environment
         }),
         true
     );
 
-    pesec_node_evaluate(node, &global_environment);
+    pesec_node_evaluate(node, global_environment);
     pesec_node_destroy(node);
     pesec_alloc_cleanup_all();
 

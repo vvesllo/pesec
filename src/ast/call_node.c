@@ -37,22 +37,22 @@ pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec
         pesec_panic("function::call: invalid function argument count (%d but %d given)",
                     function.parameter_vector.size, call_node->args.size);
 
-    pesec_environment_t local_environment = pesec_environment_new(function.parent_environment);
+    pesec_environment_t* local_environment = pesec_environment_new(function.parent_environment);
 
     for (size_t i = 0; i < call_node->args.size; i++)
     {
         const pesec_value_t arg_value = pesec_node_evaluate(call_node->args.items[i], environment);
         pesec_environment_push_variable(
-            &local_environment,
+            local_environment,
             function.parameter_vector.items[i].name,
             arg_value,
             false
         );
     }
 
-    const pesec_value_t result_value = pesec_function_value_call(&function, &local_environment);
+    const pesec_value_t result_value = pesec_function_value_call(&function, local_environment);
 
-    pesec_environment_destroy(&local_environment);
+    pesec_environment_destroy(local_environment);
 
     return result_value;
 }

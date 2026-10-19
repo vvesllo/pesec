@@ -119,6 +119,12 @@ static pesec_node_t* pesec_parser_parse_postfix(pesec_parser_t* parser, pesec_no
                 node = pesec_index_access_node_new(node, index_node);
                 break;
             }
+            case PESEC_TOKEN_DOT: {
+                pesec_parser_advance(parser);
+                const pesec_string_view_t field = pesec_parser_eat(parser, PESEC_TOKEN_IDENTIFIER).data.string_view;
+                node = pesec_field_access_node_new(node, field);
+                break;
+            }
             default: return node;
         }
     }
@@ -195,6 +201,22 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
             }
             pesec_parser_eat(parser, PESEC_TOKEN_RBRACE);
             return pesec_vector_node_new(node_vector);
+        }
+        case PESEC_TOKEN_KEYWORD_OBJECT: {
+            pesec_parser_advance(parser);
+            pesec_parser_eat(parser, PESEC_TOKEN_LBRACE);
+            pesec_node_vector_t node_vector = pesec_node_vector_new();
+            while (!pesec_parser_match(parser, PESEC_TOKEN_RBRACE))
+            {
+                pesec_node_t* node_item = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+                pesec_node_vector_push(&node_vector, node_item);
+
+                if (!pesec_parser_match(parser, PESEC_TOKEN_SEMICOLON)) break;
+
+                pesec_parser_eat(parser, PESEC_TOKEN_SEMICOLON);
+            }
+            pesec_parser_eat(parser, PESEC_TOKEN_RBRACE);
+            return pesec_object_node_new(node_vector);
         }
         case PESEC_TOKEN_LPAREN: {
             pesec_parser_eat(parser, PESEC_TOKEN_LPAREN);

@@ -1,0 +1,47 @@
+#include "include/ast/node.h"
+#include "include/common/panic.h"
+#include "include/runtime/environment.h"
+
+pesec_node_t* pesec_field_access_node_new(pesec_node_t* target, pesec_string_view_t field)
+{
+    const auto field_access_node = (pesec_field_access_node_t){
+        .target = target,
+        .field = field,
+    };
+    return pesec_node_new(
+        PESEC_NODE_TYPE_FIELD_ACCESS,
+        (pesec_node_data_t){
+            .field_access_node = field_access_node
+        }
+    );
+}
+
+pesec_value_t pesec_field_access_node_evaluate(
+    const pesec_field_access_node_t* field_access_node,
+    pesec_environment_t* environment
+)
+{
+    const pesec_value_t object_value = pesec_node_evaluate(field_access_node->target, environment);
+
+    if (object_value.type != PESEC_VALUE_TYPE_OBJECT)
+    {
+        pesec_panic("field_access_node::evaluate: can't get field from non object value");
+    }
+
+    const pesec_object_value_t* object = &object_value.data.object;
+
+    const pesec_variable_t* field_variable = pesec_object_value_get(object, field_access_node->field);
+
+    if (!field_variable)
+    {
+        pesec_panic("field_access_node::evaluate: field `%.*s` is not exists in object",
+                    field_access_node->field.size, field_access_node->field.data);
+    }
+
+    return field_variable->value;
+}
+
+void pesec_field_access_node_destroy(const pesec_field_access_node_t* field_access_node)
+{
+    pesec_node_destroy(field_access_node->target);
+}

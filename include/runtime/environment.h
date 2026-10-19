@@ -12,9 +12,9 @@ typedef struct PESEC_ENVIRONMENT_STRUCT
     pesec_variable_table_t variable_table;
 } pesec_environment_t;
 
-pesec_environment_t pesec_environment_new(pesec_environment_t* parent);
+pesec_environment_t* pesec_environment_new(pesec_environment_t* parent);
 
-void pesec_environment_destroy(const pesec_environment_t* environment);
+void pesec_environment_destroy(pesec_environment_t* environment);
 
 pesec_variable_t* pesec_environment_get_variable(const pesec_environment_t* environment, pesec_string_view_t name);
 
