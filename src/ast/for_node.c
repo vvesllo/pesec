@@ -22,17 +22,16 @@ pesec_value_t pesec_for_node_evaluate(
     pesec_environment_t* environment
 )
 {
-    pesec_vector_value_t result_vector_value = pesec_vector_value_new();
-    pesec_environment_t* local_environment = pesec_environment_new(environment);
-
-    const pesec_value_t iterable_value = pesec_node_evaluate(for_node->iterable, local_environment);
+    const pesec_value_t iterable_value = pesec_node_evaluate(for_node->iterable, environment);
 
     if (iterable_value.type != PESEC_VALUE_TYPE_VECTOR)
         pesec_panic("for_node::evaluate: iterable should be vector");
 
     const pesec_vector_value_t iterable = iterable_value.data.vector;
+
     if (iterable.size > 0)
     {
+        pesec_environment_t* local_environment = pesec_environment_new(environment);
         pesec_environment_push_variable(
             local_environment,
             for_node->iterator,
@@ -44,12 +43,12 @@ pesec_value_t pesec_for_node_evaluate(
         {
             pesec_environment_set_variable(local_environment, for_node->iterator, iterable.items[i]);
             const pesec_value_t value = pesec_node_evaluate(for_node->body, local_environment);
-            pesec_vector_value_push(&result_vector_value, value);
+            // TODO: control flow
         }
 
         pesec_environment_destroy(local_environment);
     }
-    return pesec_value_vector(result_vector_value);
+    return pesec_value_i64(0);
 }
 
 void pesec_for_node_destroy(const pesec_for_node_t* for_node)

@@ -19,7 +19,9 @@ static pesec_value_t print_function(pesec_environment_t* environment)
     printf("\n");
     return pesec_value_i64(0);
 }
-
+/*
+ * TODO: optional, value.control_flow, while loop, loop labels etc
+ */
 int main(int argc, char** argv)
 {
     const pesec_string_view_t source = pesec_file_read(argv[1]);

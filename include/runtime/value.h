@@ -20,6 +20,12 @@ typedef enum
     PESEC_VALUE_TYPE_OBJECT,
 } pesec_value_type_t;
 
+typedef enum
+{
+    PESEC_VALUE_CONTROL_FLOW_NONE,
+    PESEC_VALUE_CONTROL_FLOW_RETURN,
+} pesec_value_control_flow_t;
+
 typedef union
 {
     int64_t i64;
@@ -33,6 +39,7 @@ typedef struct PESEC_VALUE_STRUCT
 {
     pesec_value_type_t type;
     pesec_value_data_t data;
+    pesec_value_control_flow_t control_flow;
 } pesec_value_t;
 
 void pesec_value_print(FILE* stream, pesec_value_t value);

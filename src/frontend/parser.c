@@ -228,7 +228,7 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
         }
         case PESEC_TOKEN_KEYWORD_FOR: {
             pesec_parser_advance(parser);
-            pesec_string_view_t iterator = pesec_parser_eat(parser, PESEC_TOKEN_IDENTIFIER).data.string_view;
+            const pesec_string_view_t iterator = pesec_parser_eat(parser, PESEC_TOKEN_IDENTIFIER).data.string_view;
             pesec_parser_eat(parser, PESEC_TOKEN_KEYWORD_IN);
             pesec_node_t* iterable = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
             pesec_node_t* body = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
