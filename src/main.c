@@ -21,6 +21,7 @@ static pesec_value_t print_function(pesec_environment_t* environment)
 }
 /*
  * TODO: optional, value.control_flow, while loop, loop labels etc
+ * (and maybe something like `for ... { continue X } -> {X1, X2, X3}` (vector generator))
  */
 int main(int argc, char** argv)
 {
