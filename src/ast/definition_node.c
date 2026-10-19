@@ -2,9 +2,9 @@
 #include "include/runtime/environment.h"
 
 pesec_node_t* pesec_definition_node_new(
-    pesec_string_view_t name,
+    const pesec_string_view_t name,
     pesec_node_t* value,
-    bool immutable
+    const bool immutable
 )
 {
     const auto definition_node = (pesec_definition_node_t)

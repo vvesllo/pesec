@@ -1,6 +1,7 @@
 #include "include/ast/node.h"
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
+#include "include/runtime/vector_value.h"
 
 pesec_node_t* pesec_index_access_node_new(pesec_node_t* target, pesec_node_t* index)
 {
@@ -30,7 +31,7 @@ pesec_value_t pesec_index_access_node_evaluate(const pesec_index_access_node_t* 
         pesec_panic("index_access_node::evaluate: index should be an i64");
     }
 
-    const pesec_vector_value_t* vector = &vector_value.data.vector;
+    const pesec_vector_value_t* vector = vector_value.data.vector;
     const int64_t index = index_value.data.i64;
 
     if (index > vector->size && index < -vector->size)

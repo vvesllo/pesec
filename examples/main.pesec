@@ -1,3 +1,5 @@
-for i in 0...5 {
-    print(i * i);
+immut v = vector {
+    1, 2, 3
 };
+v.push_back(4);
+print(v);

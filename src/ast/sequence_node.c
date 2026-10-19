@@ -26,6 +26,8 @@ pesec_value_t pesec_sequence_node_evaluate(
     for (size_t i=0; i < node_vector->size; i++)
     {
         value = pesec_node_evaluate(node_vector->items[i], local_environment);
+        if (value.control_flow != PESEC_VALUE_CONTROL_FLOW_NONE)
+            break;
     }
 
     pesec_environment_destroy(local_environment);

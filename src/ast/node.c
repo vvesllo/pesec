@@ -29,6 +29,7 @@ pesec_value_t pesec_node_evaluate(const pesec_node_t* node, pesec_environment_t*
         case PESEC_NODE_TYPE_FIELD_ACCESS: return pesec_field_access_node_evaluate(&node->data.field_access_node, environment);
         case PESEC_NODE_TYPE_RANGE: return pesec_range_node_evaluate(&node->data.range_node, environment);
         case PESEC_NODE_TYPE_FOR: return pesec_for_node_evaluate(&node->data.for_node, environment);
+        case PESEC_NODE_TYPE_CONTROL_FLOW: return pesec_control_flow_node_evaluate(&node->data.control_flow_node, environment);
     }
 
     return pesec_value_i64(0);
@@ -54,5 +55,6 @@ void pesec_node_destroy(const pesec_node_t* node)
         case PESEC_NODE_TYPE_FIELD_ACCESS: pesec_field_access_node_destroy(&node->data.field_access_node); break;
         case PESEC_NODE_TYPE_RANGE: pesec_range_node_destroy(&node->data.range_node); break;
         case PESEC_NODE_TYPE_FOR: pesec_for_node_destroy(&node->data.for_node); break;
+        case PESEC_NODE_TYPE_CONTROL_FLOW: pesec_control_flow_node_destroy(&node->data.control_flow_node); break;
     }
 }

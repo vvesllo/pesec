@@ -93,11 +93,16 @@ static pesec_token_t pesec_lexer_next_identifier(pesec_lexer_t* lexer)
     if (pesec_string_view_equals_cstr(value, "immut")) type = PESEC_TOKEN_KEYWORD_IMMUT;
     else if (pesec_string_view_equals_cstr(value, "mut")) type = PESEC_TOKEN_KEYWORD_MUT;
     else if (pesec_string_view_equals_cstr(value, "fn")) type = PESEC_TOKEN_KEYWORD_FN;
+    else if (pesec_string_view_equals_cstr(value, "if")) type = PESEC_TOKEN_KEYWORD_IF;
+    else if (pesec_string_view_equals_cstr(value, "else")) type = PESEC_TOKEN_KEYWORD_ELSE;
     else if (pesec_string_view_equals_cstr(value, "object")) type = PESEC_TOKEN_KEYWORD_OBJECT;
     else if (pesec_string_view_equals_cstr(value, "vector")) type = PESEC_TOKEN_KEYWORD_VECTOR;
     else if (pesec_string_view_equals_cstr(value, "while")) type = PESEC_TOKEN_KEYWORD_WHILE;
     else if (pesec_string_view_equals_cstr(value, "for")) type = PESEC_TOKEN_KEYWORD_FOR;
     else if (pesec_string_view_equals_cstr(value, "in")) type = PESEC_TOKEN_KEYWORD_IN;
+    else if (pesec_string_view_equals_cstr(value, "continue")) type = PESEC_TOKEN_KEYWORD_CONTINUE;
+    else if (pesec_string_view_equals_cstr(value, "break")) type = PESEC_TOKEN_KEYWORD_BREAK;
+    else if (pesec_string_view_equals_cstr(value, "return")) type = PESEC_TOKEN_KEYWORD_RETURN;
 
     return pesec_token_new(
         type,

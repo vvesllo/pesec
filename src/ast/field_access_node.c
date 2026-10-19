@@ -1,6 +1,8 @@
 #include "include/ast/node.h"
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
+#include "include/runtime/object_value.h"
+#include "include/runtime/vector_value.h"
 
 pesec_node_t* pesec_field_access_node_new(pesec_node_t* target, pesec_string_view_t field)
 {
@@ -21,24 +23,17 @@ pesec_value_t pesec_field_access_node_evaluate(
     pesec_environment_t* environment
 )
 {
-    const pesec_value_t object_value = pesec_node_evaluate(field_access_node->target, environment);
+    pesec_value_t value = pesec_node_evaluate(field_access_node->target, environment);
 
-    if (object_value.type != PESEC_VALUE_TYPE_OBJECT)
+    switch (value.type)
     {
-        pesec_panic("field_access_node::evaluate: can't get field from non object value");
+        case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_vector_value_method_handler(&value, field_access_node->field, environment);
+        case PESEC_VALUE_TYPE_OBJECT:
+            return pesec_object_value_method_handler(&value, field_access_node->field, environment);
+        default:
+            pesec_panic("field_access_node::evaluate: can't get field from non object value");
     }
-
-    const pesec_object_value_t* object = &object_value.data.object;
-
-    const pesec_variable_t* field_variable = pesec_object_value_get(object, field_access_node->field);
-
-    if (!field_variable)
-    {
-        pesec_panic("field_access_node::evaluate: field `%.*s` is not exists in object",
-                    field_access_node->field.size, field_access_node->field.data);
-    }
-
-    return field_variable->value;
 }
 
 void pesec_field_access_node_destroy(const pesec_field_access_node_t* field_access_node)

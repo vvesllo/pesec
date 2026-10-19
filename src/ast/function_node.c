@@ -1,5 +1,6 @@
 #include "include/ast/node.h"
 #include "include/runtime/environment.h"
+#include "include/runtime/function_value.h"
 
 pesec_node_t* pesec_function_node_new(pesec_node_t* body, pesec_parameter_vector_t parameter_vector)
 {
@@ -20,15 +21,19 @@ pesec_value_t pesec_function_node_evaluate(
     pesec_environment_t* environment
 )
 {
-    return pesec_value_function((pesec_function_value_t){
-        .type = PESEC_FUNCTION_VALUE_TYPE_NODE,
-        .data.node = function_node->body,
-        .parameter_vector = function_node->parameter_vector,
-        .parent_environment = environment
-    });
+    return pesec_value_function(pesec_function_value_new(
+            PESEC_FUNCTION_VALUE_TYPE_NODE,
+            (pesec_function_value_data_t){
+                .node = function_node->body
+            },
+            function_node->parameter_vector,
+            environment
+        )
+    );
 }
 
 void pesec_function_node_destroy(const pesec_function_node_t* function_node)
 {
-    // nothing to do
+    pesec_node_destroy(function_node->body);
+    pesec_parameter_vector_destroy(&function_node->parameter_vector);
 }

@@ -36,7 +36,7 @@ pesec_value_t pesec_conditional_node_evaluate(
     if (conditional_node->else_body)
         return pesec_node_evaluate(conditional_node->else_body, environment);
 
-    return pesec_value_i64(0);
+    return pesec_value_none();
 }
 
 void pesec_conditional_node_destroy(const pesec_conditional_node_t* conditional_node)

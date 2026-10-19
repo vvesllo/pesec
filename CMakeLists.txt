@@ -23,6 +23,7 @@ add_executable(pesec
         src/ast/field_access_node.c
         src/ast/range_node.c
         src/ast/for_node.c
+        src/ast/control_flow_node.c
 
         src/frontend/token.c
         src/frontend/lexer.c

@@ -17,7 +17,7 @@ pesec_node_t* pesec_object_node_new(const pesec_node_vector_t node_vector)
 
 pesec_value_t pesec_object_node_evaluate(const pesec_object_node_t* object_node, pesec_environment_t* environment)
 {
-    pesec_object_value_t object_value = pesec_object_value_new();
+    pesec_object_value_t* object_value = pesec_object_value_new();
     for (size_t i = 0; i < object_node->node_vector.size; i++)
     {
         const pesec_node_t* node = object_node->node_vector.items[i];
@@ -28,7 +28,7 @@ pesec_value_t pesec_object_node_evaluate(const pesec_object_node_t* object_node,
         const pesec_definition_node_t* definition = &node->data.definition_node;
         const pesec_value_t value = pesec_node_evaluate(definition->value, environment);
 
-        pesec_object_value_push(&object_value, definition->name, value, definition->immutable);
+        pesec_object_value_push(object_value, definition->name, value, definition->immutable);
     }
 
     return pesec_value_object(object_value);

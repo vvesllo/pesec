@@ -51,14 +51,19 @@ const char* pesec_token_type_to_cstr(const pesec_token_type_t type)
         case PESEC_TOKEN_SEMICOLON: return "<token:semi-colon>";
         case PESEC_TOKEN_COLON: return "<token:colon>";
         case PESEC_TOKEN_QUESTION_MARK: return "<token:question-mark>";
-        case PESEC_TOKEN_KEYWORD_IMMUT: return "<token:keyword:immut>";
-        case PESEC_TOKEN_KEYWORD_MUT: return "<token:keyword:mut>";
-        case PESEC_TOKEN_KEYWORD_FN: return "<token:keyword:fn>";
-        case PESEC_TOKEN_KEYWORD_OBJECT: return "<token:keyword:object>";
-        case PESEC_TOKEN_KEYWORD_VECTOR: return "<token:keyword:vector>";
-        case PESEC_TOKEN_KEYWORD_WHILE: return "<token:keyword:while>";
-        case PESEC_TOKEN_KEYWORD_FOR: return "<token:keyword:for>";
-        case PESEC_TOKEN_KEYWORD_IN: return "<token:keyword:in>";
+        case PESEC_TOKEN_KEYWORD_IMMUT: return "<token:keyword[immut]>";
+        case PESEC_TOKEN_KEYWORD_MUT: return "<token:keyword[mut]>";
+        case PESEC_TOKEN_KEYWORD_FN: return "<token:keyword[fn]>";
+        case PESEC_TOKEN_KEYWORD_IF: return "<token:keyword[if]>";
+        case PESEC_TOKEN_KEYWORD_ELSE: return "<token:keyword[else]>";
+        case PESEC_TOKEN_KEYWORD_OBJECT: return "<token:keyword[object]>";
+        case PESEC_TOKEN_KEYWORD_VECTOR: return "<token:keyword[vector]>";
+        case PESEC_TOKEN_KEYWORD_WHILE: return "<token:keyword[while]>";
+        case PESEC_TOKEN_KEYWORD_FOR: return "<token:keyword[for]>";
+        case PESEC_TOKEN_KEYWORD_IN: return "<token:keyword[in]>";
+        case PESEC_TOKEN_KEYWORD_CONTINUE: return "<token:keyword[continue]>";
+        case PESEC_TOKEN_KEYWORD_BREAK: return "<token:keyword[break]>";
+        case PESEC_TOKEN_KEYWORD_RETURN: return "<token:keyword[return]>";
     }
 
     pesec_panic("token::to_cstr: unknown token type %d", type);

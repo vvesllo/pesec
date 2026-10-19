@@ -7,12 +7,12 @@
 typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
 typedef struct PESEC_VARIABLE_STRUCT pesec_variable_t;
 
-typedef struct
+typedef struct PESEC_OBJECT_VALUE_STRUCT
 {
     pesec_environment_t* environment;
 } pesec_object_value_t;
 
-pesec_object_value_t pesec_object_value_new();
+pesec_object_value_t* pesec_object_value_new();
 
 void pesec_object_value_push(
     const pesec_object_value_t* object_value,
@@ -24,5 +24,11 @@ void pesec_object_value_push(
 pesec_variable_t* pesec_object_value_get(const pesec_object_value_t* object_value, pesec_string_view_t field);
 
 void pesec_object_value_destroy(const pesec_object_value_t* object_value);
+
+pesec_value_t pesec_object_value_method_handler(
+    const pesec_value_t* self,
+    pesec_string_view_t field,
+    pesec_environment_t* environment
+);
 
 #endif // PESEC_OBJECT_VALUE_H

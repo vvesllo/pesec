@@ -2,6 +2,7 @@
 #include "include/common/alloc.h"
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
+#include "include/runtime/function_value.h"
 
 pesec_node_t* pesec_call_node_new(pesec_node_t* callee, const pesec_node_vector_t args)
 {
@@ -31,30 +32,36 @@ pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec
         pesec_panic("call_node::evaluate: can call function");
     }
 
-    const pesec_function_value_t function = value.data.function;
+    pesec_function_value_t* function = value.data.function;
 
-    if (function.parameter_vector.size != call_node->args.size)
+    if (function->parameter_vector.size != call_node->args.size)
         pesec_panic("function::call: invalid function argument count (%d but %d given)",
-                    function.parameter_vector.size, call_node->args.size);
+                    function->parameter_vector.size, call_node->args.size);
 
-    pesec_environment_t* local_environment = pesec_environment_new(function.parent_environment);
+    pesec_environment_t* local_environment = pesec_environment_new(function->parent_environment);
 
     for (size_t i = 0; i < call_node->args.size; i++)
     {
         const pesec_value_t arg_value = pesec_node_evaluate(call_node->args.items[i], environment);
         pesec_environment_push_variable(
             local_environment,
-            function.parameter_vector.items[i].name,
+            function->parameter_vector.items[i].name,
             arg_value,
             false
         );
     }
 
-    const pesec_value_t result_value = pesec_function_value_call(&function, local_environment);
+    pesec_value_t result_value = pesec_function_value_call(function, local_environment);
 
     pesec_environment_destroy(local_environment);
 
-    return result_value;
+    if (result_value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN)
+    {
+        result_value.control_flow = PESEC_VALUE_CONTROL_FLOW_NONE;
+        return result_value;
+    }
+
+    return pesec_value_none();
 }
 
 void pesec_call_node_destroy(const pesec_call_node_t* call_node)

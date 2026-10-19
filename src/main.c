@@ -7,6 +7,7 @@
 #include "include/frontend/parser.h"
 
 #include "include/runtime/environment.h"
+#include "include/runtime/function_value.h"
 
 
 static pesec_value_t print_function(pesec_environment_t* environment)
@@ -19,8 +20,9 @@ static pesec_value_t print_function(pesec_environment_t* environment)
     printf("\n");
     return pesec_value_i64(0);
 }
+
 /*
- * TODO: optional, value.control_flow, while loop, loop labels etc
+ * TODO: --optional--, value.control_flow, while loop, loop labels etc
  * (and maybe something like `for ... { continue X } -> {X1, X2, X3}` (vector generator))
  */
 int main(int argc, char** argv)
@@ -35,17 +37,17 @@ int main(int argc, char** argv)
     pesec_environment_push_variable(
         global_environment,
         pesec_string_view_from("print"),
-        pesec_value_function((pesec_function_value_t){
-            .type = PESEC_FUNCTION_VALUE_TYPE_NATIVE,
-            .data.native = print_function,
-            .parameter_vector = pesec_parameter_vector_from(
+        pesec_value_function(pesec_function_value_new(
+            PESEC_FUNCTION_VALUE_TYPE_NATIVE,
+            (pesec_function_value_data_t){.native = print_function},
+            pesec_parameter_vector_from(
                 (const pesec_parameter_t[]){
                     (pesec_parameter_t){.name = pesec_string_view_from("value")}
                 },
                 1
             ),
-            .parent_environment = global_environment
-        }),
+            global_environment
+        )),
         true
     );
 

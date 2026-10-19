@@ -4,15 +4,17 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-#include "function_value.h"
-#include "vector_value.h"
-#include "object_value.h"
-
 typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
 typedef struct PESEC_VALUE_STRUCT pesec_value_t;
 
+typedef struct PESEC_FUNCTION_VALUE_STRUCT pesec_function_value_t;
+typedef struct PESEC_VECTOR_VALUE_STRUCT pesec_vector_value_t;
+typedef struct PESEC_OBJECT_VALUE_STRUCT pesec_object_value_t;
+
+
 typedef enum
 {
+    PESEC_VALUE_TYPE_NONE,
     PESEC_VALUE_TYPE_I64,
     PESEC_VALUE_TYPE_F64,
     PESEC_VALUE_TYPE_FUNCTION,
@@ -23,6 +25,8 @@ typedef enum
 typedef enum
 {
     PESEC_VALUE_CONTROL_FLOW_NONE,
+    PESEC_VALUE_CONTROL_FLOW_CONTINUE,
+    PESEC_VALUE_CONTROL_FLOW_BREAK,
     PESEC_VALUE_CONTROL_FLOW_RETURN,
 } pesec_value_control_flow_t;
 
@@ -30,9 +34,9 @@ typedef union
 {
     int64_t i64;
     double f64;
-    pesec_function_value_t function;
-    pesec_vector_value_t vector;
-    pesec_object_value_t object;
+    pesec_function_value_t* function;
+    pesec_vector_value_t* vector;
+    pesec_object_value_t* object;
 } pesec_value_data_t;
 
 typedef struct PESEC_VALUE_STRUCT
@@ -48,11 +52,13 @@ pesec_value_t pesec_value_i64(int64_t data);
 
 pesec_value_t pesec_value_f64(double data);
 
-pesec_value_t pesec_value_function(pesec_function_value_t data);
+pesec_value_t pesec_value_function(pesec_function_value_t* data);
 
-pesec_value_t pesec_value_vector(pesec_vector_value_t data);
+pesec_value_t pesec_value_vector(pesec_vector_value_t* data);
 
-pesec_value_t pesec_value_object(pesec_object_value_t data);
+pesec_value_t pesec_value_object(pesec_object_value_t* data);
+
+pesec_value_t pesec_value_none();
 
 bool pesec_value_is_truthy(pesec_value_t value);
 
