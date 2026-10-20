@@ -10,6 +10,7 @@
 {
     va_list args = {0};
 
+    fprintf(stderr, "pesec@");
     va_start(args, format);
     vfprintf(stderr, format, args);
     va_end(args);

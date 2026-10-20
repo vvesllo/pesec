@@ -4,6 +4,8 @@
 #include "value.h"
 #include "include/common/string_view.h"
 
+constexpr size_t PESEC_VARIABLE_TABLE_ITEMS_INLINE_SIZE = 8;
+
 typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
 
 typedef struct PESEC_VARIABLE_STRUCT
@@ -15,10 +17,19 @@ typedef struct PESEC_VARIABLE_STRUCT
 
 typedef struct
 {
-    pesec_variable_t* items;
-    bool* occupied;
+    bool is_heap;
     size_t size;
     size_t capacity;
+    union
+    {
+        pesec_variable_t* heap;
+        pesec_variable_t _inline[PESEC_VARIABLE_TABLE_ITEMS_INLINE_SIZE];
+    } items;
+    union
+    {
+        bool* heap;
+        bool _inline[PESEC_VARIABLE_TABLE_ITEMS_INLINE_SIZE];
+    } occupied;
 } pesec_variable_table_t;
 
 pesec_variable_table_t pesec_variable_table_new();

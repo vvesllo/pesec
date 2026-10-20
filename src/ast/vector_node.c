@@ -2,7 +2,7 @@
 #include "include/runtime/environment.h"
 #include "include/runtime/vector_value.h"
 
-pesec_node_t* pesec_vector_node_new(pesec_node_vector_t node_vector)
+pesec_node_t* pesec_vector_node_new(const pesec_node_vector_t node_vector)
 {
     const auto vector_node = (pesec_vector_node_t){
         .node_vector = node_vector

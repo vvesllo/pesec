@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 #include "include/common/alloc.h"
 #include "include/common/file_read.h"
@@ -27,6 +28,7 @@ static pesec_value_t print_function(pesec_environment_t* environment)
  */
 int main(int argc, char** argv)
 {
+    const clock_t start = clock();
     const pesec_string_view_t source = pesec_file_read(argv[1]);
     pesec_lexer_t lexer = pesec_lexer_new(source);
     pesec_parser_t parser = pesec_parser_new(&lexer);
@@ -52,8 +54,12 @@ int main(int argc, char** argv)
     );
 
     pesec_node_evaluate(node, global_environment);
+
+    const clock_t stop = clock();
+    const double elapsed = (double) (stop - start) / CLOCKS_PER_SEC;
+    printf("\nTime elapsed: %.5f", elapsed);
+
     pesec_node_destroy(node);
     pesec_alloc_cleanup_all();
-
     return 0;
 }

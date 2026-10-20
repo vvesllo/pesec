@@ -5,6 +5,14 @@
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
 
+static size_t pesec_vector_value_get_index(const pesec_vector_value_t* vector_value, const int64_t index)
+{
+    if (index >= vector_value->size || index < -vector_value->size)
+        pesec_panic("index_access_node::evaluate: index out of range");
+
+    return index < 0 ? vector_value->size + index : index;
+}
+
 pesec_vector_value_t* pesec_vector_value_new()
 {
     const auto vector_value = (pesec_vector_value_t*)pesec_malloc(sizeof(pesec_vector_value_t));
@@ -21,8 +29,10 @@ void pesec_vector_value_push(pesec_vector_value_t* vector_value, pesec_value_t v
     if (vector_value->size >= vector_value->capacity)
     {
         vector_value->capacity <<= 1;
-        vector_value->items = (pesec_value_t*)pesec_realloc(vector_value->items,
-                                                            vector_value->capacity * sizeof(pesec_value_t));
+        vector_value->items = (pesec_value_t*)pesec_realloc(
+            vector_value->items,
+            vector_value->capacity * sizeof(pesec_value_t)
+        );
     }
 
     vector_value->items[vector_value->size] = value;
@@ -31,12 +41,12 @@ void pesec_vector_value_push(pesec_vector_value_t* vector_value, pesec_value_t v
 
 void pesec_vector_value_set(const pesec_vector_value_t* vector_value, const int64_t index, const pesec_value_t value)
 {
-    vector_value->items[index] = value;
+    vector_value->items[pesec_vector_value_get_index(vector_value, index)] = value;
 }
 
 pesec_value_t* pesec_vector_value_get(const pesec_vector_value_t* vector_value, const int64_t index)
 {
-    return &vector_value->items[index];
+    return &vector_value->items[pesec_vector_value_get_index(vector_value, index)];
 }
 
 void pesec_vector_value_destroy(const pesec_vector_value_t* vector_value)
@@ -85,7 +95,7 @@ pesec_value_t pesec_vector_value_method_handler(
             },
             pesec_parameter_vector_new(),
             environment
-            ));
+        ));
     if (pesec_string_view_equals_cstr(field, "push_back"))
         return pesec_value_as_function(pesec_function_value_new(
             PESEC_FUNCTION_VALUE_TYPE_METHOD,

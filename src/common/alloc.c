@@ -62,12 +62,12 @@ void* pesec_calloc(const size_t count, const size_t size)
 void* pesec_realloc(void* ptr, const size_t size)
 {
     if (!ptr) return pesec_malloc(size);
+    pesec_memory_remove(ptr);
 
     void* temp_ptr = realloc(ptr, size);
     if (!temp_ptr)
         pesec_panic("pesec::realloc: out of memory");
 
-    pesec_memory_remove(ptr);
     pesec_memory_push(temp_ptr);
     return temp_ptr;
 }

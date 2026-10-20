@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 4.3)
 project(pesec C)
 
 set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
 
 add_executable(pesec
         src/main.c

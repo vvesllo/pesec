@@ -34,12 +34,7 @@ pesec_value_t pesec_index_access_node_evaluate(const pesec_index_access_node_t* 
     const pesec_vector_value_t* vector = vector_value.data.vector;
     const int64_t index = index_value.data.i64;
 
-    if (index > vector->size && index < -vector->size)
-    {
-        pesec_panic("index_access_node::evaluate: index out of range");
-    }
-
-    return vector->items[index < 0 ? vector->size + index : index];
+    return *pesec_vector_value_get(vector, index);
 }
 
 void pesec_index_access_node_destroy(const pesec_index_access_node_t* index_access_node)
