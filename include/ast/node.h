@@ -17,6 +17,7 @@
 #include "field_access_node.h"
 #include "range_node.h"
 #include "for_node.h"
+#include "while_node.h"
 #include "control_flow_node.h"
 
 typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
@@ -39,6 +40,7 @@ typedef enum
     PESEC_NODE_TYPE_FIELD_ACCESS,
     PESEC_NODE_TYPE_RANGE,
     PESEC_NODE_TYPE_FOR,
+    PESEC_NODE_TYPE_WHILE,
     PESEC_NODE_TYPE_CONTROL_FLOW,
 } pesec_node_type_t;
 
@@ -60,6 +62,7 @@ typedef union
     pesec_field_access_node_t field_access_node;
     pesec_range_node_t range_node;
     pesec_for_node_t for_node;
+    pesec_while_node_t while_node;
     pesec_control_flow_node_t control_flow_node;
 } pesec_node_data_t;
 

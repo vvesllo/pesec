@@ -1,0 +1,7 @@
+immut a = for i in 0...10000 {
+    if i % 2 == 0 {
+        continue i * i;
+    };
+};
+
+print(a);

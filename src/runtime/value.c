@@ -1,5 +1,7 @@
 #include "include/runtime/value.h"
 
+#include <math.h>
+
 #include "include/common/panic.h"
 #include "include/runtime/vector_value.h"
 
@@ -253,6 +255,27 @@ pesec_value_t pesec_value_div(const pesec_value_t left, const pesec_value_t righ
             return pesec_value_as_i64(left.data.i64 / right.data.i64);
         case PESEC_VALUE_TYPE_F64:
             return pesec_value_as_f64(left.data.f64 / right.data.f64);
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_value_as_i64(0);
+        case PESEC_VALUE_TYPE_NONE:
+            return pesec_value_as_none();
+    }
+    pesec_panic("value::div: fuck");
+}
+
+pesec_value_t pesec_value_mod(const pesec_value_t left, const pesec_value_t right)
+{
+    if (left.type != right.type)
+        pesec_panic("value::div: both values should be same type");
+
+    switch (left.type)
+    {
+        case PESEC_VALUE_TYPE_I64:
+            return pesec_value_as_i64(left.data.i64 % right.data.i64);
+        case PESEC_VALUE_TYPE_F64:
+            return pesec_value_as_f64(fmod(left.data.f64, right.data.f64));
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:

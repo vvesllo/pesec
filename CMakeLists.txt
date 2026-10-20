@@ -23,6 +23,7 @@ add_executable(pesec
         src/ast/field_access_node.c
         src/ast/range_node.c
         src/ast/for_node.c
+        src/ast/while_node.c
         src/ast/control_flow_node.c
 
         src/frontend/token.c
@@ -43,5 +44,7 @@ add_executable(pesec
         src/runtime/vector_value.c
         src/runtime/object_value.c
 )
+
+target_link_libraries(pesec PRIVATE m)
 
 target_include_directories(pesec PRIVATE ${CMAKE_SOURCE_DIR})

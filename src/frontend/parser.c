@@ -33,6 +33,7 @@ static pesec_parser_binding_power_t pesec_parser_infix_binding_power(const pesec
             return PESEC_PARSER_BINDING_POWER_ADDITIVE;
         case PESEC_TOKEN_ASTERISK:
         case PESEC_TOKEN_SLASH:
+        case PESEC_TOKEN_PERCENT:
             return PESEC_PARSER_BINDING_POWER_MULTIPLICATIVE;
         default:
             return PESEC_PARSER_BINDING_POWER_NONE;
@@ -279,6 +280,12 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
             pesec_node_t* body = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
             return pesec_for_node_new(iterator, iterable, body);
         }
+        case PESEC_TOKEN_KEYWORD_WHILE: {
+            pesec_parser_advance(parser);
+            pesec_node_t* condition = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+            pesec_node_t* body = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+            return pesec_while_node_new(condition, body);
+        }
         default:
             pesec_panic("parser::parse_primary(%zu:%zu): unexpected token %s",
                         parser->token.line + 1,
@@ -296,6 +303,7 @@ static pesec_binary_node_operation_t pesec_parser_binary_operation_from_token(co
         case PESEC_TOKEN_MINUS: return PESEC_BINARY_NODE_OPERATION_SUB;
         case PESEC_TOKEN_ASTERISK: return PESEC_BINARY_NODE_OPERATION_MUL;
         case PESEC_TOKEN_SLASH: return PESEC_BINARY_NODE_OPERATION_DIV;
+        case PESEC_TOKEN_PERCENT: return PESEC_BINARY_NODE_OPERATION_MOD;
         case PESEC_TOKEN_EQUAL_EQUAL: return PESEC_BINARY_NODE_OPERATION_EQUAL;
         case PESEC_TOKEN_LESS_THAN: return PESEC_BINARY_NODE_OPERATION_LESS;
         case PESEC_TOKEN_LESS_EQUAL: return PESEC_BINARY_NODE_OPERATION_LESS_EQUAL;

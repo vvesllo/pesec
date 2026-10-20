@@ -30,10 +30,10 @@ pesec_value_t pesec_for_node_evaluate(
 
     const pesec_vector_value_t* iterable = iterable_value.data.vector;
 
+    pesec_vector_value_t* result_vector_value = pesec_vector_value_new();
+
     if (iterable->size > 0)
     {
-        pesec_vector_value_t* result_vector_value = pesec_vector_value_new();
-
         pesec_value_t value = pesec_value_as_none();
         for (size_t i = 0; i < iterable->size; i++)
         {
@@ -48,24 +48,27 @@ pesec_value_t pesec_for_node_evaluate(
             if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_CONTINUE)
             {
                 value.control_flow = PESEC_VALUE_CONTROL_FLOW_NONE;
-                pesec_vector_value_push(result_vector_value, value);
+                if (value.type != PESEC_VALUE_TYPE_NONE) pesec_vector_value_push(result_vector_value, value);
                 continue;
             }
-            if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_BREAK) break;
+            if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_BREAK)
+            {
+                value.control_flow = PESEC_VALUE_CONTROL_FLOW_NONE;
+                if (value.type != PESEC_VALUE_TYPE_NONE) pesec_vector_value_push(result_vector_value, value);
+                break;
+            }
             if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN) break;
             pesec_environment_destroy(local_environment);
         }
 
 
-        if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_BREAK || value.control_flow ==
-            PESEC_VALUE_CONTROL_FLOW_RETURN)
+        if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_BREAK ||
+            value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN)
         {
             return value;
         }
-
-        return pesec_value_as_vector(result_vector_value);
     }
-    return pesec_value_as_none();
+    return pesec_value_as_vector(result_vector_value);
 }
 
 void pesec_for_node_destroy(const pesec_for_node_t* for_node)

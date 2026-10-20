@@ -131,6 +131,8 @@ static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
             return pesec_token_blank(PESEC_TOKEN_ASTERISK, lexer->line, lexer->column);
         case '/': pesec_lexer_advance(lexer);
             return pesec_token_blank(PESEC_TOKEN_SLASH, lexer->line, lexer->column);
+        case '%': pesec_lexer_advance(lexer);
+            return pesec_token_blank(PESEC_TOKEN_PERCENT, lexer->line, lexer->column);
         case '=': {
             pesec_lexer_advance(lexer);
             if (pesec_lexer_peek(lexer, 0) == '=')
