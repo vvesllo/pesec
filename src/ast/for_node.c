@@ -35,9 +35,9 @@ pesec_value_t pesec_for_node_evaluate(
     if (iterable->size > 0)
     {
         pesec_value_t value = pesec_value_as_none();
+        pesec_environment_t* local_environment = pesec_environment_new(environment);
         for (size_t i = 0; i < iterable->size; i++)
         {
-            pesec_environment_t* local_environment = pesec_environment_new(environment);
             pesec_environment_push_variable(
                 local_environment,
                 for_node->iterator,
@@ -45,6 +45,9 @@ pesec_value_t pesec_for_node_evaluate(
                 false
             );
             value = pesec_node_evaluate(for_node->body, local_environment);
+
+            pesec_variable_table_reset(&local_environment->variable_table);
+
             if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_CONTINUE)
             {
                 value.control_flow = PESEC_VALUE_CONTROL_FLOW_NONE;
@@ -58,9 +61,9 @@ pesec_value_t pesec_for_node_evaluate(
                 break;
             }
             if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN) break;
-            pesec_environment_destroy(local_environment);
         }
 
+        pesec_environment_destroy(local_environment);
 
         if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_BREAK ||
             value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN)

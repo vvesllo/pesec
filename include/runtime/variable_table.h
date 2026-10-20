@@ -23,6 +23,8 @@ typedef struct
 
 pesec_variable_table_t pesec_variable_table_new();
 
+void pesec_variable_table_reset(pesec_variable_table_t* variable_table);
+
 void pesec_variable_table_push(pesec_variable_table_t* variable_table, pesec_variable_t variable);
 
 pesec_variable_t* pesec_variable_table_find(const pesec_variable_table_t* variable_table, pesec_string_view_t name);

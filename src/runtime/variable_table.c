@@ -1,5 +1,7 @@
 #include "include/runtime/variable_table.h"
 
+#include <string.h>
+
 #include "include/common/alloc.h"
 #include "include/common/panic.h"
 
@@ -28,6 +30,12 @@ pesec_variable_table_t pesec_variable_table_new()
     return variable_table;
 }
 
+void pesec_variable_table_reset(pesec_variable_table_t* variable_table)
+{
+    variable_table->size = 0;
+    memset(variable_table->occupied, 0, variable_table->capacity * sizeof(bool));
+}
+
 void pesec_variable_table_push(pesec_variable_table_t* variable_table, const pesec_variable_t variable)
 {
     const size_t hash = pesec_variable_table_hash(variable_table, variable.name);
@@ -36,22 +44,27 @@ void pesec_variable_table_push(pesec_variable_table_t* variable_table, const pes
     {
         const size_t index = (hash + probe) % variable_table->capacity;
 
-        if (pesec_string_view_equals(variable_table->items[index].name, variable.name))
-            pesec_panic("variable_table::push: variable `%.*s` already exists",
-                        variable.name.size, variable.name.data
-            );
-
         if (!variable_table->occupied[index])
         {
             variable_table->occupied[index] = true;
             variable_table->items[index] = variable;
             variable_table->size += 1;
-            break;
+            return;
         }
+
+        if (pesec_string_view_equals(variable_table->items[index].name, variable.name))
+            pesec_panic("variable_table::push: variable `%.*s` already exists",
+                        variable.name.size, variable.name.data);
     }
+
+    // TODO: resize + rehash
+    pesec_panic("variable_table::push: table is full");
 }
 
-pesec_variable_t* pesec_variable_table_find(const pesec_variable_table_t* variable_table, const pesec_string_view_t name)
+pesec_variable_t* pesec_variable_table_find(
+    const pesec_variable_table_t* variable_table,
+    const pesec_string_view_t name
+)
 {
     const size_t hash = pesec_variable_table_hash(variable_table, name);
 
@@ -60,12 +73,10 @@ pesec_variable_t* pesec_variable_table_find(const pesec_variable_table_t* variab
         const size_t index = (hash + probe) % variable_table->capacity;
 
         if (!variable_table->occupied[index])
-            continue;
+            return nullptr;
 
-        pesec_variable_t* variable = &variable_table->items[index];
-
-        if (pesec_string_view_equals(variable->name, name))
-            return variable;
+        if (pesec_string_view_equals(variable_table->items[index].name, name))
+            return &variable_table->items[index];
     }
 
     return nullptr;

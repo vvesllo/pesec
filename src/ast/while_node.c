@@ -1,5 +1,4 @@
 #include "include/ast/node.h"
-#include "include/common/panic.h"
 #include "include/runtime/environment.h"
 #include "include/runtime/vector_value.h"
 
@@ -24,9 +23,9 @@ pesec_value_t pesec_while_node_evaluate(
 {
     pesec_vector_value_t* result_vector_value = pesec_vector_value_new();
     pesec_value_t value = pesec_value_as_none();
-    while (pesec_value_is_truthy(pesec_node_evaluate(while_node->condition, environment)))
+    pesec_environment_t* local_environment = pesec_environment_new(environment);
+    while (pesec_value_is_truthy(pesec_node_evaluate(while_node->condition, local_environment)))
     {
-        pesec_environment_t* local_environment = pesec_environment_new(environment);
         value = pesec_node_evaluate(while_node->body, local_environment);
         if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_CONTINUE)
         {
@@ -41,9 +40,11 @@ pesec_value_t pesec_while_node_evaluate(
             break;
         }
         if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN) break;
-        pesec_environment_destroy(local_environment);
+
+        pesec_variable_table_reset(&local_environment->variable_table);
     }
 
+    pesec_environment_destroy(local_environment);
 
     if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_BREAK ||
         value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN)
