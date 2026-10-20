@@ -40,6 +40,21 @@ pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec
 
     pesec_environment_t* local_environment = pesec_environment_new(function->parent_environment);
 
+    if (call_node->callee->type == PESEC_NODE_TYPE_FIELD_ACCESS)
+    {
+        const pesec_value_t self_value = pesec_node_evaluate(
+            call_node->callee->data.field_access_node.object,
+            local_environment
+        );
+
+        pesec_environment_push_variable(
+            local_environment,
+            pesec_string_view_from("self"),
+            self_value,
+            true
+        );
+    }
+
     for (size_t i = 0; i < call_node->args.size; i++)
     {
         const pesec_value_t arg_value = pesec_node_evaluate(call_node->args.items[i], environment);
@@ -61,7 +76,7 @@ pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec
         return result_value;
     }
 
-    return pesec_value_none();
+    return pesec_value_as_none();
 }
 
 void pesec_call_node_destroy(const pesec_call_node_t* call_node)

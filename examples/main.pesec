@@ -1,5 +1,18 @@
-immut v = vector {
+mut v = vector {
     1, 2, 3
 };
-v.push_back(4);
+
 print(v);
+v[1] = 69;
+print(v);
+
+immut o = object {
+    mut a = 0;
+    immut f = fn() {
+        self.a = self.a + 1;
+    };
+};
+
+print(o.a);
+o.f();
+print(o.a);

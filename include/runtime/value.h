@@ -10,6 +10,7 @@ typedef struct PESEC_VALUE_STRUCT pesec_value_t;
 typedef struct PESEC_FUNCTION_VALUE_STRUCT pesec_function_value_t;
 typedef struct PESEC_VECTOR_VALUE_STRUCT pesec_vector_value_t;
 typedef struct PESEC_OBJECT_VALUE_STRUCT pesec_object_value_t;
+typedef struct PESEC_ITERATOR_VALUE_STRUCT pesec_iterator_value_t;
 
 
 typedef enum
@@ -48,17 +49,31 @@ typedef struct PESEC_VALUE_STRUCT
 
 void pesec_value_print(FILE* stream, pesec_value_t value);
 
-pesec_value_t pesec_value_i64(int64_t data);
+pesec_value_t pesec_value_as_i64(int64_t data);
 
-pesec_value_t pesec_value_f64(double data);
+pesec_value_t pesec_value_as_f64(double data);
 
-pesec_value_t pesec_value_function(pesec_function_value_t* data);
+pesec_value_t pesec_value_as_function(pesec_function_value_t* data);
 
-pesec_value_t pesec_value_vector(pesec_vector_value_t* data);
+pesec_value_t pesec_value_as_vector(pesec_vector_value_t* data);
 
-pesec_value_t pesec_value_object(pesec_object_value_t* data);
+pesec_value_t pesec_value_as_object(pesec_object_value_t* data);
 
-pesec_value_t pesec_value_none();
+pesec_value_t pesec_value_as_none();
+
+
+pesec_value_t pesec_value_as_i64_with(int64_t data, pesec_value_control_flow_t control_flow);
+
+pesec_value_t pesec_value_as_f64_with(double data, pesec_value_control_flow_t control_flow);
+
+pesec_value_t pesec_value_as_function_with(pesec_function_value_t* data, pesec_value_control_flow_t control_flow);
+
+pesec_value_t pesec_value_as_vector_with(pesec_vector_value_t* data, pesec_value_control_flow_t control_flow);
+
+pesec_value_t pesec_value_as_object_with(pesec_object_value_t* data, pesec_value_control_flow_t control_flow);
+
+pesec_value_t pesec_value_as_none_with(pesec_value_control_flow_t control_flow);
+
 
 bool pesec_value_is_truthy(pesec_value_t value);
 

@@ -31,7 +31,7 @@ pesec_value_t pesec_object_node_evaluate(const pesec_object_node_t* object_node,
         pesec_object_value_push(object_value, definition->name, value, definition->immutable);
     }
 
-    return pesec_value_object(object_value);
+    return pesec_value_as_object(object_value);
 }
 
 void pesec_object_node_destroy(const pesec_object_node_t* object_node)

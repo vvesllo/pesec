@@ -2,21 +2,22 @@
 
 #include "include/common/panic.h"
 
-pesec_token_t pesec_token_new(const pesec_token_type_t type, const pesec_token_data_t data)
+pesec_token_t pesec_token_new(const pesec_token_type_t type, const pesec_token_data_t data, const size_t line, const size_t column)
 {
     return (pesec_token_t){
         .type = type,
-        .data = data
+        .data = data,
+        .line = line,
+        .column = column,
     };
 }
 
-pesec_token_t pesec_token_blank(const pesec_token_type_t type)
+pesec_token_t pesec_token_blank(const pesec_token_type_t type, const size_t line, const size_t column)
 {
     return pesec_token_new(
         type,
-        (pesec_token_data_t){
-            .integer = 0
-        }
+        (pesec_token_data_t){0},
+        line, column
     );
 }
 

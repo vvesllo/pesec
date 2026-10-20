@@ -34,7 +34,7 @@ pesec_value_t pesec_for_node_evaluate(
     {
         pesec_vector_value_t* result_vector_value = pesec_vector_value_new();
 
-        pesec_value_t value = pesec_value_none();
+        pesec_value_t value = pesec_value_as_none();
         for (size_t i = 0; i < iterable->size; i++)
         {
             pesec_environment_t* local_environment = pesec_environment_new(environment);
@@ -63,9 +63,9 @@ pesec_value_t pesec_for_node_evaluate(
             return value;
         }
 
-        return pesec_value_vector(result_vector_value);
+        return pesec_value_as_vector(result_vector_value);
     }
-    return pesec_value_none();
+    return pesec_value_as_none();
 }
 
 void pesec_for_node_destroy(const pesec_for_node_t* for_node)

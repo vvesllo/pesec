@@ -21,7 +21,7 @@ pesec_value_t pesec_function_node_evaluate(
     pesec_environment_t* environment
 )
 {
-    return pesec_value_function(pesec_function_value_new(
+    return pesec_value_as_function(pesec_function_value_new(
             PESEC_FUNCTION_VALUE_TYPE_NODE,
             (pesec_function_value_data_t){
                 .node = function_node->body

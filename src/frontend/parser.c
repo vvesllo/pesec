@@ -59,7 +59,9 @@ static pesec_token_t pesec_parser_advance(pesec_parser_t* parser)
 static pesec_token_t pesec_parser_eat(pesec_parser_t* parser, const pesec_token_type_t type)
 {
     if (!pesec_parser_match(parser, type))
-        pesec_panic("parser::eat: unexpected token (%s but %s given)",
+        pesec_panic("parser::eat(%zu:%zu): unexpected token (%s but %s given)",
+                    parser->token.line + 1,
+                    parser->token.column,
                     pesec_token_type_to_cstr(parser->token.type),
                     pesec_token_type_to_cstr(type)
         );
@@ -126,6 +128,12 @@ static pesec_node_t* pesec_parser_parse_postfix(pesec_parser_t* parser, pesec_no
                 node = pesec_field_access_node_new(node, field);
                 break;
             }
+            case PESEC_TOKEN_EQUAL: {
+                pesec_parser_advance(parser);
+                pesec_node_t* node_value = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+                node = pesec_assignment_node_new(node, node_value);
+                break;
+            }
             default: return node;
         }
     }
@@ -142,22 +150,16 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
         }
         case PESEC_TOKEN_INTEGER: {
             return pesec_literal_node_new(
-                pesec_value_i64(pesec_parser_advance(parser).data.integer)
+                pesec_value_as_i64(pesec_parser_advance(parser).data.integer)
             );
         }
         case PESEC_TOKEN_FLOAT: {
             return pesec_literal_node_new(
-                pesec_value_f64(pesec_parser_advance(parser).data.floating)
+                pesec_value_as_f64(pesec_parser_advance(parser).data.floating)
             );
         }
         case PESEC_TOKEN_IDENTIFIER: {
             const pesec_string_view_t identifier = pesec_parser_advance(parser).data.string_view;
-            if (pesec_parser_match(parser, PESEC_TOKEN_EQUAL))
-            {
-                pesec_parser_advance(parser);
-                pesec_node_t* node_value = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
-                return pesec_assignment_node_new(identifier, node_value);
-            }
             return pesec_variable_node_new(identifier);
         }
         case PESEC_TOKEN_LPAREN: {
@@ -278,15 +280,17 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
             return pesec_for_node_new(iterator, iterable, body);
         }
         default:
-            pesec_panic("parser::parse_primary: unexpected token %s",
+            pesec_panic("parser::parse_primary(%zu:%zu): unexpected token %s",
+                        parser->token.line + 1,
+                        parser->token.column,
                         pesec_token_type_to_cstr(parser->token.type)
             );
     }
 }
 
-static pesec_binary_node_operation_t pesec_parser_binary_operation_from_token(const pesec_token_type_t type)
+static pesec_binary_node_operation_t pesec_parser_binary_operation_from_token(const pesec_token_t token)
 {
-    switch (type)
+    switch (token.type)
     {
         case PESEC_TOKEN_PLUS: return PESEC_BINARY_NODE_OPERATION_ADD;
         case PESEC_TOKEN_MINUS: return PESEC_BINARY_NODE_OPERATION_SUB;
@@ -298,8 +302,10 @@ static pesec_binary_node_operation_t pesec_parser_binary_operation_from_token(co
         case PESEC_TOKEN_GREATER_THAN: return PESEC_BINARY_NODE_OPERATION_GREATER;
         case PESEC_TOKEN_GREATER_EQUAL: return PESEC_BINARY_NODE_OPERATION_GREATER_EQUAL;
         default:
-            pesec_panic("parser::binary_operation_from_token: unexpected token %s",
-                        pesec_token_type_to_cstr(type));
+            pesec_panic("parser::binary_operation_from_token(%zu:%zu): unexpected token %s",
+                        token.line + 1,
+                        token.column,
+                        pesec_token_type_to_cstr(token.type));
     }
 }
 
@@ -335,7 +341,7 @@ static pesec_node_t* pesec_parser_parse_expression(
 
         pesec_node_t* right = pesec_parser_parse_expression(parser, right_binding_power);
 
-        const pesec_binary_node_operation_t operation = pesec_parser_binary_operation_from_token(operator_token.type);
+        const pesec_binary_node_operation_t operation = pesec_parser_binary_operation_from_token(operator_token);
 
         left = pesec_binary_node_new(operation, left, right);
     }

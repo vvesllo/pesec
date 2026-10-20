@@ -8,6 +8,8 @@ typedef struct
 {
     pesec_string_view_t source;
     size_t i;
+    size_t line;
+    size_t column;
 } pesec_lexer_t;
 
 pesec_lexer_t pesec_lexer_new(pesec_string_view_t source);

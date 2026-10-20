@@ -29,6 +29,16 @@ void pesec_vector_value_push(pesec_vector_value_t* vector_value, pesec_value_t v
     vector_value->size += 1;
 }
 
+void pesec_vector_value_set(const pesec_vector_value_t* vector_value, const int64_t index, const pesec_value_t value)
+{
+    vector_value->items[index] = value;
+}
+
+pesec_value_t* pesec_vector_value_get(const pesec_vector_value_t* vector_value, const int64_t index)
+{
+    return &vector_value->items[index];
+}
+
 void pesec_vector_value_destroy(const pesec_vector_value_t* vector_value)
 {
     pesec_free(vector_value->items);
@@ -39,7 +49,7 @@ static pesec_value_t pesec_vector_value_method_size(
     pesec_environment_t* environment
 )
 {
-    pesec_value_t size = pesec_value_i64((int64_t)self->data.vector->size);
+    pesec_value_t size = pesec_value_as_i64((int64_t)self->data.vector->size);
     size.control_flow = PESEC_VALUE_CONTROL_FLOW_RETURN;
     return size;
 }
@@ -57,7 +67,7 @@ static pesec_value_t pesec_vector_value_method_push_back(
         pesec_panic("vector::push_back: missing `value` argument");
 
     pesec_vector_value_push(self->data.vector, variable->value);
-    return pesec_value_none();
+    return pesec_value_as_none();
 }
 
 pesec_value_t pesec_vector_value_method_handler(
@@ -67,7 +77,7 @@ pesec_value_t pesec_vector_value_method_handler(
 )
 {
     if (pesec_string_view_equals_cstr(field, "size"))
-        return pesec_value_function(pesec_function_value_new(
+        return pesec_value_as_function(pesec_function_value_new(
             PESEC_FUNCTION_VALUE_TYPE_METHOD,
             (pesec_function_value_data_t){
                 .method.self = *self,
@@ -75,9 +85,9 @@ pesec_value_t pesec_vector_value_method_handler(
             },
             pesec_parameter_vector_new(),
             environment
-        ));
+            ));
     if (pesec_string_view_equals_cstr(field, "push_back"))
-        return pesec_value_function(pesec_function_value_new(
+        return pesec_value_as_function(pesec_function_value_new(
             PESEC_FUNCTION_VALUE_TYPE_METHOD,
             (pesec_function_value_data_t){
                 .method.self = *self,

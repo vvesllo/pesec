@@ -16,7 +16,7 @@ pesec_node_t* pesec_control_flow_node_new(pesec_node_t* value, const pesec_value
 
 pesec_value_t pesec_control_flow_node_evaluate(const pesec_control_flow_node_t* control_flow_node, pesec_environment_t* environment)
 {
-    pesec_value_t value = pesec_value_none();
+    pesec_value_t value = pesec_value_as_none();
     if (control_flow_node->value)
     {
         value = pesec_node_evaluate(control_flow_node->value, environment);

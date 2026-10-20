@@ -8,6 +8,7 @@
 static void pesec_lexer_advance(pesec_lexer_t* lexer)
 {
     lexer->i += 1;
+    lexer->column += 1;
 }
 
 static bool pesec_lexer_can_advance(const pesec_lexer_t* lexer)
@@ -64,14 +65,18 @@ static pesec_token_t pesec_lexer_next_numeric(pesec_lexer_t* lexer)
             PESEC_TOKEN_FLOAT,
             (pesec_token_data_t){
                 .floating = value,
-            }
+            },
+            lexer->line,
+            lexer->column
         );
 
     return pesec_token_new(
         PESEC_TOKEN_INTEGER,
         (pesec_token_data_t){
             .integer = (int64_t)integer_part
-        }
+        },
+        lexer->line,
+        lexer->column
     );
 }
 
@@ -108,7 +113,9 @@ static pesec_token_t pesec_lexer_next_identifier(pesec_lexer_t* lexer)
         type,
         (pesec_token_data_t){
             .string_view = value
-        }
+        },
+        lexer->line,
+        lexer->column
     );
 }
 
@@ -117,42 +124,42 @@ static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
     switch (pesec_lexer_peek(lexer, 0))
     {
         case '+': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_PLUS);
+            return pesec_token_blank(PESEC_TOKEN_PLUS, lexer->line, lexer->column);
         case '-': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_MINUS);
+            return pesec_token_blank(PESEC_TOKEN_MINUS, lexer->line, lexer->column);
         case '*': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_ASTERISK);
+            return pesec_token_blank(PESEC_TOKEN_ASTERISK, lexer->line, lexer->column);
         case '/': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_SLASH);
+            return pesec_token_blank(PESEC_TOKEN_SLASH, lexer->line, lexer->column);
         case '=': {
             pesec_lexer_advance(lexer);
             if (pesec_lexer_peek(lexer, 0) == '=')
             {
                 pesec_lexer_advance(lexer);
-                return pesec_token_blank(PESEC_TOKEN_EQUAL_EQUAL);
+                return pesec_token_blank(PESEC_TOKEN_EQUAL_EQUAL, lexer->line, lexer->column);
             }
-            return pesec_token_blank(PESEC_TOKEN_EQUAL);
+            return pesec_token_blank(PESEC_TOKEN_EQUAL, lexer->line, lexer->column);
         }
         case '<': {
             pesec_lexer_advance(lexer);
             if (pesec_lexer_peek(lexer, 0) == '=')
             {
                 pesec_lexer_advance(lexer);
-                return pesec_token_blank(PESEC_TOKEN_LESS_EQUAL);
+                return pesec_token_blank(PESEC_TOKEN_LESS_EQUAL, lexer->line, lexer->column);
             }
-            return pesec_token_blank(PESEC_TOKEN_LESS_THAN);
+            return pesec_token_blank(PESEC_TOKEN_LESS_THAN, lexer->line, lexer->column);
         }
         case '>': {
             pesec_lexer_advance(lexer);
             if (pesec_lexer_peek(lexer, 0) == '=')
             {
                 pesec_lexer_advance(lexer);
-                return pesec_token_blank(PESEC_TOKEN_GREATER_EQUAL);
+                return pesec_token_blank(PESEC_TOKEN_GREATER_EQUAL, lexer->line, lexer->column);
             }
-            return pesec_token_blank(PESEC_TOKEN_GREATER_THAN);
+            return pesec_token_blank(PESEC_TOKEN_GREATER_THAN, lexer->line, lexer->column);
         }
         case ',': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_COMMA);
+            return pesec_token_blank(PESEC_TOKEN_COMMA, lexer->line, lexer->column);
         case '.': {
             pesec_lexer_advance(lexer);
             if (pesec_lexer_peek(lexer, 0) == '.')
@@ -161,30 +168,30 @@ static pesec_token_t pesec_lexer_next_operator(pesec_lexer_t* lexer)
                 if (pesec_lexer_peek(lexer, 0) == '.')
                 {
                     pesec_lexer_advance(lexer);
-                    return pesec_token_blank(PESEC_TOKEN_DOT_DOT_DOT);
+                    return pesec_token_blank(PESEC_TOKEN_DOT_DOT_DOT, lexer->line, lexer->column);
                 }
-                return pesec_token_blank(PESEC_TOKEN_DOT_DOT);
+                return pesec_token_blank(PESEC_TOKEN_DOT_DOT, lexer->line, lexer->column);
             }
-            return pesec_token_blank(PESEC_TOKEN_DOT);
+            return pesec_token_blank(PESEC_TOKEN_DOT, lexer->line, lexer->column);
         }
         case ';': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_SEMICOLON);
+            return pesec_token_blank(PESEC_TOKEN_SEMICOLON, lexer->line, lexer->column);
         case ':': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_COLON);
+            return pesec_token_blank(PESEC_TOKEN_COLON, lexer->line, lexer->column);
         case '?': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_QUESTION_MARK);
+            return pesec_token_blank(PESEC_TOKEN_QUESTION_MARK, lexer->line, lexer->column);
         case '(': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_LPAREN);
+            return pesec_token_blank(PESEC_TOKEN_LPAREN, lexer->line, lexer->column);
         case ')': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_RPAREN);
+            return pesec_token_blank(PESEC_TOKEN_RPAREN, lexer->line, lexer->column);
         case '{': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_LBRACE);
+            return pesec_token_blank(PESEC_TOKEN_LBRACE, lexer->line, lexer->column);
         case '}': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_RBRACE);
+            return pesec_token_blank(PESEC_TOKEN_RBRACE, lexer->line, lexer->column);
         case '[': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_LBRACKET);
+            return pesec_token_blank(PESEC_TOKEN_LBRACKET, lexer->line, lexer->column);
         case ']': pesec_lexer_advance(lexer);
-            return pesec_token_blank(PESEC_TOKEN_RBRACKET);
+            return pesec_token_blank(PESEC_TOKEN_RBRACKET, lexer->line, lexer->column);
         default: pesec_panic("lexer::next_operator: unknown character `%c`", pesec_lexer_peek(lexer, 0));
     }
 }
@@ -193,17 +200,26 @@ pesec_lexer_t pesec_lexer_new(const pesec_string_view_t source)
 {
     return (pesec_lexer_t){
         .source = source,
-        .i = 0
+        .i = 0,
+        .line = 0,
+        .column = 0,
     };
 }
 
 pesec_token_t pesec_lexer_next(pesec_lexer_t* lexer)
 {
     while (pesec_lexer_can_advance(lexer) && isspace(pesec_lexer_peek(lexer, 0)))
+    {
+        if (pesec_lexer_peek(lexer, 0) == '\n')
+        {
+            lexer->column = 0;
+            lexer->line += 1;
+        }
         pesec_lexer_advance(lexer);
+    }
 
     if (!pesec_lexer_can_advance(lexer))
-        return pesec_token_blank(PESEC_TOKEN_EOF);
+        return pesec_token_blank(PESEC_TOKEN_EOF, lexer->line, lexer->column);
 
     const char current = pesec_lexer_peek(lexer, 0);
     if (isdigit(current)) return pesec_lexer_next_numeric(lexer);

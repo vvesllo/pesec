@@ -4,10 +4,10 @@
 #include "include/runtime/object_value.h"
 #include "include/runtime/vector_value.h"
 
-pesec_node_t* pesec_field_access_node_new(pesec_node_t* target, pesec_string_view_t field)
+pesec_node_t* pesec_field_access_node_new(pesec_node_t* object, pesec_string_view_t field)
 {
     const auto field_access_node = (pesec_field_access_node_t){
-        .target = target,
+        .object = object,
         .field = field,
     };
     return pesec_node_new(
@@ -23,7 +23,7 @@ pesec_value_t pesec_field_access_node_evaluate(
     pesec_environment_t* environment
 )
 {
-    pesec_value_t value = pesec_node_evaluate(field_access_node->target, environment);
+    pesec_value_t value = pesec_node_evaluate(field_access_node->object, environment);
 
     switch (value.type)
     {
@@ -38,5 +38,5 @@ pesec_value_t pesec_field_access_node_evaluate(
 
 void pesec_field_access_node_destroy(const pesec_field_access_node_t* field_access_node)
 {
-    pesec_node_destroy(field_access_node->target);
+    pesec_node_destroy(field_access_node->object);
 }

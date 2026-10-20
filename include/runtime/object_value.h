@@ -16,9 +16,15 @@ pesec_object_value_t* pesec_object_value_new();
 
 void pesec_object_value_push(
     const pesec_object_value_t* object_value,
-    pesec_string_view_t name,
+    pesec_string_view_t field,
     pesec_value_t value,
     bool immutable
+);
+
+void pesec_object_value_set(
+    const pesec_object_value_t* object_value,
+    pesec_string_view_t field,
+    pesec_value_t value
 );
 
 pesec_variable_t* pesec_object_value_get(const pesec_object_value_t* object_value, pesec_string_view_t field);

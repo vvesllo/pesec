@@ -18,7 +18,7 @@ static pesec_value_t print_function(pesec_environment_t* environment)
     );
     pesec_value_print(stdout, printable->value);
     printf("\n");
-    return pesec_value_i64(0);
+    return pesec_value_as_i64(0);
 }
 
 /*
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     pesec_environment_push_variable(
         global_environment,
         pesec_string_view_from("print"),
-        pesec_value_function(pesec_function_value_new(
+        pesec_value_as_function(pesec_function_value_new(
             PESEC_FUNCTION_VALUE_TYPE_NATIVE,
             (pesec_function_value_data_t){.native = print_function},
             pesec_parameter_vector_from(

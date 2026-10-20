@@ -73,11 +73,13 @@ typedef struct
 {
     pesec_token_type_t type;
     pesec_token_data_t data;
+    size_t line;
+    size_t column;
 } pesec_token_t;
 
-pesec_token_t pesec_token_new(pesec_token_type_t type, pesec_token_data_t data);
+pesec_token_t pesec_token_new(pesec_token_type_t type, pesec_token_data_t data, size_t line, size_t column);
 
-pesec_token_t pesec_token_blank(pesec_token_type_t type);
+pesec_token_t pesec_token_blank(pesec_token_type_t type, size_t line, size_t column);
 
 const char* pesec_token_type_to_cstr(pesec_token_type_t type);
 

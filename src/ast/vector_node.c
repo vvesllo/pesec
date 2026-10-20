@@ -25,7 +25,7 @@ pesec_value_t pesec_vector_node_evaluate(const pesec_vector_node_t* vector_node,
         pesec_vector_value_push(vector_value, value);
     }
 
-    return pesec_value_vector(vector_value);
+    return pesec_value_as_vector(vector_value);
 }
 
 void pesec_vector_node_destroy(const pesec_vector_node_t* vector_node)

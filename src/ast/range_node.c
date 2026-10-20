@@ -38,18 +38,18 @@ pesec_value_t pesec_range_node_evaluate(const pesec_range_node_t* range_node, pe
     {
         for (int64_t i = begin_i64; i < end_i64 + range_node->contains; i++)
         {
-            pesec_vector_value_push(vector_value, pesec_value_i64(i));
+            pesec_vector_value_push(vector_value, pesec_value_as_i64(i));
         }
     }
     else
     {
         for (int64_t i = begin_i64; i > end_i64 - range_node->contains; i--)
         {
-            pesec_vector_value_push(vector_value, pesec_value_i64(i));
+            pesec_vector_value_push(vector_value, pesec_value_as_i64(i));
         }
     }
 
-    return pesec_value_vector(vector_value);
+    return pesec_value_as_vector(vector_value);
 }
 
 void pesec_range_node_destroy(const pesec_range_node_t* range_node)

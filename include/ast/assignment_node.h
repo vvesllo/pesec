@@ -8,11 +8,11 @@ typedef struct PESEC_NODE_STRUCT pesec_node_t;
 
 typedef struct
 {
-    pesec_string_view_t name;
+    pesec_node_t* target;
     pesec_node_t* node_value;
 } pesec_assignment_node_t;
 
-pesec_node_t* pesec_assignment_node_new(pesec_string_view_t name, pesec_node_t* node_value);
+pesec_node_t* pesec_assignment_node_new(pesec_node_t* target, pesec_node_t* node_value);
 
 pesec_value_t pesec_assignment_node_evaluate(const pesec_assignment_node_t* assignment_node, pesec_environment_t* environment);
 

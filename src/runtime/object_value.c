@@ -15,12 +15,21 @@ pesec_object_value_t* pesec_object_value_new()
 
 void pesec_object_value_push(
     const pesec_object_value_t* object_value,
-    const pesec_string_view_t name,
+    const pesec_string_view_t field,
     const pesec_value_t value,
     const bool immutable
 )
 {
-    pesec_environment_push_variable(object_value->environment, name, value, immutable);
+    pesec_environment_push_variable(object_value->environment, field, value, immutable);
+}
+
+void pesec_object_value_set(
+    const pesec_object_value_t* object_value,
+    const pesec_string_view_t field,
+    const pesec_value_t value
+)
+{
+    pesec_environment_set_variable(object_value->environment, field, value);
 }
 
 pesec_variable_t* pesec_object_value_get(const pesec_object_value_t* object_value, const pesec_string_view_t field)
