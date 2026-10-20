@@ -30,13 +30,18 @@ pesec_value_t pesec_conditional_node_evaluate(
 {
     const pesec_value_t condition_value = pesec_node_evaluate(conditional_node->condition, environment);
 
+    pesec_environment_t* local_environment = pesec_environment_new(environment);
+
+    pesec_value_t result_value = pesec_value_as_none();
+
     if (pesec_value_is_truthy(condition_value))
-        return pesec_node_evaluate(conditional_node->then_body, environment);
+        result_value = pesec_node_evaluate(conditional_node->then_body, local_environment);
+    else if (conditional_node->else_body)
+        result_value = pesec_node_evaluate(conditional_node->else_body, local_environment);
 
-    if (conditional_node->else_body)
-        return pesec_node_evaluate(conditional_node->else_body, environment);
+    pesec_environment_destroy(local_environment);
 
-    return pesec_value_as_none();
+    return result_value;
 }
 
 void pesec_conditional_node_destroy(const pesec_conditional_node_t* conditional_node)

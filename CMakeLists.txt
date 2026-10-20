@@ -44,6 +44,7 @@ add_executable(pesec
         src/runtime/function_value.c
         src/runtime/vector_value.c
         src/runtime/object_value.c
+        src/runtime/string_value.c
 )
 
 target_link_libraries(pesec PRIVATE m)

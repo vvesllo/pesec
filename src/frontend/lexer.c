@@ -19,7 +19,7 @@ static bool pesec_lexer_can_advance(const pesec_lexer_t* lexer)
 static char pesec_lexer_peek(const pesec_lexer_t* lexer, const size_t offset)
 {
     if (lexer->i + offset >= lexer->source.size)
-        pesec_panic("lexer::peek: eof reached");
+        return '\0';
 
     return lexer->source.data[lexer->i + offset];
 }
@@ -47,11 +47,12 @@ static pesec_token_t pesec_lexer_next_numeric(pesec_lexer_t* lexer)
             continue;
         }
 
+        const unsigned char digit = (char)(curr_char - '0');
         if (!has_dot)
-            integer_part = integer_part * 10 + (curr_char - '0');
+            integer_part = integer_part * 10 + digit;
         else
         {
-            fraction_part += (curr_char - '0') / divisor;
+            fraction_part += digit / divisor;
             divisor *= 10;
         }
 
@@ -111,6 +112,31 @@ static pesec_token_t pesec_lexer_next_identifier(pesec_lexer_t* lexer)
 
     return pesec_token_new(
         type,
+        (pesec_token_data_t){
+            .string_view = value
+        },
+        lexer->line,
+        lexer->column
+    );
+}
+static pesec_token_t pesec_lexer_next_string(pesec_lexer_t* lexer, const char quotation_mark)
+{
+    pesec_lexer_advance(lexer);
+    const size_t begin = lexer->i;
+    while (pesec_lexer_can_advance(lexer) && pesec_lexer_peek(lexer, 0) != quotation_mark)
+    {
+        pesec_lexer_advance(lexer);
+    }
+
+    const pesec_string_view_t value = pesec_string_view_new(
+        lexer->source.data + begin,
+        lexer->i - begin
+    );
+
+    pesec_lexer_advance(lexer);
+
+    return pesec_token_new(
+        PESEC_TOKEN_STRING,
         (pesec_token_data_t){
             .string_view = value
         },
@@ -226,5 +252,6 @@ pesec_token_t pesec_lexer_next(pesec_lexer_t* lexer)
     const char current = pesec_lexer_peek(lexer, 0);
     if (isdigit(current)) return pesec_lexer_next_numeric(lexer);
     if (isalpha(current)) return pesec_lexer_next_identifier(lexer);
+    if (current == '"' || current == '\'' || current == '`') return pesec_lexer_next_string(lexer, current);
     return pesec_lexer_next_operator(lexer);
 }

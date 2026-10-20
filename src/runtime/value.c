@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "include/common/panic.h"
+#include "include/runtime/string_value.h"
 #include "include/runtime/vector_value.h"
 
 void pesec_value_print(FILE* stream, const pesec_value_t value)
@@ -34,6 +35,11 @@ void pesec_value_print(FILE* stream, const pesec_value_t value)
             fprintf(stream, "}");
             break;
         }
+        case PESEC_VALUE_TYPE_STRING:
+            fprintf(stream, "%s",
+                    value.data.string->is_heap ? value.data.string->items.heap : value.data.string->items._inline
+            );
+            break;
     }
 }
 
@@ -73,6 +79,11 @@ pesec_value_t pesec_value_as_vector(pesec_vector_value_t* data)
 pesec_value_t pesec_value_as_object(pesec_object_value_t* data)
 {
     return pesec_value_as_object_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
+}
+
+pesec_value_t pesec_value_as_string(pesec_string_value_t* data)
+{
+    return pesec_value_as_string_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
 }
 
 pesec_value_t pesec_value_as_none()
@@ -136,6 +147,17 @@ pesec_value_t pesec_value_as_object_with(pesec_object_value_t* data, const pesec
     );
 }
 
+pesec_value_t pesec_value_as_string_with(pesec_string_value_t* data, const pesec_value_control_flow_t control_flow)
+{
+    return pesec_value_new(
+        PESEC_VALUE_TYPE_STRING,
+        (pesec_value_data_t){
+            .string = data
+        },
+        control_flow
+    );
+}
+
 pesec_value_t pesec_value_as_none_with(const pesec_value_control_flow_t control_flow)
 {
     return pesec_value_new(
@@ -154,6 +176,7 @@ bool pesec_value_is_truthy(const pesec_value_t value)
         case PESEC_VALUE_TYPE_I64: return value.data.i64 != 0;
         case PESEC_VALUE_TYPE_F64: return value.data.f64 != 0;
         case PESEC_VALUE_TYPE_VECTOR: return value.data.vector->size != 0;
+        case PESEC_VALUE_TYPE_STRING: return value.data.string->size != 0;
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT: return true;
     }
@@ -177,6 +200,8 @@ pesec_value_t pesec_value_negative(const pesec_value_t value)
             pesec_panic("value::negative: object value can't be negatived");
         case PESEC_VALUE_TYPE_VECTOR:
             pesec_panic("value::negative: vector value can't be negatived");
+        case PESEC_VALUE_TYPE_STRING:
+            pesec_panic("value::negative: string value can't be negatived");
     }
     pesec_panic("value::negative: fuck");
 }
@@ -195,6 +220,7 @@ pesec_value_t pesec_value_add(const pesec_value_t left, const pesec_value_t righ
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
+        case PESEC_VALUE_TYPE_STRING:
             return pesec_value_as_i64(0);
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
@@ -216,6 +242,7 @@ pesec_value_t pesec_value_sub(const pesec_value_t left, const pesec_value_t righ
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
+        case PESEC_VALUE_TYPE_STRING:
             return pesec_value_as_i64(0);
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
@@ -237,6 +264,7 @@ pesec_value_t pesec_value_mul(const pesec_value_t left, const pesec_value_t righ
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
+        case PESEC_VALUE_TYPE_STRING:
             return pesec_value_as_i64(0);
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
@@ -258,6 +286,7 @@ pesec_value_t pesec_value_div(const pesec_value_t left, const pesec_value_t righ
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
+        case PESEC_VALUE_TYPE_STRING:
             return pesec_value_as_i64(0);
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
@@ -279,6 +308,7 @@ pesec_value_t pesec_value_mod(const pesec_value_t left, const pesec_value_t righ
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
+        case PESEC_VALUE_TYPE_STRING:
             return pesec_value_as_i64(0);
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
@@ -300,6 +330,7 @@ pesec_value_t pesec_value_equal(const pesec_value_t left, const pesec_value_t ri
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
+        case PESEC_VALUE_TYPE_STRING:
             return pesec_value_as_i64(0);
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
@@ -321,6 +352,7 @@ pesec_value_t pesec_value_less(const pesec_value_t left, const pesec_value_t rig
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
+        case PESEC_VALUE_TYPE_STRING:
             return pesec_value_as_i64(0);
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
@@ -342,6 +374,7 @@ pesec_value_t pesec_value_less_equal(const pesec_value_t left, const pesec_value
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
+        case PESEC_VALUE_TYPE_STRING:
             return pesec_value_as_i64(0);
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
@@ -363,6 +396,7 @@ pesec_value_t pesec_value_greater(const pesec_value_t left, const pesec_value_t 
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
+        case PESEC_VALUE_TYPE_STRING:
             return pesec_value_as_i64(0);
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
@@ -384,6 +418,7 @@ pesec_value_t pesec_value_greater_equal(const pesec_value_t left, const pesec_va
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT:
         case PESEC_VALUE_TYPE_VECTOR:
+        case PESEC_VALUE_TYPE_STRING:
             return pesec_value_as_i64(0);
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();

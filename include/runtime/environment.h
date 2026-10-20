@@ -9,7 +9,7 @@ typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
 typedef struct PESEC_ENVIRONMENT_STRUCT
 {
     pesec_environment_t* parent;
-    pesec_variable_table_t variable_table;
+    pesec_variable_table_t* variable_table;
 } pesec_environment_t;
 
 pesec_environment_t* pesec_environment_new(pesec_environment_t* parent);
@@ -25,7 +25,7 @@ void pesec_environment_set_variable(
 );
 
 void pesec_environment_push_variable(
-    pesec_environment_t* environment,
+    const pesec_environment_t* environment,
     pesec_string_view_t name,
     pesec_value_t value,
     bool immutable

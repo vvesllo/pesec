@@ -46,7 +46,7 @@ pesec_value_t pesec_for_node_evaluate(
             );
             value = pesec_node_evaluate(for_node->body, local_environment);
 
-            pesec_variable_table_reset(&local_environment->variable_table);
+            pesec_variable_table_reset(local_environment->variable_table);
 
             if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_CONTINUE)
             {

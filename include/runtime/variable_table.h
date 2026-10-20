@@ -4,7 +4,7 @@
 #include "value.h"
 #include "include/common/string_view.h"
 
-constexpr size_t PESEC_VARIABLE_TABLE_ITEMS_INLINE_SIZE = 8;
+constexpr size_t PESEC_VARIABLE_TABLE_ITEMS_INLINE_SIZE = 32;
 
 typedef struct PESEC_ENVIRONMENT_STRUCT pesec_environment_t;
 
@@ -32,7 +32,7 @@ typedef struct
     } occupied;
 } pesec_variable_table_t;
 
-pesec_variable_table_t pesec_variable_table_new();
+pesec_variable_table_t* pesec_variable_table_new();
 
 void pesec_variable_table_reset(pesec_variable_table_t* variable_table);
 
@@ -40,6 +40,6 @@ void pesec_variable_table_push(pesec_variable_table_t* variable_table, pesec_var
 
 pesec_variable_t* pesec_variable_table_find(const pesec_variable_table_t* variable_table, pesec_string_view_t name);
 
-void pesec_variable_table_destroy(const pesec_variable_table_t* variable_table);
+void pesec_variable_table_destroy(pesec_variable_table_t* variable_table);
 
 #endif // PESEC_VARIABLE_TABLE_H

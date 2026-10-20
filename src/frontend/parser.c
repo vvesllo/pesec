@@ -3,6 +3,7 @@
 #include "include/common/node_vector.h"
 #include "include/common/panic.h"
 #include "include/common/parameter_vector.h"
+#include "include/runtime/string_value.h"
 
 
 typedef enum
@@ -152,6 +153,11 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
         case PESEC_TOKEN_INTEGER: {
             return pesec_literal_node_new(
                 pesec_value_as_i64(pesec_parser_advance(parser).data.integer)
+            );
+        }
+        case PESEC_TOKEN_STRING: {
+            return pesec_literal_node_new(
+                pesec_value_as_string(pesec_string_value_from(pesec_parser_advance(parser).data.string_view))
             );
         }
         case PESEC_TOKEN_FLOAT: {

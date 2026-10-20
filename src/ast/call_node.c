@@ -44,7 +44,7 @@ pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec
     {
         const pesec_value_t self_value = pesec_node_evaluate(
             call_node->callee->data.field_access_node.object,
-            local_environment
+            environment
         );
 
         pesec_environment_push_variable(

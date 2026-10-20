@@ -10,6 +10,7 @@ typedef struct PESEC_VALUE_STRUCT pesec_value_t;
 typedef struct PESEC_FUNCTION_VALUE_STRUCT pesec_function_value_t;
 typedef struct PESEC_VECTOR_VALUE_STRUCT pesec_vector_value_t;
 typedef struct PESEC_OBJECT_VALUE_STRUCT pesec_object_value_t;
+typedef struct PESEC_STRING_VALUE_STRUCT pesec_string_value_t;
 typedef struct PESEC_ITERATOR_VALUE_STRUCT pesec_iterator_value_t;
 
 
@@ -21,6 +22,7 @@ typedef enum
     PESEC_VALUE_TYPE_FUNCTION,
     PESEC_VALUE_TYPE_VECTOR,
     PESEC_VALUE_TYPE_OBJECT,
+    PESEC_VALUE_TYPE_STRING,
 } pesec_value_type_t;
 
 typedef enum
@@ -38,6 +40,7 @@ typedef union
     pesec_function_value_t* function;
     pesec_vector_value_t* vector;
     pesec_object_value_t* object;
+    pesec_string_value_t* string;
 } pesec_value_data_t;
 
 typedef struct PESEC_VALUE_STRUCT
@@ -59,6 +62,8 @@ pesec_value_t pesec_value_as_vector(pesec_vector_value_t* data);
 
 pesec_value_t pesec_value_as_object(pesec_object_value_t* data);
 
+pesec_value_t pesec_value_as_string(pesec_string_value_t* data);
+
 pesec_value_t pesec_value_as_none();
 
 
@@ -71,6 +76,8 @@ pesec_value_t pesec_value_as_function_with(pesec_function_value_t* data, pesec_v
 pesec_value_t pesec_value_as_vector_with(pesec_vector_value_t* data, pesec_value_control_flow_t control_flow);
 
 pesec_value_t pesec_value_as_object_with(pesec_object_value_t* data, pesec_value_control_flow_t control_flow);
+
+pesec_value_t pesec_value_as_string_with(pesec_string_value_t* data, pesec_value_control_flow_t control_flow);
 
 pesec_value_t pesec_value_as_none_with(pesec_value_control_flow_t control_flow);
 

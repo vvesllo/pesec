@@ -8,14 +8,22 @@
 
 static size_t pesec_variable_table_hash(const pesec_variable_table_t* variable_table, const pesec_string_view_t name)
 {
-    size_t hash = 5381;
-    for (size_t i = 0; i < name.size; i++)
+    size_t hash = 0xcbf29ce484222325ULL;
+    for (size_t i = 0; i + 8 <= name.size; i += 8)
     {
-        hash += (hash << 5) + (unsigned char)name.data[i];
-        hash &= 0xFFFFFFFF;
+        size_t chunk;
+        memcpy(&chunk, name.data + i, 8);
+        hash ^= chunk;
+        hash *= 0x100000001b3ULL;
     }
 
-    return hash % variable_table->capacity;
+    for (size_t i = 0; i < name.size; i++)
+    {
+        hash ^= (unsigned char)name.data[i];
+        hash *= 0x100000001b3ULL;
+    }
+
+    return hash & (variable_table->capacity - 1);
 }
 
 static pesec_variable_t* pesec_variable_table_get_items(pesec_variable_table_t* variable_table)
@@ -65,7 +73,7 @@ static void pesec_variable_table_rehash(pesec_variable_table_t* variable_table)
 
         for (size_t probe = 0; probe < new_capacity; probe++)
         {
-            const size_t index = (hash + probe) % new_capacity;
+            const size_t index = (hash + probe) & (new_capacity - 1);
             if (!new_occupied[index])
             {
                 new_occupied[index] = true;
@@ -91,14 +99,14 @@ static void pesec_variable_table_rehash(pesec_variable_table_t* variable_table)
     variable_table->size = new_size;
 }
 
-pesec_variable_table_t pesec_variable_table_new()
+pesec_variable_table_t* pesec_variable_table_new()
 {
-    pesec_variable_table_t variable_table;
+    const auto variable_table = (pesec_variable_table_t*)pesec_malloc(sizeof(pesec_variable_table_t));
 
-    variable_table.is_heap = false;
-    variable_table.size = 0;
-    variable_table.capacity = PESEC_VARIABLE_TABLE_ITEMS_INLINE_SIZE;
-    memset(variable_table.occupied._inline, 0, sizeof(variable_table.occupied._inline));
+    variable_table->is_heap = false;
+    variable_table->size = 0;
+    variable_table->capacity = PESEC_VARIABLE_TABLE_ITEMS_INLINE_SIZE;
+    memset(variable_table->occupied._inline, 0, sizeof(variable_table->occupied._inline));
 
     return variable_table;
 }
@@ -112,24 +120,23 @@ void pesec_variable_table_reset(pesec_variable_table_t* variable_table)
 
 void pesec_variable_table_push(pesec_variable_table_t* variable_table, const pesec_variable_t variable)
 {
+    if ((variable_table->size + 1) * 4 >= variable_table->capacity * 3)
+        pesec_variable_table_rehash(variable_table);
+
     const size_t hash = pesec_variable_table_hash(variable_table, variable.name);
+    const size_t mask = variable_table->capacity - 1;
 
     pesec_variable_t* items = pesec_variable_table_get_items(variable_table);
     bool* occupied = pesec_variable_table_get_occupied(variable_table);
 
     for (size_t probe = 0; probe < variable_table->capacity; probe++)
     {
-        const size_t index = (hash + probe) % variable_table->capacity;
-
+        const size_t index = (hash + probe) & mask;
         if (!occupied[index])
         {
             occupied[index] = true;
             items[index] = variable;
             variable_table->size += 1;
-
-            if (variable_table->size * 4 >= variable_table->capacity * 3)
-                pesec_variable_table_rehash(variable_table);
-
             return;
         }
 
@@ -138,8 +145,7 @@ void pesec_variable_table_push(pesec_variable_table_t* variable_table, const pes
                         variable.name.size, variable.name.data);
     }
 
-    pesec_variable_table_rehash(variable_table);
-    pesec_variable_table_push(variable_table, variable);
+    pesec_panic("variable_table::push: table full after rehash (should not happen)");
 }
 
 pesec_variable_t* pesec_variable_table_find(
@@ -154,8 +160,7 @@ pesec_variable_t* pesec_variable_table_find(
 
     for (size_t probe = 0; probe < variable_table->capacity; probe++)
     {
-        const size_t index = (hash + probe) % variable_table->capacity;
-
+        const size_t index = (hash + probe) & (variable_table->capacity - 1);
         if (!occupied[index])
             return nullptr;
 
@@ -166,11 +171,12 @@ pesec_variable_t* pesec_variable_table_find(
     return nullptr;
 }
 
-void pesec_variable_table_destroy(const pesec_variable_table_t* variable_table)
+void pesec_variable_table_destroy(pesec_variable_table_t* variable_table)
 {
     if (variable_table->is_heap)
     {
         pesec_free(variable_table->items.heap);
         pesec_free(variable_table->occupied.heap);
     }
+    pesec_free(variable_table);
 }
