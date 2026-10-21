@@ -7,15 +7,6 @@
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
 
-static char* pesec_string_value_get_items(pesec_string_value_t* string_value)
-{
-    return string_value->is_heap ? string_value->items.heap : string_value->items._inline;
-}
-
-static const char* pesec_string_value_get_items_const(const pesec_string_value_t* string_value)
-{
-    return string_value->is_heap ? string_value->items.heap : string_value->items._inline;
-}
 
 static void pesec_string_value_reserve(pesec_string_value_t* string_value, const size_t min_capacity)
 {
@@ -58,6 +49,16 @@ pesec_string_value_t* pesec_string_value_from(const pesec_string_view_t string_v
     pesec_string_value_t* string_value = pesec_string_value_new();
     pesec_string_value_append(string_value, string_view);
     return string_value;
+}
+
+char* pesec_string_value_get_items(pesec_string_value_t* string_value)
+{
+    return string_value->is_heap ? string_value->items.heap : string_value->items._inline;
+}
+
+const char* pesec_string_value_get_items_const(const pesec_string_value_t* string_value)
+{
+    return string_value->is_heap ? string_value->items.heap : string_value->items._inline;
 }
 
 void pesec_string_value_push(pesec_string_value_t* string_value, const char c)
@@ -165,4 +166,7 @@ pesec_value_t pesec_string_value_method_handler(
             ),
             environment
         ));
+
+    pesec_panic("field_access_node::evaluate: field `%.*s` is not exists in object",
+                field.size, field.data);
 }

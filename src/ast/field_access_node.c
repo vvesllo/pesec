@@ -2,6 +2,7 @@
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
 #include "include/runtime/object_value.h"
+#include "include/runtime/string_value.h"
 #include "include/runtime/vector_value.h"
 
 pesec_node_t* pesec_field_access_node_new(pesec_node_t* object, pesec_string_view_t field)
@@ -31,6 +32,8 @@ pesec_value_t pesec_field_access_node_evaluate(
             return pesec_vector_value_method_handler(&value, field_access_node->field, environment);
         case PESEC_VALUE_TYPE_OBJECT:
             return pesec_object_value_method_handler(&value, field_access_node->field, environment);
+        case PESEC_VALUE_TYPE_STRING:
+            return pesec_string_value_method_handler(&value, field_access_node->field, environment);
         default:
             pesec_panic("field_access_node::evaluate: can't get field from non object value");
     }

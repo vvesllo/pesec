@@ -20,6 +20,10 @@ pesec_string_value_t* pesec_string_value_new();
 
 pesec_string_value_t* pesec_string_value_from(pesec_string_view_t string_view);
 
+char* pesec_string_value_get_items(pesec_string_value_t* string_value);
+
+const char* pesec_string_value_get_items_const(const pesec_string_value_t* string_value);
+
 void pesec_string_value_push(pesec_string_value_t* string_value, char c);
 
 void pesec_string_value_append(pesec_string_value_t* string_value, pesec_string_view_t string_view);

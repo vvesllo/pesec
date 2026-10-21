@@ -48,6 +48,7 @@ typedef struct PESEC_VALUE_STRUCT
     pesec_value_type_t type;
     pesec_value_data_t data;
     pesec_value_control_flow_t control_flow;
+    int64_t reference_count;
 } pesec_value_t;
 
 void pesec_value_print(FILE* stream, pesec_value_t value);
@@ -81,6 +82,9 @@ pesec_value_t pesec_value_as_string_with(pesec_string_value_t* data, pesec_value
 
 pesec_value_t pesec_value_as_none_with(pesec_value_control_flow_t control_flow);
 
+void pesec_value_increase_reference(pesec_value_t* value);
+
+void pesec_value_decrease_reference(pesec_value_t* value);
 
 bool pesec_value_is_truthy(pesec_value_t value);
 

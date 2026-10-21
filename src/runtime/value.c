@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "include/common/panic.h"
+#include "include/runtime/object_value.h"
 #include "include/runtime/string_value.h"
 #include "include/runtime/vector_value.h"
 
@@ -36,9 +37,7 @@ void pesec_value_print(FILE* stream, const pesec_value_t value)
             break;
         }
         case PESEC_VALUE_TYPE_STRING:
-            fprintf(stream, "%s",
-                    value.data.string->is_heap ? value.data.string->items.heap : value.data.string->items._inline
-            );
+            fprintf(stream, "%s", pesec_string_value_get_items_const(value.data.string));
             break;
     }
 }
@@ -53,7 +52,31 @@ static pesec_value_t pesec_value_new(
         .type = type,
         .data = data,
         .control_flow = control_flow,
+        .reference_count = 1
     };
+}
+
+static void pesec_value_destroy(pesec_value_t* value)
+{
+    switch (value->type)
+    {
+        case PESEC_VALUE_TYPE_NONE:
+        case PESEC_VALUE_TYPE_I64:
+        case PESEC_VALUE_TYPE_F64:
+            break;
+        case PESEC_VALUE_TYPE_FUNCTION:
+            pesec_function_value_destroy(value->data.function);
+            break;
+        case PESEC_VALUE_TYPE_VECTOR:
+            pesec_vector_value_destroy(value->data.vector);
+            break;
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_object_value_destroy(value->data.object);
+            break;
+        case PESEC_VALUE_TYPE_STRING:
+            pesec_string_value_destroy(value->data.string);
+            break;
+    }
 }
 
 pesec_value_t pesec_value_as_i64(const int64_t data)
@@ -167,6 +190,17 @@ pesec_value_t pesec_value_as_none_with(const pesec_value_control_flow_t control_
     );
 }
 
+void pesec_value_increase_reference(pesec_value_t* value)
+{
+    value->reference_count += 1;
+}
+
+void pesec_value_decrease_reference(pesec_value_t* value)
+{
+    value->reference_count -= 1;
+    if (value->reference_count <= 0)
+        pesec_value_destroy(value);
+}
 
 bool pesec_value_is_truthy(const pesec_value_t value)
 {
