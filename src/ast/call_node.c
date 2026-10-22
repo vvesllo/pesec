@@ -81,5 +81,6 @@ pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec
 
 void pesec_call_node_destroy(const pesec_call_node_t* call_node)
 {
-    // nothing to do
+    pesec_node_destroy(call_node->callee);
+    pesec_node_vector_destroy(&call_node->args);
 }

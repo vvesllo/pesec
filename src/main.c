@@ -9,6 +9,7 @@
 
 #include "include/runtime/environment.h"
 #include "include/runtime/function_value.h"
+#include "include/runtime/integer_value.h"
 
 
 static pesec_value_t print_function(pesec_environment_t* environment)
@@ -18,19 +19,25 @@ static pesec_value_t print_function(pesec_environment_t* environment)
         pesec_string_view_from("value")
     );
     pesec_value_print(stdout, printable->value);
-    return pesec_value_as_i64(0);
+    return pesec_value_as_integer(pesec_integer_value_new(0));
 }
 
 static pesec_value_t println_function(pesec_environment_t* environment)
 {
     print_function(environment);
     printf("\n");
-    return pesec_value_as_i64(0);
+    return pesec_value_as_integer(pesec_integer_value_new(0));
 }
 
-int main(int argc, char** argv)
+static void pesec_print_help()
+{
+    printf("help\n");
+}
+
+int main(const int argc, char** argv)
 {
     const clock_t start = clock();
+    if (argc < 2) pesec_print_help();
     const pesec_string_view_t source = pesec_file_read(argv[1]);
     pesec_lexer_t lexer = pesec_lexer_new(source);
     pesec_parser_t parser = pesec_parser_new(&lexer);

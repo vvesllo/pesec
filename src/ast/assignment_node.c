@@ -1,6 +1,7 @@
 #include "include/ast/node.h"
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
+#include "include/runtime/integer_value.h"
 #include "include/runtime/object_value.h"
 #include "include/runtime/vector_value.h"
 
@@ -64,12 +65,12 @@ pesec_value_t pesec_assignment_node_evaluate(
                 environment
             );
 
-            if (index_value.type != PESEC_VALUE_TYPE_I64)
-                pesec_panic("assignment_node::evaluate: index should be an i64");
+            if (index_value.type != PESEC_VALUE_TYPE_INTEGER)
+                pesec_panic("assignment_node::evaluate: index should be an integer");
 
             pesec_vector_value_set(
                 vector_value.data.vector,
-                index_value.data.i64,
+                index_value.data.integer,
                 value
             );
             break;

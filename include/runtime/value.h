@@ -11,14 +11,16 @@ typedef struct PESEC_FUNCTION_VALUE_STRUCT pesec_function_value_t;
 typedef struct PESEC_VECTOR_VALUE_STRUCT pesec_vector_value_t;
 typedef struct PESEC_OBJECT_VALUE_STRUCT pesec_object_value_t;
 typedef struct PESEC_STRING_VALUE_STRUCT pesec_string_value_t;
-typedef struct PESEC_ITERATOR_VALUE_STRUCT pesec_iterator_value_t;
+typedef struct PESEC_INTEGER_VALUE_STRUCT pesec_integer_value_t;
+typedef struct PESEC_FLOATING_VALUE_STRUCT pesec_floating_value_t;
 
 
 typedef enum
 {
     PESEC_VALUE_TYPE_NONE,
-    PESEC_VALUE_TYPE_I64,
-    PESEC_VALUE_TYPE_F64,
+    PESEC_VALUE_TYPE_BOOLEAN,
+    PESEC_VALUE_TYPE_INTEGER,
+    PESEC_VALUE_TYPE_FLOATING,
     PESEC_VALUE_TYPE_FUNCTION,
     PESEC_VALUE_TYPE_VECTOR,
     PESEC_VALUE_TYPE_OBJECT,
@@ -35,8 +37,9 @@ typedef enum
 
 typedef union
 {
-    int64_t i64;
-    double f64;
+    bool boolean;
+    pesec_integer_value_t* integer;
+    pesec_floating_value_t* floating;
     pesec_function_value_t* function;
     pesec_vector_value_t* vector;
     pesec_object_value_t* object;
@@ -53,9 +56,11 @@ typedef struct PESEC_VALUE_STRUCT
 
 void pesec_value_print(FILE* stream, pesec_value_t value);
 
-pesec_value_t pesec_value_as_i64(int64_t data);
+pesec_value_t pesec_value_as_boolean(bool data);
 
-pesec_value_t pesec_value_as_f64(double data);
+pesec_value_t pesec_value_as_integer(pesec_integer_value_t* data);
+
+pesec_value_t pesec_value_as_floating(pesec_floating_value_t* data);
 
 pesec_value_t pesec_value_as_function(pesec_function_value_t* data);
 
@@ -68,9 +73,11 @@ pesec_value_t pesec_value_as_string(pesec_string_value_t* data);
 pesec_value_t pesec_value_as_none();
 
 
-pesec_value_t pesec_value_as_i64_with(int64_t data, pesec_value_control_flow_t control_flow);
+pesec_value_t pesec_value_as_boolean_with(bool data, pesec_value_control_flow_t control_flow);
 
-pesec_value_t pesec_value_as_f64_with(double data, pesec_value_control_flow_t control_flow);
+pesec_value_t pesec_value_as_integer_with(pesec_integer_value_t* data, pesec_value_control_flow_t control_flow);
+
+pesec_value_t pesec_value_as_floating_with(pesec_floating_value_t* data, pesec_value_control_flow_t control_flow);
 
 pesec_value_t pesec_value_as_function_with(pesec_function_value_t* data, pesec_value_control_flow_t control_flow);
 
@@ -82,11 +89,14 @@ pesec_value_t pesec_value_as_string_with(pesec_string_value_t* data, pesec_value
 
 pesec_value_t pesec_value_as_none_with(pesec_value_control_flow_t control_flow);
 
+
 void pesec_value_increase_reference(pesec_value_t* value);
 
 void pesec_value_decrease_reference(pesec_value_t* value);
 
+
 bool pesec_value_is_truthy(pesec_value_t value);
+
 
 pesec_value_t pesec_value_negative(pesec_value_t value);
 

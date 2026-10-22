@@ -48,6 +48,11 @@ void pesec_object_value_destroy(const pesec_object_value_t* object_value)
     pesec_environment_destroy(object_value->environment);
 }
 
+void pesec_object_value_print(FILE* stream, const pesec_object_value_t* object_value)
+{
+    fprintf(stream, "<object:%p>", object_value);
+}
+
 pesec_value_t pesec_object_value_method_handler(
     const pesec_value_t* self,
     const pesec_string_view_t field,

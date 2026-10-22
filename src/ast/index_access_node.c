@@ -26,15 +26,14 @@ pesec_value_t pesec_index_access_node_evaluate(const pesec_index_access_node_t* 
     {
         pesec_panic("index_access_node::evaluate: can't get index from non vector value");
     }
-    if (index_value.type != PESEC_VALUE_TYPE_I64)
+    if (index_value.type != PESEC_VALUE_TYPE_INTEGER)
     {
-        pesec_panic("index_access_node::evaluate: index should be an i64");
+        pesec_panic("index_access_node::evaluate: index should be an integer");
     }
 
     const pesec_vector_value_t* vector = vector_value.data.vector;
-    const int64_t index = index_value.data.i64;
 
-    return *pesec_vector_value_get(vector, index);
+    return *pesec_vector_value_get(vector, index_value.data.integer);
 }
 
 void pesec_index_access_node_destroy(const pesec_index_access_node_t* index_access_node)

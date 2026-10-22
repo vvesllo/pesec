@@ -6,6 +6,7 @@
 #include "include/common/alloc.h"
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
+#include "include/runtime/integer_value.h"
 
 
 static void pesec_string_value_reserve(pesec_string_value_t* string_value, const size_t min_capacity)
@@ -30,6 +31,22 @@ static void pesec_string_value_reserve(pesec_string_value_t* string_value, const
     }
 
     string_value->capacity = new_capacity;
+}
+
+static int pesec_string_value_compare(const pesec_string_value_t* left, const pesec_string_value_t* right)
+{
+    const char* left_items = pesec_string_value_get_items_const(left);
+    const char* right_items = pesec_string_value_get_items_const(right);
+
+    const size_t min_size = left->size < right->size ? left->size : right->size;
+    const int cmp = memcmp(left_items, right_items, min_size);
+
+    if (cmp < 0) return -1;
+    if (cmp > 0) return 1;
+
+    if (left->size < right->size) return -1;
+    if (left->size > right->size) return 1;
+    return 0;
 }
 
 pesec_string_value_t* pesec_string_value_new()
@@ -91,12 +108,109 @@ void pesec_string_value_destroy(pesec_string_value_t* string_value)
     pesec_free(string_value);
 }
 
+void pesec_string_value_print(FILE* stream, const pesec_string_value_t* string_value)
+{
+    fprintf(stream, "%s", pesec_string_value_get_items_const(string_value));
+}
+
+bool pesec_string_value_is_truthy(const pesec_string_value_t* string_value)
+{
+    return string_value->size > 0;
+}
+
+pesec_value_t pesec_string_value_negative(const pesec_string_value_t* string_value)
+{
+    (void)string_value;
+    pesec_panic("string_value::negative: unsupported");
+}
+
+pesec_value_t pesec_string_value_add(const pesec_string_value_t* left, const pesec_value_t right)
+{
+    if (right.type != PESEC_VALUE_TYPE_STRING)
+        pesec_panic("string_value::add: right operand must be string");
+
+    const pesec_string_value_t* right_string = right.data.string;
+    pesec_string_value_t* result = pesec_string_value_new();
+
+    pesec_string_value_append(
+        result,
+        pesec_string_view_new(pesec_string_value_get_items_const(left), left->size)
+    );
+
+    pesec_string_value_append(
+        result,
+        pesec_string_view_new(pesec_string_value_get_items_const(right_string), right_string->size)
+    );
+
+    return pesec_value_as_string(result);
+}
+
+pesec_value_t pesec_string_value_sub(const pesec_string_value_t* left, const pesec_value_t right)
+{
+    pesec_panic("string_value::sub: unsupported");
+}
+
+pesec_value_t pesec_string_value_mul(const pesec_string_value_t* left, const pesec_value_t right)
+{
+    pesec_panic("string_value::mul: unsupported");
+}
+
+pesec_value_t pesec_string_value_div(const pesec_string_value_t* left, const pesec_value_t right)
+{
+    pesec_panic("string_value::div: unsupported");
+}
+
+pesec_value_t pesec_string_value_mod(const pesec_string_value_t* left, const pesec_value_t right)
+{
+    pesec_panic("string_value::mod: unsupported");
+}
+
+bool pesec_string_value_equal(const pesec_string_value_t* left, const pesec_value_t right)
+{
+    if (right.type != PESEC_VALUE_TYPE_STRING)
+        pesec_panic("string_value::equal: right operand must be string");
+
+    return pesec_string_value_compare(left, right.data.string) == 0;
+}
+
+bool pesec_string_value_less(const pesec_string_value_t* left, const pesec_value_t right)
+{
+    if (right.type != PESEC_VALUE_TYPE_STRING)
+        pesec_panic("string_value::less: right operand must be string");
+
+    return pesec_string_value_compare(left, right.data.string) < 0;
+}
+
+bool pesec_string_value_less_equal(const pesec_string_value_t* left, const pesec_value_t right)
+{
+    if (right.type != PESEC_VALUE_TYPE_STRING)
+        pesec_panic("string_value::less_equal: right operand must be string");
+
+    return pesec_string_value_compare(left, right.data.string) <= 0;
+}
+
+bool pesec_string_value_greater(const pesec_string_value_t* left, const pesec_value_t right)
+{
+    if (right.type != PESEC_VALUE_TYPE_STRING)
+        pesec_panic("string_value::greater: right operand must be string");
+
+    return pesec_string_value_compare(left, right.data.string) > 0;
+}
+
+bool pesec_string_value_greater_equal(const pesec_string_value_t* left, const pesec_value_t right)
+{
+    if (right.type != PESEC_VALUE_TYPE_STRING)
+        pesec_panic("string_value::greater_equal: right operand must be string");
+
+    return pesec_string_value_compare(left, right.data.string) >= 0;
+}
+
 static pesec_value_t pesec_string_value_method_size(
     pesec_value_t* self,
     pesec_environment_t* environment
 )
 {
-    pesec_value_t size = pesec_value_as_i64((int64_t)self->data.string->size);
+    pesec_value_t size = pesec_value_as_integer(pesec_integer_value_new((int64_t)self->data.string->size));
     size.control_flow = PESEC_VALUE_CONTROL_FLOW_RETURN;
     return size;
 }
@@ -123,12 +237,8 @@ static pesec_value_t pesec_string_value_method_push_back(
             );
             break;
         }
-        case PESEC_VALUE_TYPE_I64: {
-            pesec_string_value_push(self->data.string, (char)variable->value.data.i64);
-            break;
-        }
         default:
-            pesec_panic("string::push_back: `value` should be a string or i64");
+            pesec_panic("string::push_back: `value` should be a string or integer");
     }
 
     return pesec_value_as_none();

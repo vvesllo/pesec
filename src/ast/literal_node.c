@@ -18,5 +18,4 @@ pesec_value_t pesec_literal_node_evaluate(const pesec_literal_node_t* literal_no
 
 void pesec_literal_node_destroy(const pesec_literal_node_t* literal_node)
 {
-    // nothing to do
 }

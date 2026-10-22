@@ -34,3 +34,8 @@ void pesec_function_value_destroy(pesec_function_value_t* function_value)
 {
     pesec_free(function_value);
 }
+
+void pesec_function_value_print(FILE* stream, const pesec_function_value_t* function_value)
+{
+    fprintf(stream, "<function:%p>", function_value);
+}

@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 4.3)
 project(pesec C)
 
 set(CMAKE_C_STANDARD 23)
-set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Werror -fsanitize=undefined -fsanitize=address")
 
 add_executable(pesec
         src/main.c
@@ -45,8 +46,11 @@ add_executable(pesec
         src/runtime/vector_value.c
         src/runtime/object_value.c
         src/runtime/string_value.c
+        src/runtime/integer_value.c
+        src/runtime/floating_value.c
 )
 
 target_link_libraries(pesec PRIVATE m)
+target_link_options(pesec BEFORE PUBLIC -fsanitize=undefined PUBLIC -fsanitize=address)
 
 target_include_directories(pesec PRIVATE ${CMAKE_SOURCE_DIR})
