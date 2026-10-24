@@ -31,6 +31,8 @@ pesec_variable_t* pesec_object_value_get(const pesec_object_value_t* object_valu
 
 void pesec_object_value_destroy(const pesec_object_value_t* object_value);
 
+void pesec_object_value_print(FILE* stream, const pesec_object_value_t* object_value);
+
 pesec_value_t pesec_object_value_method_handler(
     const pesec_value_t* self,
     pesec_string_view_t field,

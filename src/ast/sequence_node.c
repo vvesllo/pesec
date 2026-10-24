@@ -1,5 +1,6 @@
 #include "include/ast/node.h"
 #include "include/runtime/environment.h"
+#include "include/runtime/integer_value.h"
 
 pesec_node_t* pesec_sequence_node_new(const pesec_node_vector_t node_vector)
 {
@@ -21,7 +22,7 @@ pesec_value_t pesec_sequence_node_evaluate(
 {
     const pesec_node_vector_t* node_vector = &sequence_node->node_vector;
     pesec_environment_t* local_environment = pesec_environment_new(environment);
-    pesec_value_t value = pesec_value_as_i64(0);
+    pesec_value_t value = pesec_value_as_integer(pesec_integer_value_new(0));
 
     for (size_t i=0; i < node_vector->size; i++)
     {

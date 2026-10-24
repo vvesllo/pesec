@@ -3,44 +3,12 @@
 #include <math.h>
 
 #include "include/common/panic.h"
+#include "include/runtime/integer_value.h"
+#include "include/runtime/floating_value.h"
+#include "include/runtime/function_value.h"
 #include "include/runtime/object_value.h"
 #include "include/runtime/string_value.h"
 #include "include/runtime/vector_value.h"
-
-void pesec_value_print(FILE* stream, const pesec_value_t value)
-{
-    switch (value.type)
-    {
-        case PESEC_VALUE_TYPE_NONE:
-            fprintf(stream, "<fucking-nothing>");
-            break;
-        case PESEC_VALUE_TYPE_I64:
-            fprintf(stream, "%" PRIi64, value.data.i64);
-            break;
-        case PESEC_VALUE_TYPE_F64:
-            fprintf(stream, "%lf", value.data.f64);
-            break;
-        case PESEC_VALUE_TYPE_FUNCTION:
-            fprintf(stream, "<function>");
-            break;
-        case PESEC_VALUE_TYPE_OBJECT:
-            fprintf(stream, "<object>");
-            break;
-        case PESEC_VALUE_TYPE_VECTOR: {
-            fprintf(stream, "{");
-            for (size_t i = 0; i < value.data.vector->size; i++)
-            {
-                if (i > 0) fprintf(stream, ", ");
-                pesec_value_print(stream, value.data.vector->items[i]);
-            }
-            fprintf(stream, "}");
-            break;
-        }
-        case PESEC_VALUE_TYPE_STRING:
-            fprintf(stream, "%s", pesec_string_value_get_items_const(value.data.string));
-            break;
-    }
-}
 
 static pesec_value_t pesec_value_new(
     const pesec_value_type_t type,
@@ -56,13 +24,18 @@ static pesec_value_t pesec_value_new(
     };
 }
 
-static void pesec_value_destroy(pesec_value_t* value)
+static void pesec_value_destroy(const pesec_value_t* value)
 {
     switch (value->type)
     {
         case PESEC_VALUE_TYPE_NONE:
-        case PESEC_VALUE_TYPE_I64:
-        case PESEC_VALUE_TYPE_F64:
+        case PESEC_VALUE_TYPE_BOOLEAN:
+            break;
+        case PESEC_VALUE_TYPE_INTEGER:
+            pesec_integer_value_destroy(value->data.integer);
+            break;
+        case PESEC_VALUE_TYPE_FLOATING:
+            pesec_floating_value_destroy(value->data.floating);
             break;
         case PESEC_VALUE_TYPE_FUNCTION:
             pesec_function_value_destroy(value->data.function);
@@ -79,14 +52,51 @@ static void pesec_value_destroy(pesec_value_t* value)
     }
 }
 
-pesec_value_t pesec_value_as_i64(const int64_t data)
+void pesec_value_print(FILE* stream, const pesec_value_t value)
 {
-    return pesec_value_as_i64_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
+    switch (value.type)
+    {
+        case PESEC_VALUE_TYPE_NONE:
+            fprintf(stream, "<none>");
+            break;
+        case PESEC_VALUE_TYPE_BOOLEAN:
+            fprintf(stream, value.data.boolean ? "true" : "false");
+            break;
+        case PESEC_VALUE_TYPE_INTEGER:
+            pesec_integer_value_print(stream, value.data.integer);
+            break;
+        case PESEC_VALUE_TYPE_FLOATING:
+            pesec_floating_value_print(stream, value.data.floating);
+            break;
+        case PESEC_VALUE_TYPE_FUNCTION:
+            pesec_function_value_print(stream, value.data.function);
+            break;
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_object_value_print(stream, value.data.object);
+            break;
+        case PESEC_VALUE_TYPE_STRING:
+            pesec_string_value_print(stream, value.data.string);
+            break;
+        case PESEC_VALUE_TYPE_VECTOR: {
+            pesec_vector_value_print(stream, value.data.vector);
+            break;
+        }
+    }
 }
 
-pesec_value_t pesec_value_as_f64(const double data)
+pesec_value_t pesec_value_as_boolean(const bool data)
 {
-    return pesec_value_as_f64_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
+    return pesec_value_as_boolean_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
+}
+
+pesec_value_t pesec_value_as_integer(pesec_integer_value_t* data)
+{
+    return pesec_value_as_integer_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
+}
+
+pesec_value_t pesec_value_as_floating(pesec_floating_value_t* data)
+{
+    return pesec_value_as_floating_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
 }
 
 pesec_value_t pesec_value_as_function(pesec_function_value_t* data)
@@ -115,23 +125,34 @@ pesec_value_t pesec_value_as_none()
 }
 
 
-pesec_value_t pesec_value_as_i64_with(const int64_t data, const pesec_value_control_flow_t control_flow)
+pesec_value_t pesec_value_as_boolean_with(const bool data, const pesec_value_control_flow_t control_flow)
 {
     return pesec_value_new(
-        PESEC_VALUE_TYPE_I64,
+        PESEC_VALUE_TYPE_BOOLEAN,
         (pesec_value_data_t){
-            .i64 = data
+            .boolean = data
         },
         control_flow
     );
 }
 
-pesec_value_t pesec_value_as_f64_with(const double data, const pesec_value_control_flow_t control_flow)
+pesec_value_t pesec_value_as_integer_with(pesec_integer_value_t* data, const pesec_value_control_flow_t control_flow)
 {
     return pesec_value_new(
-        PESEC_VALUE_TYPE_F64,
+        PESEC_VALUE_TYPE_INTEGER,
         (pesec_value_data_t){
-            .f64 = data
+            .integer = data
+        },
+        control_flow
+    );
+}
+
+pesec_value_t pesec_value_as_floating_with(pesec_floating_value_t* data, const pesec_value_control_flow_t control_flow)
+{
+    return pesec_value_new(
+        PESEC_VALUE_TYPE_FLOATING,
+        (pesec_value_data_t){
+            .floating = data
         },
         control_flow
     );
@@ -207,10 +228,11 @@ bool pesec_value_is_truthy(const pesec_value_t value)
     switch (value.type)
     {
         case PESEC_VALUE_TYPE_NONE: return false;
-        case PESEC_VALUE_TYPE_I64: return value.data.i64 != 0;
-        case PESEC_VALUE_TYPE_F64: return value.data.f64 != 0;
-        case PESEC_VALUE_TYPE_VECTOR: return value.data.vector->size != 0;
-        case PESEC_VALUE_TYPE_STRING: return value.data.string->size != 0;
+        case PESEC_VALUE_TYPE_BOOLEAN: return value.data.boolean;
+        case PESEC_VALUE_TYPE_INTEGER: return pesec_integer_value_is_truthy(value.data.integer);
+        case PESEC_VALUE_TYPE_FLOATING: return pesec_floating_value_is_truthy(value.data.floating);
+        case PESEC_VALUE_TYPE_VECTOR: return pesec_vector_value_is_truthy(value.data.vector);
+        case PESEC_VALUE_TYPE_STRING: return pesec_string_value_is_truthy(value.data.string);
         case PESEC_VALUE_TYPE_FUNCTION:
         case PESEC_VALUE_TYPE_OBJECT: return true;
     }
@@ -222,240 +244,251 @@ pesec_value_t pesec_value_negative(const pesec_value_t value)
 {
     switch (value.type)
     {
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_integer_value_negative(value.data.integer);
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_floating_value_negative(value.data.floating);
+        case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_vector_value_negative(value.data.vector);
+        case PESEC_VALUE_TYPE_STRING:
+            return pesec_string_value_negative(value.data.string);
         case PESEC_VALUE_TYPE_NONE:
             pesec_panic("value::negative: none value can't be negatived");
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(-value.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(-value.data.f64);
+        case PESEC_VALUE_TYPE_BOOLEAN:
         case PESEC_VALUE_TYPE_FUNCTION:
-            pesec_panic("value::negative: function value can't be negatived");
         case PESEC_VALUE_TYPE_OBJECT:
-            pesec_panic("value::negative: object value can't be negatived");
-        case PESEC_VALUE_TYPE_VECTOR:
-            pesec_panic("value::negative: vector value can't be negatived");
-        case PESEC_VALUE_TYPE_STRING:
-            pesec_panic("value::negative: string value can't be negatived");
+            pesec_panic("value::negative: unsupported value type");
     }
+
     pesec_panic("value::negative: fuck");
 }
 
 pesec_value_t pesec_value_add(const pesec_value_t left, const pesec_value_t right)
 {
-    if (left.type != right.type)
-        pesec_panic("value::add: both values should be same type");
-
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(left.data.i64 + right.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(left.data.f64 + right.data.f64);
-        case PESEC_VALUE_TYPE_FUNCTION:
-        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_integer_value_add(left.data.integer, right);
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_floating_value_add(left.data.floating, right);
         case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_vector_value_add(left.data.vector, right);
         case PESEC_VALUE_TYPE_STRING:
-            return pesec_value_as_i64(0);
+            return pesec_string_value_add(left.data.string, right);
+        case PESEC_VALUE_TYPE_BOOLEAN:
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_panic("value::add: unsupported value type");
     }
+
     pesec_panic("value::add: fuck");
 }
 
 pesec_value_t pesec_value_sub(const pesec_value_t left, const pesec_value_t right)
 {
-    if (left.type != right.type)
-        pesec_panic("value::sub: both values should be same type");
-
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(left.data.i64 - right.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(left.data.f64 - right.data.f64);
-        case PESEC_VALUE_TYPE_FUNCTION:
-        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_integer_value_sub(left.data.integer, right);
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_floating_value_sub(left.data.floating, right);
         case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_vector_value_sub(left.data.vector, right);
         case PESEC_VALUE_TYPE_STRING:
-            return pesec_value_as_i64(0);
+            return pesec_string_value_sub(left.data.string, right);
+        case PESEC_VALUE_TYPE_BOOLEAN:
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_panic("value::sub: unsupported value type");
     }
+
     pesec_panic("value::sub: fuck");
 }
 
 pesec_value_t pesec_value_mul(const pesec_value_t left, const pesec_value_t right)
 {
-    if (left.type != right.type)
-        pesec_panic("value::mul: both values should be same type");
-
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(left.data.i64 * right.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(left.data.f64 * right.data.f64);
-        case PESEC_VALUE_TYPE_FUNCTION:
-        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_integer_value_mul(left.data.integer, right);
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_floating_value_mul(left.data.floating, right);
         case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_vector_value_mul(left.data.vector, right);
         case PESEC_VALUE_TYPE_STRING:
-            return pesec_value_as_i64(0);
+            return pesec_string_value_mul(left.data.string, right);
+        case PESEC_VALUE_TYPE_BOOLEAN:
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_panic("value::mul: unsupported value type");
     }
+
     pesec_panic("value::mul: fuck");
 }
 
 pesec_value_t pesec_value_div(const pesec_value_t left, const pesec_value_t right)
 {
-    if (left.type != right.type)
-        pesec_panic("value::div: both values should be same type");
-
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(left.data.i64 / right.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(left.data.f64 / right.data.f64);
-        case PESEC_VALUE_TYPE_FUNCTION:
-        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_integer_value_div(left.data.integer, right);
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_floating_value_div(left.data.floating, right);
         case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_vector_value_div(left.data.vector, right);
         case PESEC_VALUE_TYPE_STRING:
-            return pesec_value_as_i64(0);
+            return pesec_string_value_div(left.data.string, right);
+        case PESEC_VALUE_TYPE_BOOLEAN:
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_panic("value::div: unsupported value type");
     }
+
     pesec_panic("value::div: fuck");
 }
 
 pesec_value_t pesec_value_mod(const pesec_value_t left, const pesec_value_t right)
 {
-    if (left.type != right.type)
-        pesec_panic("value::div: both values should be same type");
-
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(left.data.i64 % right.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(fmod(left.data.f64, right.data.f64));
-        case PESEC_VALUE_TYPE_FUNCTION:
-        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_integer_value_mod(left.data.integer, right);
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_floating_value_mod(left.data.floating, right);
         case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_vector_value_mod(left.data.vector, right);
         case PESEC_VALUE_TYPE_STRING:
-            return pesec_value_as_i64(0);
+            return pesec_string_value_mod(left.data.string, right);
+        case PESEC_VALUE_TYPE_BOOLEAN:
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_panic("value::mod: unsupported value type");
     }
-    pesec_panic("value::div: fuck");
+
+    pesec_panic("value::mod: fuck");
 }
 
 pesec_value_t pesec_value_equal(const pesec_value_t left, const pesec_value_t right)
 {
-    if (left.type != right.type)
-        pesec_panic("value::equal: both values should be same type");
-
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(left.data.i64 == right.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(left.data.f64 == right.data.f64);
-        case PESEC_VALUE_TYPE_FUNCTION:
-        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_value_as_boolean(pesec_integer_value_equal(left.data.integer, right));
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_value_as_boolean(pesec_floating_value_equal(left.data.floating, right));
         case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_value_as_boolean(pesec_vector_value_equal(left.data.vector, right));
         case PESEC_VALUE_TYPE_STRING:
-            return pesec_value_as_i64(0);
+            return pesec_value_as_boolean(pesec_string_value_equal(left.data.string, right));
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
+        case PESEC_VALUE_TYPE_BOOLEAN:
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_panic("value::equal: unsupported value type");
     }
+
     pesec_panic("value::equal: fuck");
 }
 
 pesec_value_t pesec_value_less(const pesec_value_t left, const pesec_value_t right)
 {
-    if (left.type != right.type)
-        pesec_panic("value::less: both values should be same type");
-
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(left.data.i64 < right.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(left.data.f64 < right.data.f64);
-        case PESEC_VALUE_TYPE_FUNCTION:
-        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_value_as_boolean(pesec_integer_value_less(left.data.integer, right));
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_value_as_boolean(pesec_floating_value_less(left.data.floating, right));
         case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_value_as_boolean(pesec_vector_value_less(left.data.vector, right));
         case PESEC_VALUE_TYPE_STRING:
-            return pesec_value_as_i64(0);
+            return pesec_value_as_boolean(pesec_string_value_less(left.data.string, right));
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
+        case PESEC_VALUE_TYPE_BOOLEAN:
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_panic("value::less: unsupported value type");
     }
+
     pesec_panic("value::less: fuck");
 }
 
 pesec_value_t pesec_value_less_equal(const pesec_value_t left, const pesec_value_t right)
 {
-    if (left.type != right.type)
-        pesec_panic("value::less_equal: both values should be same type");
-
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(left.data.i64 <= right.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(left.data.f64 <= right.data.f64);
-        case PESEC_VALUE_TYPE_FUNCTION:
-        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_value_as_boolean(pesec_integer_value_less_equal(left.data.integer, right));
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_value_as_boolean(pesec_floating_value_less_equal(left.data.floating, right));
         case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_value_as_boolean(pesec_vector_value_less_equal(left.data.vector, right));
         case PESEC_VALUE_TYPE_STRING:
-            return pesec_value_as_i64(0);
+            return pesec_value_as_boolean(pesec_string_value_less_equal(left.data.string, right));
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
+        case PESEC_VALUE_TYPE_BOOLEAN:
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_panic("value::less_equal: unsupported value type");
     }
+
     pesec_panic("value::less_equal: fuck");
 }
 
 pesec_value_t pesec_value_greater(const pesec_value_t left, const pesec_value_t right)
 {
-    if (left.type != right.type)
-        pesec_panic("value::greater: both values should be same type");
-
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(left.data.i64 > right.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(left.data.f64 > right.data.f64);
-        case PESEC_VALUE_TYPE_FUNCTION:
-        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_value_as_boolean(pesec_integer_value_greater(left.data.integer, right));
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_value_as_boolean(pesec_floating_value_greater(left.data.floating, right));
         case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_value_as_boolean(pesec_vector_value_greater(left.data.vector, right));
         case PESEC_VALUE_TYPE_STRING:
-            return pesec_value_as_i64(0);
+            return pesec_value_as_boolean(pesec_string_value_greater(left.data.string, right));
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
+        case PESEC_VALUE_TYPE_BOOLEAN:
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_panic("value::greater: unsupported value type");
     }
+
     pesec_panic("value::greater: fuck");
 }
 
 pesec_value_t pesec_value_greater_equal(const pesec_value_t left, const pesec_value_t right)
 {
-    if (left.type != right.type)
-        pesec_panic("value::greater_equal: both values should be same type");
-
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_I64:
-            return pesec_value_as_i64(left.data.i64 >= right.data.i64);
-        case PESEC_VALUE_TYPE_F64:
-            return pesec_value_as_f64(left.data.f64 >= right.data.f64);
-        case PESEC_VALUE_TYPE_FUNCTION:
-        case PESEC_VALUE_TYPE_OBJECT:
+        case PESEC_VALUE_TYPE_INTEGER:
+            return pesec_value_as_boolean(pesec_integer_value_greater_equal(left.data.integer, right));
+        case PESEC_VALUE_TYPE_FLOATING:
+            return pesec_value_as_boolean(pesec_floating_value_greater_equal(left.data.floating, right));
         case PESEC_VALUE_TYPE_VECTOR:
+            return pesec_value_as_boolean(pesec_vector_value_greater_equal(left.data.vector, right));
         case PESEC_VALUE_TYPE_STRING:
-            return pesec_value_as_i64(0);
+            return pesec_value_as_boolean(pesec_string_value_greater_equal(left.data.string, right));
         case PESEC_VALUE_TYPE_NONE:
             return pesec_value_as_none();
+        case PESEC_VALUE_TYPE_BOOLEAN:
+        case PESEC_VALUE_TYPE_FUNCTION:
+        case PESEC_VALUE_TYPE_OBJECT:
+            pesec_panic("value::greater_equal: unsupported value type");
     }
+
     pesec_panic("value::greater_equal: fuck");
 }

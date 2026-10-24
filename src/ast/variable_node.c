@@ -22,5 +22,4 @@ pesec_value_t pesec_variable_node_evaluate(const pesec_variable_node_t* variable
 
 void pesec_variable_node_destroy(const pesec_variable_node_t* variable_node)
 {
-    // nothing to do
 }

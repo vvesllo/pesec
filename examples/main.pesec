@@ -2,3 +2,4 @@ immut s = "123";
 s.push_back("456");
 
 println(s);
+println(print);

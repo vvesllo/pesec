@@ -50,4 +50,6 @@ pesec_value_t pesec_function_value_call(pesec_function_value_t* function_value, 
 
 void pesec_function_value_destroy(pesec_function_value_t* function_value);
 
+void pesec_function_value_print(FILE* stream, const pesec_function_value_t* function_value);
+
 #endif // PESEC_FUNCTION_VALUE_H

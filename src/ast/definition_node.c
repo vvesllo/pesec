@@ -38,5 +38,5 @@ pesec_value_t pesec_definition_node_evaluate(
 
 void pesec_definition_node_destroy(const pesec_definition_node_t* definition_node)
 {
-    // nothing to do
+    pesec_node_destroy(definition_node->value);
 }

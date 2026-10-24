@@ -34,10 +34,11 @@ pesec_variable_t* pesec_environment_get_variable(const pesec_environment_t* envi
 void pesec_environment_set_variable(
     const pesec_environment_t* environment,
     const pesec_string_view_t name,
-    const pesec_value_t value
+    pesec_value_t value
 )
 {
     pesec_variable_t* variable = pesec_variable_table_find(environment->variable_table, name);
+    pesec_value_increase_reference(&value);
     if (!variable && environment->parent)
         variable = pesec_environment_get_variable(environment->parent, name);
     if (variable)
@@ -56,10 +57,11 @@ void pesec_environment_set_variable(
 void pesec_environment_push_variable(
     const pesec_environment_t* environment,
     const pesec_string_view_t name,
-    const pesec_value_t value,
+    pesec_value_t value,
     const bool immutable
 )
 {
+    pesec_value_increase_reference(&value);
     pesec_variable_table_push(
         environment->variable_table,
         (pesec_variable_t){
