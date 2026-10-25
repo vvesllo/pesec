@@ -6,7 +6,7 @@
 #include "include/common/alloc.h"
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
-#include "include/runtime/integer_value.h"
+#include "include/runtime/number_value.h"
 
 
 static void pesec_string_value_reserve(pesec_string_value_t* string_value, const size_t min_capacity)
@@ -209,7 +209,7 @@ static pesec_value_t pesec_string_value_method_size(
     pesec_environment_t* environment
 )
 {
-    pesec_value_t size = pesec_value_as_integer(pesec_integer_value_new((int64_t)self->data.string->size));
+    pesec_value_t size = pesec_value_as_number(pesec_number_value_new((double)self->data.string->size));
     size.control_flow = PESEC_VALUE_CONTROL_FLOW_RETURN;
     return size;
 }

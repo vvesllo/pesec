@@ -1,5 +1,6 @@
 #include "include/common/node_vector.h"
 
+#include "include/ast/node.h"
 #include "include/common/alloc.h"
 
 pesec_node_vector_t pesec_node_vector_new()
@@ -27,5 +28,9 @@ void pesec_node_vector_push(pesec_node_vector_t* node_vector, pesec_node_t* node
 
 void pesec_node_vector_destroy(const pesec_node_vector_t* node_vector)
 {
+    for (size_t i =0; i < node_vector->size; i++)
+    {
+        pesec_node_destroy(node_vector->items[i]);
+    }
     pesec_free(node_vector->items);
 }

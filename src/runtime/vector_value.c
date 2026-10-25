@@ -4,24 +4,24 @@
 #include "include/common/alloc.h"
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
-#include "include/runtime/integer_value.h"
+#include "include/runtime/number_value.h"
 
-static size_t pesec_vector_value_get_index(const pesec_vector_value_t* vector_value, const pesec_integer_value_t* index)
+static size_t pesec_vector_value_get_index(const pesec_vector_value_t* vector_value, const pesec_number_value_t* index)
 {
-    const int64_t index_int64 = pesec_integer_value_get(index);
+    const double index_value = pesec_number_value_get(index);
 
-    if (index_int64 < 0)
+    if (index_value < 0)
     {
-        const int64_t positive_index = (int64_t)vector_value->size + index_int64;
+        const size_t positive_index = (size_t)((double)vector_value->size + index_value);
         if (positive_index < 0)
             pesec_panic("index_access_node::evaluate: index out of range");
         return (size_t)positive_index;
     }
 
-    if ((size_t)index_int64 >= vector_value->size)
+    if ((size_t)index_value >= vector_value->size)
         pesec_panic("index_access_node::evaluate: index out of range");
 
-    return (size_t)index_int64;
+    return (size_t)index_value;
 }
 
 static int pesec_vector_value_compare(const pesec_vector_value_t* left, const pesec_vector_value_t* right)
@@ -53,7 +53,7 @@ pesec_vector_value_t* pesec_vector_value_new()
     return vector_value;
 }
 
-void pesec_vector_value_push(pesec_vector_value_t* vector_value, pesec_value_t value)
+void pesec_vector_value_push(pesec_vector_value_t* vector_value, const pesec_value_t value)
 {
     if (vector_value->size >= vector_value->capacity)
     {
@@ -70,14 +70,14 @@ void pesec_vector_value_push(pesec_vector_value_t* vector_value, pesec_value_t v
 
 void pesec_vector_value_set(
     const pesec_vector_value_t* vector_value,
-    const pesec_integer_value_t* index,
+    const pesec_number_value_t* index,
     const pesec_value_t value
 )
 {
     vector_value->items[pesec_vector_value_get_index(vector_value, index)] = value;
 }
 
-pesec_value_t* pesec_vector_value_get(const pesec_vector_value_t* vector_value, const pesec_integer_value_t* index)
+pesec_value_t* pesec_vector_value_get(const pesec_vector_value_t* vector_value, const pesec_number_value_t* index)
 {
     return &vector_value->items[pesec_vector_value_get_index(vector_value, index)];
 }
@@ -200,7 +200,7 @@ bool pesec_vector_value_greater_equal(const pesec_vector_value_t* left, const pe
 
 static pesec_value_t pesec_vector_value_method_size(pesec_value_t* self, pesec_environment_t* environment)
 {
-    pesec_value_t size = pesec_value_as_integer(pesec_integer_value_new((int64_t)self->data.vector->size));
+    pesec_value_t size = pesec_value_as_number(pesec_number_value_new((double)self->data.vector->size));
     size.control_flow = PESEC_VALUE_CONTROL_FLOW_RETURN;
     return size;
 }

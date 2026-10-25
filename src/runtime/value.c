@@ -1,10 +1,7 @@
 #include "include/runtime/value.h"
 
-#include <math.h>
-
 #include "include/common/panic.h"
-#include "include/runtime/integer_value.h"
-#include "include/runtime/floating_value.h"
+#include "include/runtime/number_value.h"
 #include "include/runtime/function_value.h"
 #include "include/runtime/object_value.h"
 #include "include/runtime/string_value.h"
@@ -31,11 +28,8 @@ static void pesec_value_destroy(const pesec_value_t* value)
         case PESEC_VALUE_TYPE_NONE:
         case PESEC_VALUE_TYPE_BOOLEAN:
             break;
-        case PESEC_VALUE_TYPE_INTEGER:
-            pesec_integer_value_destroy(value->data.integer);
-            break;
-        case PESEC_VALUE_TYPE_FLOATING:
-            pesec_floating_value_destroy(value->data.floating);
+        case PESEC_VALUE_TYPE_NUMBER:
+            pesec_number_value_destroy(value->data.number);
             break;
         case PESEC_VALUE_TYPE_FUNCTION:
             pesec_function_value_destroy(value->data.function);
@@ -62,11 +56,8 @@ void pesec_value_print(FILE* stream, const pesec_value_t value)
         case PESEC_VALUE_TYPE_BOOLEAN:
             fprintf(stream, value.data.boolean ? "true" : "false");
             break;
-        case PESEC_VALUE_TYPE_INTEGER:
-            pesec_integer_value_print(stream, value.data.integer);
-            break;
-        case PESEC_VALUE_TYPE_FLOATING:
-            pesec_floating_value_print(stream, value.data.floating);
+        case PESEC_VALUE_TYPE_NUMBER:
+            pesec_number_value_print(stream, value.data.number);
             break;
         case PESEC_VALUE_TYPE_FUNCTION:
             pesec_function_value_print(stream, value.data.function);
@@ -89,14 +80,9 @@ pesec_value_t pesec_value_as_boolean(const bool data)
     return pesec_value_as_boolean_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
 }
 
-pesec_value_t pesec_value_as_integer(pesec_integer_value_t* data)
+pesec_value_t pesec_value_as_number(pesec_number_value_t* data)
 {
-    return pesec_value_as_integer_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
-}
-
-pesec_value_t pesec_value_as_floating(pesec_floating_value_t* data)
-{
-    return pesec_value_as_floating_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
+    return pesec_value_as_number_with(data, PESEC_VALUE_CONTROL_FLOW_NONE);
 }
 
 pesec_value_t pesec_value_as_function(pesec_function_value_t* data)
@@ -136,23 +122,12 @@ pesec_value_t pesec_value_as_boolean_with(const bool data, const pesec_value_con
     );
 }
 
-pesec_value_t pesec_value_as_integer_with(pesec_integer_value_t* data, const pesec_value_control_flow_t control_flow)
+pesec_value_t pesec_value_as_number_with(pesec_number_value_t* data, const pesec_value_control_flow_t control_flow)
 {
     return pesec_value_new(
-        PESEC_VALUE_TYPE_INTEGER,
+        PESEC_VALUE_TYPE_NUMBER,
         (pesec_value_data_t){
-            .integer = data
-        },
-        control_flow
-    );
-}
-
-pesec_value_t pesec_value_as_floating_with(pesec_floating_value_t* data, const pesec_value_control_flow_t control_flow)
-{
-    return pesec_value_new(
-        PESEC_VALUE_TYPE_FLOATING,
-        (pesec_value_data_t){
-            .floating = data
+            .number = data
         },
         control_flow
     );
@@ -229,8 +204,7 @@ bool pesec_value_is_truthy(const pesec_value_t value)
     {
         case PESEC_VALUE_TYPE_NONE: return false;
         case PESEC_VALUE_TYPE_BOOLEAN: return value.data.boolean;
-        case PESEC_VALUE_TYPE_INTEGER: return pesec_integer_value_is_truthy(value.data.integer);
-        case PESEC_VALUE_TYPE_FLOATING: return pesec_floating_value_is_truthy(value.data.floating);
+        case PESEC_VALUE_TYPE_NUMBER: return pesec_number_value_is_truthy(value.data.number);
         case PESEC_VALUE_TYPE_VECTOR: return pesec_vector_value_is_truthy(value.data.vector);
         case PESEC_VALUE_TYPE_STRING: return pesec_string_value_is_truthy(value.data.string);
         case PESEC_VALUE_TYPE_FUNCTION:
@@ -244,10 +218,8 @@ pesec_value_t pesec_value_negative(const pesec_value_t value)
 {
     switch (value.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_integer_value_negative(value.data.integer);
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_floating_value_negative(value.data.floating);
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_number_value_negative(value.data.number);
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_vector_value_negative(value.data.vector);
         case PESEC_VALUE_TYPE_STRING:
@@ -267,10 +239,8 @@ pesec_value_t pesec_value_add(const pesec_value_t left, const pesec_value_t righ
 {
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_integer_value_add(left.data.integer, right);
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_floating_value_add(left.data.floating, right);
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_number_value_add(left.data.number, right);
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_vector_value_add(left.data.vector, right);
         case PESEC_VALUE_TYPE_STRING:
@@ -290,10 +260,8 @@ pesec_value_t pesec_value_sub(const pesec_value_t left, const pesec_value_t righ
 {
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_integer_value_sub(left.data.integer, right);
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_floating_value_sub(left.data.floating, right);
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_number_value_sub(left.data.number, right);
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_vector_value_sub(left.data.vector, right);
         case PESEC_VALUE_TYPE_STRING:
@@ -313,10 +281,8 @@ pesec_value_t pesec_value_mul(const pesec_value_t left, const pesec_value_t righ
 {
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_integer_value_mul(left.data.integer, right);
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_floating_value_mul(left.data.floating, right);
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_number_value_mul(left.data.number, right);
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_vector_value_mul(left.data.vector, right);
         case PESEC_VALUE_TYPE_STRING:
@@ -336,10 +302,8 @@ pesec_value_t pesec_value_div(const pesec_value_t left, const pesec_value_t righ
 {
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_integer_value_div(left.data.integer, right);
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_floating_value_div(left.data.floating, right);
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_number_value_div(left.data.number, right);
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_vector_value_div(left.data.vector, right);
         case PESEC_VALUE_TYPE_STRING:
@@ -359,10 +323,8 @@ pesec_value_t pesec_value_mod(const pesec_value_t left, const pesec_value_t righ
 {
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_integer_value_mod(left.data.integer, right);
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_floating_value_mod(left.data.floating, right);
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_number_value_mod(left.data.number, right);
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_vector_value_mod(left.data.vector, right);
         case PESEC_VALUE_TYPE_STRING:
@@ -382,10 +344,8 @@ pesec_value_t pesec_value_equal(const pesec_value_t left, const pesec_value_t ri
 {
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_value_as_boolean(pesec_integer_value_equal(left.data.integer, right));
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_value_as_boolean(pesec_floating_value_equal(left.data.floating, right));
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_value_as_boolean(pesec_number_value_equal(left.data.number, right));
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_as_boolean(pesec_vector_value_equal(left.data.vector, right));
         case PESEC_VALUE_TYPE_STRING:
@@ -405,10 +365,8 @@ pesec_value_t pesec_value_less(const pesec_value_t left, const pesec_value_t rig
 {
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_value_as_boolean(pesec_integer_value_less(left.data.integer, right));
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_value_as_boolean(pesec_floating_value_less(left.data.floating, right));
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_value_as_boolean(pesec_number_value_less(left.data.number, right));
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_as_boolean(pesec_vector_value_less(left.data.vector, right));
         case PESEC_VALUE_TYPE_STRING:
@@ -428,10 +386,8 @@ pesec_value_t pesec_value_less_equal(const pesec_value_t left, const pesec_value
 {
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_value_as_boolean(pesec_integer_value_less_equal(left.data.integer, right));
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_value_as_boolean(pesec_floating_value_less_equal(left.data.floating, right));
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_value_as_boolean(pesec_number_value_less_equal(left.data.number, right));
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_as_boolean(pesec_vector_value_less_equal(left.data.vector, right));
         case PESEC_VALUE_TYPE_STRING:
@@ -451,10 +407,8 @@ pesec_value_t pesec_value_greater(const pesec_value_t left, const pesec_value_t 
 {
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_value_as_boolean(pesec_integer_value_greater(left.data.integer, right));
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_value_as_boolean(pesec_floating_value_greater(left.data.floating, right));
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_value_as_boolean(pesec_number_value_greater(left.data.number, right));
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_as_boolean(pesec_vector_value_greater(left.data.vector, right));
         case PESEC_VALUE_TYPE_STRING:
@@ -474,10 +428,8 @@ pesec_value_t pesec_value_greater_equal(const pesec_value_t left, const pesec_va
 {
     switch (left.type)
     {
-        case PESEC_VALUE_TYPE_INTEGER:
-            return pesec_value_as_boolean(pesec_integer_value_greater_equal(left.data.integer, right));
-        case PESEC_VALUE_TYPE_FLOATING:
-            return pesec_value_as_boolean(pesec_floating_value_greater_equal(left.data.floating, right));
+        case PESEC_VALUE_TYPE_NUMBER:
+            return pesec_value_as_boolean(pesec_number_value_greater_equal(left.data.number, right));
         case PESEC_VALUE_TYPE_VECTOR:
             return pesec_value_as_boolean(pesec_vector_value_greater_equal(left.data.vector, right));
         case PESEC_VALUE_TYPE_STRING:
