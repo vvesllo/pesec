@@ -6,7 +6,7 @@
 #include "include/common/alloc.h"
 #include "include/common/panic.h"
 #include "include/runtime/environment.h"
-#include "include/runtime/integer_value.h"
+#include "include/runtime/number_value.h"
 
 
 static void pesec_string_value_reserve(pesec_string_value_t* string_value, const size_t min_capacity)
@@ -55,7 +55,7 @@ pesec_string_value_t* pesec_string_value_new()
 
     string_value->is_heap = false;
     string_value->size = 0;
-    string_value->capacity = PESEC_VARIABLE_TABLE_ITEMS_INLINE_SIZE;
+    string_value->capacity = PESEC_STRING_VALUE_ITEMS_INLINE_SIZE;
     memset(string_value->items._inline, 0, sizeof(string_value->items._inline));
 
     return string_value;
@@ -110,7 +110,7 @@ void pesec_string_value_destroy(pesec_string_value_t* string_value)
 
 void pesec_string_value_print(FILE* stream, const pesec_string_value_t* string_value)
 {
-    fprintf(stream, "%s", pesec_string_value_get_items_const(string_value));
+    fwrite(pesec_string_value_get_items_const(string_value), 1, string_value->size, stream);
 }
 
 bool pesec_string_value_is_truthy(const pesec_string_value_t* string_value)
@@ -120,7 +120,6 @@ bool pesec_string_value_is_truthy(const pesec_string_value_t* string_value)
 
 pesec_value_t pesec_string_value_negative(const pesec_string_value_t* string_value)
 {
-    (void)string_value;
     pesec_panic("string_value::negative: unsupported");
 }
 
@@ -210,7 +209,7 @@ static pesec_value_t pesec_string_value_method_size(
     pesec_environment_t* environment
 )
 {
-    pesec_value_t size = pesec_value_as_integer(pesec_integer_value_new((int64_t)self->data.string->size));
+    pesec_value_t size = pesec_value_as_number(pesec_number_value_new((double)self->data.string->size));
     size.control_flow = PESEC_VALUE_CONTROL_FLOW_RETURN;
     return size;
 }

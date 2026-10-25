@@ -26,8 +26,7 @@ const char* pesec_token_type_to_cstr(const pesec_token_type_t type)
     switch (type)
     {
         case PESEC_TOKEN_EOF: return "<token:eof>";
-        case PESEC_TOKEN_INTEGER: return "<token:integer>";
-        case PESEC_TOKEN_FLOAT: return "<token:float>";
+        case PESEC_TOKEN_NUMBER: return "<token:number>";
         case PESEC_TOKEN_IDENTIFIER: return "<token:identifier>";
         case PESEC_TOKEN_STRING: return "<token:string>";
         case PESEC_TOKEN_PLUS: return "<token:plus>";

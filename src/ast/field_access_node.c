@@ -19,24 +19,28 @@ pesec_node_t* pesec_field_access_node_new(pesec_node_t* object, pesec_string_vie
     );
 }
 
+pesec_value_t pesec_field_access_node_get_field(
+    pesec_value_t object_value,
+    const pesec_string_view_t field,
+    pesec_environment_t* environment
+)
+{
+    switch (object_value.type)
+    {
+        case PESEC_VALUE_TYPE_VECTOR: return pesec_vector_value_method_handler(&object_value, field, environment);
+        case PESEC_VALUE_TYPE_OBJECT: return pesec_object_value_method_handler(&object_value, field, environment);
+        case PESEC_VALUE_TYPE_STRING: return pesec_string_value_method_handler(&object_value, field, environment);
+        default: pesec_panic("field_access_node::evaluate: can't get field from non object value");
+    }
+}
+
 pesec_value_t pesec_field_access_node_evaluate(
     const pesec_field_access_node_t* field_access_node,
     pesec_environment_t* environment
 )
 {
-    pesec_value_t value = pesec_node_evaluate(field_access_node->object, environment);
-
-    switch (value.type)
-    {
-        case PESEC_VALUE_TYPE_VECTOR:
-            return pesec_vector_value_method_handler(&value, field_access_node->field, environment);
-        case PESEC_VALUE_TYPE_OBJECT:
-            return pesec_object_value_method_handler(&value, field_access_node->field, environment);
-        case PESEC_VALUE_TYPE_STRING:
-            return pesec_string_value_method_handler(&value, field_access_node->field, environment);
-        default:
-            pesec_panic("field_access_node::evaluate: can't get field from non object value");
-    }
+    const pesec_value_t object_value = pesec_node_evaluate(field_access_node->object, environment);
+    return pesec_field_access_node_get_field(object_value, field_access_node->field, environment);
 }
 
 void pesec_field_access_node_destroy(const pesec_field_access_node_t* field_access_node)

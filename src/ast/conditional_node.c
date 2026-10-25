@@ -39,7 +39,7 @@ pesec_value_t pesec_conditional_node_evaluate(
     else if (conditional_node->else_body)
         result_value = pesec_node_evaluate(conditional_node->else_body, local_environment);
 
-    pesec_environment_destroy(local_environment);
+    pesec_environment_decrease_reference(local_environment);
 
     return result_value;
 }

@@ -13,11 +13,11 @@ pesec_vector_value_t* pesec_vector_value_new();
 
 void pesec_vector_value_push(pesec_vector_value_t* vector_value, pesec_value_t value);
 
-void pesec_vector_value_set(const pesec_vector_value_t* vector_value, const pesec_integer_value_t* index, pesec_value_t value);
+void pesec_vector_value_set(const pesec_vector_value_t* vector_value, const pesec_number_value_t* index, pesec_value_t value);
 
-pesec_value_t* pesec_vector_value_get(const pesec_vector_value_t* vector_value, const pesec_integer_value_t* index);
+pesec_value_t* pesec_vector_value_get(const pesec_vector_value_t* vector_value, const pesec_number_value_t* index);
 
-void pesec_vector_value_destroy(const pesec_vector_value_t* vector_value);
+void pesec_vector_value_destroy(pesec_vector_value_t* vector_value);
 
 void pesec_vector_value_print(FILE* stream, const pesec_vector_value_t* vector_value);
 

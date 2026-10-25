@@ -17,7 +17,7 @@ static size_t pesec_variable_table_hash(const pesec_variable_table_t* variable_t
     size_t i = 0;
     for (; i + 8 <= name.size; i += 8)
     {
-        size_t chunk;
+        uint64_t chunk;
         memcpy(&chunk, name.data + i, 8);
         hash ^= chunk;
         hash *= 0x100000001b3ULL;

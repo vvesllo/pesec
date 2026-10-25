@@ -3,8 +3,7 @@
 #include "include/common/node_vector.h"
 #include "include/common/panic.h"
 #include "include/common/parameter_vector.h"
-#include "include/runtime/floating_value.h"
-#include "include/runtime/integer_value.h"
+#include "include/runtime/number_value.h"
 #include "include/runtime/string_value.h"
 
 
@@ -152,14 +151,9 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
             pesec_node_t* operand = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_UNARY);
             return pesec_unary_node_new(PESEC_UNARY_NODE_OPERATION_NEGATIVE, operand);
         }
-        case PESEC_TOKEN_INTEGER: {
+        case PESEC_TOKEN_NUMBER: {
             return pesec_literal_node_new(
-                pesec_value_as_integer(pesec_integer_value_new((double)pesec_parser_advance(parser).data.integer))
-            );
-        }
-        case PESEC_TOKEN_FLOAT: {
-            return pesec_literal_node_new(
-                pesec_value_as_floating(pesec_floating_value_new(pesec_parser_advance(parser).data.floating))
+                pesec_value_as_number(pesec_number_value_new(pesec_parser_advance(parser).data.number))
             );
         }
         case PESEC_TOKEN_STRING: {
@@ -210,7 +204,7 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
                 pesec_parser_eat(parser, PESEC_TOKEN_COMMA);
             }
             pesec_parser_eat(parser, PESEC_TOKEN_RPAREN);
-            pesec_node_t* body = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+            pesec_node_t* body = pesec_parser_parse_primary(parser);
             return pesec_function_node_new(body, parameter_vector);
         }
         case PESEC_TOKEN_KEYWORD_IF: {

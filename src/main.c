@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "include/common/alloc.h"
@@ -9,7 +10,6 @@
 
 #include "include/runtime/environment.h"
 #include "include/runtime/function_value.h"
-#include "include/runtime/integer_value.h"
 
 
 static pesec_value_t print_function(pesec_environment_t* environment)
@@ -19,14 +19,14 @@ static pesec_value_t print_function(pesec_environment_t* environment)
         pesec_string_view_from("value")
     );
     pesec_value_print(stdout, printable->value);
-    return pesec_value_as_integer(pesec_integer_value_new(0));
+    return pesec_value_as_none();
 }
 
 static pesec_value_t println_function(pesec_environment_t* environment)
 {
     print_function(environment);
     printf("\n");
-    return pesec_value_as_integer(pesec_integer_value_new(0));
+    return pesec_value_as_none();
 }
 
 static void pesec_print_help()
@@ -37,11 +37,16 @@ static void pesec_print_help()
 int main(const int argc, char** argv)
 {
     const clock_t start = clock();
-    if (argc < 2) pesec_print_help();
+    if (argc < 2)
+    {
+        pesec_print_help();
+        return EXIT_FAILURE;
+    }
+
     const pesec_string_view_t source = pesec_file_read(argv[1]);
     pesec_lexer_t lexer = pesec_lexer_new(source);
     pesec_parser_t parser = pesec_parser_new(&lexer);
-    const pesec_node_t* node = pesec_parser_parse(&parser);
+    pesec_node_t* node = pesec_parser_parse(&parser);
 
     pesec_environment_t* global_environment = pesec_environment_new(nullptr);
 
@@ -82,7 +87,7 @@ int main(const int argc, char** argv)
     pesec_node_evaluate(node, global_environment);
 
     const clock_t stop = clock();
-    const double elapsed = (double) (stop - start) / CLOCKS_PER_SEC;
+    const double elapsed = (double)(stop - start) / CLOCKS_PER_SEC;
     printf("\nTime elapsed: %.5f", elapsed);
 
     pesec_node_destroy(node);

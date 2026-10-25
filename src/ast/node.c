@@ -1,6 +1,5 @@
 #include "include/ast/node.h"
 #include "include/common/alloc.h"
-#include "include/runtime/integer_value.h"
 
 pesec_node_t* pesec_node_new(const pesec_node_type_t type, const pesec_node_data_t data)
 {
@@ -34,10 +33,10 @@ pesec_value_t pesec_node_evaluate(const pesec_node_t* node, pesec_environment_t*
         case PESEC_NODE_TYPE_CONTROL_FLOW: return pesec_control_flow_node_evaluate(&node->data.control_flow_node, environment);
     }
 
-    return pesec_value_as_integer(pesec_integer_value_new(0));
+    return pesec_value_as_none();
 }
 
-void pesec_node_destroy(const pesec_node_t* node)
+void pesec_node_destroy(pesec_node_t* node)
 {
     switch (node->type)
     {
@@ -60,4 +59,5 @@ void pesec_node_destroy(const pesec_node_t* node)
         case PESEC_NODE_TYPE_WHILE: pesec_while_node_destroy(&node->data.while_node); break;
         case PESEC_NODE_TYPE_CONTROL_FLOW: pesec_control_flow_node_destroy(&node->data.control_flow_node); break;
     }
+    pesec_free(node);
 }

@@ -61,20 +61,10 @@ static pesec_token_t pesec_lexer_next_numeric(pesec_lexer_t* lexer)
 
     const double value = integer_part + fraction_part;
 
-    if (has_dot)
-        return pesec_token_new(
-            PESEC_TOKEN_FLOAT,
-            (pesec_token_data_t){
-                .floating = value,
-            },
-            lexer->line,
-            lexer->column
-        );
-
     return pesec_token_new(
-        PESEC_TOKEN_INTEGER,
+        PESEC_TOKEN_NUMBER,
         (pesec_token_data_t){
-            .integer = (int64_t)integer_part
+            .number = value
         },
         lexer->line,
         lexer->column

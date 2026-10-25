@@ -2,6 +2,7 @@
 
 #include "include/ast/node.h"
 #include "include/common/alloc.h"
+#include "include/runtime/environment.h"
 
 pesec_function_value_t* pesec_function_value_new(
     const pesec_function_value_type_t type,
@@ -16,6 +17,8 @@ pesec_function_value_t* pesec_function_value_new(
     function_value->data = data;
     function_value->parameter_vector = parameter_vector;
     function_value->parent_environment = parent_environment;
+
+    if (parent_environment) pesec_environment_increase_reference(parent_environment);
 
     return function_value;
 }
@@ -32,6 +35,15 @@ pesec_value_t pesec_function_value_call(pesec_function_value_t* function_value, 
 
 void pesec_function_value_destroy(pesec_function_value_t* function_value)
 {
+    if (function_value->parent_environment)
+        pesec_environment_decrease_reference(function_value->parent_environment);
+
+    pesec_parameter_vector_destroy(&function_value->parameter_vector);
+    if (function_value->type == PESEC_FUNCTION_VALUE_TYPE_METHOD)
+    {
+        pesec_value_decrease_reference(&function_value->data.method.self);
+    }
+
     pesec_free(function_value);
 }
 

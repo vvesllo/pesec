@@ -1,5 +1,7 @@
-immut s = "123";
-s.push_back("456");
-
-println(s);
-println(print);
+mut f = {
+    mut x = 69;
+    fn(a) {
+        return x * a;
+    };
+};
+println(f(12));

@@ -9,8 +9,7 @@ typedef enum
 {
     PESEC_TOKEN_EOF = 0,
 
-    PESEC_TOKEN_INTEGER,
-    PESEC_TOKEN_FLOAT,
+    PESEC_TOKEN_NUMBER,
     PESEC_TOKEN_IDENTIFIER,
     PESEC_TOKEN_STRING,
 
@@ -66,8 +65,7 @@ typedef enum
 
 typedef union
 {
-    int64_t integer;
-    double floating;
+    double number;
     pesec_string_view_t string_view;
 } pesec_token_data_t;
 

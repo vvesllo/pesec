@@ -11,16 +11,14 @@ typedef struct PESEC_FUNCTION_VALUE_STRUCT pesec_function_value_t;
 typedef struct PESEC_VECTOR_VALUE_STRUCT pesec_vector_value_t;
 typedef struct PESEC_OBJECT_VALUE_STRUCT pesec_object_value_t;
 typedef struct PESEC_STRING_VALUE_STRUCT pesec_string_value_t;
-typedef struct PESEC_INTEGER_VALUE_STRUCT pesec_integer_value_t;
-typedef struct PESEC_FLOATING_VALUE_STRUCT pesec_floating_value_t;
+typedef struct PESEC_NUMBER_VALUE_STRUCT pesec_number_value_t;
 
 
 typedef enum
 {
     PESEC_VALUE_TYPE_NONE,
     PESEC_VALUE_TYPE_BOOLEAN,
-    PESEC_VALUE_TYPE_INTEGER,
-    PESEC_VALUE_TYPE_FLOATING,
+    PESEC_VALUE_TYPE_NUMBER,
     PESEC_VALUE_TYPE_FUNCTION,
     PESEC_VALUE_TYPE_VECTOR,
     PESEC_VALUE_TYPE_OBJECT,
@@ -38,8 +36,7 @@ typedef enum
 typedef union
 {
     bool boolean;
-    pesec_integer_value_t* integer;
-    pesec_floating_value_t* floating;
+    pesec_number_value_t* number;
     pesec_function_value_t* function;
     pesec_vector_value_t* vector;
     pesec_object_value_t* object;
@@ -58,9 +55,7 @@ void pesec_value_print(FILE* stream, pesec_value_t value);
 
 pesec_value_t pesec_value_as_boolean(bool data);
 
-pesec_value_t pesec_value_as_integer(pesec_integer_value_t* data);
-
-pesec_value_t pesec_value_as_floating(pesec_floating_value_t* data);
+pesec_value_t pesec_value_as_number(pesec_number_value_t* data);
 
 pesec_value_t pesec_value_as_function(pesec_function_value_t* data);
 
@@ -75,9 +70,7 @@ pesec_value_t pesec_value_as_none();
 
 pesec_value_t pesec_value_as_boolean_with(bool data, pesec_value_control_flow_t control_flow);
 
-pesec_value_t pesec_value_as_integer_with(pesec_integer_value_t* data, pesec_value_control_flow_t control_flow);
-
-pesec_value_t pesec_value_as_floating_with(pesec_floating_value_t* data, pesec_value_control_flow_t control_flow);
+pesec_value_t pesec_value_as_number_with(pesec_number_value_t* data, pesec_value_control_flow_t control_flow);
 
 pesec_value_t pesec_value_as_function_with(pesec_function_value_t* data, pesec_value_control_flow_t control_flow);
 

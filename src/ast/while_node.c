@@ -31,20 +31,21 @@ pesec_value_t pesec_while_node_evaluate(
         {
             value.control_flow = PESEC_VALUE_CONTROL_FLOW_NONE;
             if (value.type != PESEC_VALUE_TYPE_NONE) pesec_vector_value_push(result_vector_value, value);
+            pesec_variable_table_reset(local_environment->variable_table);
             continue;
         }
         if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_BREAK)
         {
             value.control_flow = PESEC_VALUE_CONTROL_FLOW_NONE;
             if (value.type != PESEC_VALUE_TYPE_NONE) pesec_vector_value_push(result_vector_value, value);
+            pesec_variable_table_reset(local_environment->variable_table);
             break;
         }
         if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN) break;
-
         pesec_variable_table_reset(local_environment->variable_table);
     }
 
-    pesec_environment_destroy(local_environment);
+    pesec_environment_decrease_reference(local_environment);
 
     if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_BREAK ||
         value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN)
