@@ -1,7 +1,7 @@
 mut f = {
     mut x = 69;
-    fn() {
-        return x;
+    fn(a) {
+        return x * a;
     };
 };
-println(f());
+println(f(12));

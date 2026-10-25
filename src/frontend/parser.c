@@ -204,7 +204,7 @@ static pesec_node_t* pesec_parser_parse_primary(pesec_parser_t* parser)
                 pesec_parser_eat(parser, PESEC_TOKEN_COMMA);
             }
             pesec_parser_eat(parser, PESEC_TOKEN_RPAREN);
-            pesec_node_t* body = pesec_parser_parse_expression(parser, PESEC_PARSER_BINDING_POWER_NONE);
+            pesec_node_t* body = pesec_parser_parse_primary(parser);
             return pesec_function_node_new(body, parameter_vector);
         }
         case PESEC_TOKEN_KEYWORD_IF: {
