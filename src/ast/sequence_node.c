@@ -30,7 +30,7 @@ pesec_value_t pesec_sequence_node_evaluate(
             break;
     }
 
-    pesec_environment_destroy(local_environment);
+    pesec_environment_decrease_reference(local_environment);
 
     return value;
 }

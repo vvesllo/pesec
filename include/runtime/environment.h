@@ -10,11 +10,14 @@ typedef struct PESEC_ENVIRONMENT_STRUCT
 {
     pesec_environment_t* parent;
     pesec_variable_table_t* variable_table;
+    size_t reference_count;
 } pesec_environment_t;
 
 pesec_environment_t* pesec_environment_new(pesec_environment_t* parent);
 
-void pesec_environment_destroy(pesec_environment_t* environment);
+void pesec_environment_increase_reference(pesec_environment_t* environment);
+
+void pesec_environment_decrease_reference(pesec_environment_t* environment);
 
 pesec_variable_t* pesec_environment_get_variable(const pesec_environment_t* environment, pesec_string_view_t name);
 

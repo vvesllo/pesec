@@ -12,8 +12,8 @@ static size_t pesec_vector_value_get_index(const pesec_vector_value_t* vector_va
 
     if (index_value < 0)
     {
-        const size_t positive_index = (size_t)((double)vector_value->size + index_value);
-        if (positive_index < 0)
+        const double positive_index = (double)vector_value->size + index_value;
+        if (positive_index < 0.f)
             pesec_panic("index_access_node::evaluate: index out of range");
         return (size_t)positive_index;
     }

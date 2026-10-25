@@ -45,7 +45,7 @@ pesec_variable_t* pesec_object_value_get(const pesec_object_value_t* object_valu
 
 void pesec_object_value_destroy(pesec_object_value_t* object_value)
 {
-    pesec_environment_destroy(object_value->environment);
+    pesec_environment_decrease_reference(object_value->environment);
     pesec_free(object_value);
 }
 

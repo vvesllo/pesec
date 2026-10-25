@@ -1,5 +1,7 @@
-immut v = for i in 1...5 {
-    continue i * i;
+mut f = {
+    mut x = 69;
+    fn() {
+        return x;
+    };
 };
-
-print(v);
+println(f());

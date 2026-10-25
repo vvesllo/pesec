@@ -78,7 +78,7 @@ pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec
 
     pesec_value_t result_value = pesec_function_value_call(function, local_environment);
 
-    pesec_environment_destroy(local_environment);
+    pesec_environment_decrease_reference(local_environment);
 
     if (result_value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN)
     {

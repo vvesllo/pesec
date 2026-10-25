@@ -64,7 +64,7 @@ pesec_value_t pesec_for_node_evaluate(
             pesec_variable_table_reset(local_environment->variable_table);
         }
 
-        pesec_environment_destroy(local_environment);
+        pesec_environment_decrease_reference(local_environment);
 
         if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_BREAK ||
             value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN)

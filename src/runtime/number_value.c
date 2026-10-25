@@ -108,9 +108,12 @@ pesec_value_t pesec_number_value_mod(const pesec_number_value_t* left, const pes
     switch (right.type)
     {
         case PESEC_VALUE_TYPE_NUMBER:
+            if (right.data.number->value == 0.0)
+                pesec_panic("number_value::mod: division by zero(0)");
             return pesec_value_as_number(
                 pesec_number_value_new(fmod(left->value, right.data.number->value))
             );
+
 
         default:
             pesec_panic("number_value::mod: unsupported right type");

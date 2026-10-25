@@ -55,7 +55,7 @@ pesec_string_value_t* pesec_string_value_new()
 
     string_value->is_heap = false;
     string_value->size = 0;
-    string_value->capacity = PESEC_VARIABLE_TABLE_ITEMS_INLINE_SIZE;
+    string_value->capacity = PESEC_STRING_VALUE_ITEMS_INLINE_SIZE;
     memset(string_value->items._inline, 0, sizeof(string_value->items._inline));
 
     return string_value;

@@ -64,7 +64,7 @@ static pesec_token_t pesec_lexer_next_numeric(pesec_lexer_t* lexer)
     return pesec_token_new(
         PESEC_TOKEN_NUMBER,
         (pesec_token_data_t){
-            .number = integer_part
+            .number = value
         },
         lexer->line,
         lexer->column
