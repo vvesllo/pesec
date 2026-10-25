@@ -29,7 +29,7 @@ void pesec_object_value_set(
 
 pesec_variable_t* pesec_object_value_get(const pesec_object_value_t* object_value, pesec_string_view_t field);
 
-void pesec_object_value_destroy(const pesec_object_value_t* object_value);
+void pesec_object_value_destroy(pesec_object_value_t* object_value);
 
 void pesec_object_value_print(FILE* stream, const pesec_object_value_t* object_value);
 

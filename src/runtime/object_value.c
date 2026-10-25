@@ -43,9 +43,10 @@ pesec_variable_t* pesec_object_value_get(const pesec_object_value_t* object_valu
     return variable;
 }
 
-void pesec_object_value_destroy(const pesec_object_value_t* object_value)
+void pesec_object_value_destroy(pesec_object_value_t* object_value)
 {
     pesec_environment_destroy(object_value->environment);
+    pesec_free(object_value);
 }
 
 void pesec_object_value_print(FILE* stream, const pesec_object_value_t* object_value)

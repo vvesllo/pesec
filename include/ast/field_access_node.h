@@ -13,7 +13,16 @@ typedef struct
 
 pesec_node_t* pesec_field_access_node_new(pesec_node_t* object, pesec_string_view_t field);
 
-pesec_value_t pesec_field_access_node_evaluate(const pesec_field_access_node_t* field_access_node, pesec_environment_t* environment);
+pesec_value_t pesec_field_access_node_evaluate(
+    const pesec_field_access_node_t* field_access_node,
+    pesec_environment_t* environment
+);
+
+pesec_value_t pesec_field_access_node_get_field(
+    pesec_value_t object_value,
+    pesec_string_view_t field,
+    pesec_environment_t* environment
+);
 
 void pesec_field_access_node_destroy(const pesec_field_access_node_t* field_access_node);
 

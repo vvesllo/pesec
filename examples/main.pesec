@@ -1,5 +1,5 @@
-immut s = "123";
-s.push_back("456");
+immut v = for i in 1...5 {
+    continue i * i;
+};
 
-println(s);
-println(print);
+print(v);

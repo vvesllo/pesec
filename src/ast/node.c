@@ -37,7 +37,7 @@ pesec_value_t pesec_node_evaluate(const pesec_node_t* node, pesec_environment_t*
     return pesec_value_as_integer(pesec_integer_value_new(0));
 }
 
-void pesec_node_destroy(const pesec_node_t* node)
+void pesec_node_destroy(pesec_node_t* node)
 {
     switch (node->type)
     {
@@ -60,4 +60,5 @@ void pesec_node_destroy(const pesec_node_t* node)
         case PESEC_NODE_TYPE_WHILE: pesec_while_node_destroy(&node->data.while_node); break;
         case PESEC_NODE_TYPE_CONTROL_FLOW: pesec_control_flow_node_destroy(&node->data.control_flow_node); break;
     }
+    pesec_free(node);
 }

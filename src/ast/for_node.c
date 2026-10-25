@@ -44,23 +44,24 @@ pesec_value_t pesec_for_node_evaluate(
                 iterable->items[i],
                 false
             );
+
             value = pesec_node_evaluate(for_node->body, local_environment);
-
-            pesec_variable_table_reset(local_environment->variable_table);
-
             if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_CONTINUE)
             {
                 value.control_flow = PESEC_VALUE_CONTROL_FLOW_NONE;
                 if (value.type != PESEC_VALUE_TYPE_NONE) pesec_vector_value_push(result_vector_value, value);
+                pesec_variable_table_reset(local_environment->variable_table);
                 continue;
             }
             if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_BREAK)
             {
                 value.control_flow = PESEC_VALUE_CONTROL_FLOW_NONE;
                 if (value.type != PESEC_VALUE_TYPE_NONE) pesec_vector_value_push(result_vector_value, value);
+                pesec_variable_table_reset(local_environment->variable_table);
                 break;
             }
             if (value.control_flow == PESEC_VALUE_CONTROL_FLOW_RETURN) break;
+            pesec_variable_table_reset(local_environment->variable_table);
         }
 
         pesec_environment_destroy(local_environment);

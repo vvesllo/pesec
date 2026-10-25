@@ -20,15 +20,30 @@ pesec_node_t* pesec_call_node_new(pesec_node_t* callee, const pesec_node_vector_
 
 pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec_environment_t* environment)
 {
-    const pesec_value_t value = pesec_node_evaluate(call_node->callee, environment);
+    pesec_value_t value;
+    pesec_value_t self_value = pesec_value_as_none();
+    bool has_self = false;
+
+    if (call_node->callee->type == PESEC_NODE_TYPE_FIELD_ACCESS)
+    {
+        const pesec_field_access_node_t* field_access = &call_node->callee->data.field_access_node;
+
+        self_value = pesec_node_evaluate(field_access->object, environment);
+        has_self = true;
+
+        value = pesec_field_access_node_get_field(self_value, field_access->field, environment);
+    }
+    else
+    {
+        value = pesec_node_evaluate(call_node->callee, environment);
+    }
 
     if (value.type != PESEC_VALUE_TYPE_FUNCTION)
     {
         if (call_node->callee->type == PESEC_NODE_TYPE_VARIABLE)
             pesec_panic("call_node::evaluate: variable `%.*s` is not a function",
                         call_node->callee->data.variable_node.name.size,
-                        call_node->callee->data.variable_node.name.data
-            );
+                        call_node->callee->data.variable_node.name.data);
         pesec_panic("call_node::evaluate: can call function");
     }
 
@@ -40,13 +55,8 @@ pesec_value_t pesec_call_node_evaluate(const pesec_call_node_t* call_node, pesec
 
     pesec_environment_t* local_environment = pesec_environment_new(function->parent_environment);
 
-    if (call_node->callee->type == PESEC_NODE_TYPE_FIELD_ACCESS)
+    if (has_self && function->type == PESEC_FUNCTION_VALUE_TYPE_NODE)
     {
-        const pesec_value_t self_value = pesec_node_evaluate(
-            call_node->callee->data.field_access_node.object,
-            environment
-        );
-
         pesec_environment_push_variable(
             local_environment,
             pesec_string_view_from("self"),

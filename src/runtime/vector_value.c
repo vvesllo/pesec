@@ -82,9 +82,10 @@ pesec_value_t* pesec_vector_value_get(const pesec_vector_value_t* vector_value, 
     return &vector_value->items[pesec_vector_value_get_index(vector_value, index)];
 }
 
-void pesec_vector_value_destroy(const pesec_vector_value_t* vector_value)
+void pesec_vector_value_destroy(pesec_vector_value_t* vector_value)
 {
     pesec_free(vector_value->items);
+    pesec_free(vector_value);
 }
 
 void pesec_vector_value_print(FILE* stream, const pesec_vector_value_t* vector_value)

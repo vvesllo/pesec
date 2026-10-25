@@ -28,5 +28,6 @@ pesec_value_t pesec_control_flow_node_evaluate(const pesec_control_flow_node_t* 
 
 void pesec_control_flow_node_destroy(const pesec_control_flow_node_t* control_flow_node)
 {
-    pesec_node_destroy(control_flow_node->value);
+    if (control_flow_node->value)
+        pesec_node_destroy(control_flow_node->value);
 }

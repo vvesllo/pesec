@@ -110,7 +110,7 @@ void pesec_string_value_destroy(pesec_string_value_t* string_value)
 
 void pesec_string_value_print(FILE* stream, const pesec_string_value_t* string_value)
 {
-    fprintf(stream, "%s", pesec_string_value_get_items_const(string_value));
+    fwrite(pesec_string_value_get_items_const(string_value), 1, string_value->size, stream);
 }
 
 bool pesec_string_value_is_truthy(const pesec_string_value_t* string_value)
@@ -120,7 +120,6 @@ bool pesec_string_value_is_truthy(const pesec_string_value_t* string_value)
 
 pesec_value_t pesec_string_value_negative(const pesec_string_value_t* string_value)
 {
-    (void)string_value;
     pesec_panic("string_value::negative: unsupported");
 }
 

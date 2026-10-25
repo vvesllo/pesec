@@ -76,6 +76,6 @@ pesec_node_t* pesec_node_new(pesec_node_type_t type, pesec_node_data_t data);
 
 pesec_value_t pesec_node_evaluate(const pesec_node_t* node, pesec_environment_t* environment);
 
-void pesec_node_destroy(const pesec_node_t* node);
+void pesec_node_destroy(pesec_node_t* node);
 
 #endif // PESEC_NODE_H

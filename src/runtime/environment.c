@@ -38,13 +38,14 @@ void pesec_environment_set_variable(
 )
 {
     pesec_variable_t* variable = pesec_variable_table_find(environment->variable_table, name);
-    pesec_value_increase_reference(&value);
     if (!variable && environment->parent)
         variable = pesec_environment_get_variable(environment->parent, name);
     if (variable)
     {
         if (variable->immutable)
             pesec_panic("environment::set_variable: variable `%.*s` is immutable", name.size, name.data);
+        pesec_value_increase_reference(&value);
+        pesec_value_decrease_reference(&variable->value);
         variable->value = value;
         return;
     }
